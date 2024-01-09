@@ -1,20 +1,20 @@
-import React, {useState} from 'react';
-import {View, Text, Image, TouchableOpacity, Alert} from 'react-native';
-import {myClient} from '../../..';
-import STYLES from '../../constants/Styles';
-import {useAppDispatch, useAppSelector} from '../../store';
-import {getExploreFeedData} from '../../store/actions/explorefeed';
+import React, { useState } from "react";
+import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
+import STYLES from "../../constants/Styles";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { getExploreFeedData } from "../../store/actions/explorefeed";
 import {
   SET_EXPLORE_FEED_PAGE,
   SET_PAGE,
   TO_BE_DELETED,
-} from '../../store/types/types';
-import ToastMessage from '../ToastMessage';
-import {styles} from './styles';
-import {CHATROOM} from '../../constants/Screens';
-import {Events, Keys, Sources} from '../../enums';
-import {LMChatAnalytics} from '../../analytics/LMChatAnalytics';
-import {CHATROOM_JOINED, CHATROOM_LEFT} from '../../constants/Strings';
+} from "../../store/types/types";
+import ToastMessage from "../ToastMessage";
+import { styles } from "./styles";
+import { CHATROOM } from "../../constants/Screens";
+import { Events, Keys, Sources } from "../../enums";
+import { LMChatAnalytics } from "../../analytics/LMChatAnalytics";
+import { CHATROOM_JOINED, CHATROOM_LEFT } from "../../constants/Strings";
+import { Client } from "../../client";
 
 interface Props {
   avatar: string;
@@ -47,9 +47,10 @@ const ExploreFeedItem: React.FC<Props> = ({
   filterState,
   navigation,
 }) => {
+  const myClient = Client.myClient;
   const [isToast, setIsToast] = useState(false);
-  const [msg, setMsg] = useState('');
-  const {user, community} = useAppSelector(state => state.homefeed);
+  const [msg, setMsg] = useState("");
+  const { user, community } = useAppSelector((state) => state.homefeed);
 
   const dispatch = useAppDispatch();
 
@@ -71,7 +72,7 @@ const ExploreFeedItem: React.FC<Props> = ({
           setIsToast(true);
           await myClient?.updateChatroomFollowStatus(
             chatroomID?.toString(),
-            true,
+            true
           );
           LMChatAnalytics.track(
             Events.CHAT_ROOM_FOLLOWED,
@@ -79,7 +80,7 @@ const ExploreFeedItem: React.FC<Props> = ({
               [Keys.CHATROOM_ID, chatroomID?.toString()],
               [Keys.COMMUNITY_ID, user?.sdkClientInfo?.community?.toString()],
               [Keys.SOURCE, Sources.COMMUNITY_FEED],
-            ]),
+            ])
           );
         } else {
           setMsg(CHATROOM_LEFT);
@@ -87,7 +88,7 @@ const ExploreFeedItem: React.FC<Props> = ({
           // Updating the followStatus of chatroom to false in case of leaving the chatroo
           await myClient?.updateChatroomFollowStatus(
             chatroomID?.toString(),
-            false,
+            false
           );
           LMChatAnalytics.track(
             Events.CHAT_ROOM_UN_FOLLOWED,
@@ -95,14 +96,14 @@ const ExploreFeedItem: React.FC<Props> = ({
               [Keys.CHATROOM_ID, chatroomID?.toString()],
               [Keys.COMMUNITY_ID, user?.sdkClientInfo?.community?.toString()],
               [Keys.SOURCE, Sources.COMMUNITY_FEED],
-            ]),
+            ])
           );
         }
-        dispatch({type: SET_EXPLORE_FEED_PAGE, body: 1});
+        dispatch({ type: SET_EXPLORE_FEED_PAGE, body: 1 });
         await dispatch(getExploreFeedData(payload) as any);
       })
       .catch(() => {
-        Alert.alert('Leave Chatroom failed');
+        Alert.alert("Leave Chatroom failed");
       });
 
     return res;
@@ -110,22 +111,23 @@ const ExploreFeedItem: React.FC<Props> = ({
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate(CHATROOM, {chatroomID: chatroomID});
+        navigation.navigate(CHATROOM, { chatroomID: chatroomID });
       }}
-      style={styles.itemContainer}>
+      style={styles.itemContainer}
+    >
       <View>
         <Image
           source={
             avatar
-              ? {uri: avatar}
-              : require('../../assets/images/default_pic.png')
+              ? { uri: avatar }
+              : require("../../assets/images/default_pic.png")
           }
           style={styles.avatar}
         />
         {pinned && (
           <View style={styles.pinnedIconParent}>
             <Image
-              source={require('../../assets/images/pin_icon_white3x.png')}
+              source={require("../../assets/images/pin_icon_white3x.png")}
               style={styles.pinnedIcon}
             />
           </View>
@@ -146,7 +148,7 @@ const ExploreFeedItem: React.FC<Props> = ({
                 {header}
                 {isSecret ? (
                   <Image
-                    source={require('../../assets/images/lock_icon3x.png')}
+                    source={require("../../assets/images/lock_icon3x.png")}
                     style={styles.lockIcon}
                   />
                 ) : null}
@@ -154,19 +156,21 @@ const ExploreFeedItem: React.FC<Props> = ({
             </View>
             <View style={styles.info}>
               <Image
-                source={require('../../assets/images/participants_icon3x.png')}
+                source={require("../../assets/images/participants_icon3x.png")}
                 style={styles.info_icons}
               />
               <Text
                 style={styles.lastMessage}
-                numberOfLines={1}>{`${participants} • `}</Text>
+                numberOfLines={1}
+              >{`${participants} • `}</Text>
               <Image
-                source={require('../../assets/images/message_icon3x.png')}
+                source={require("../../assets/images/message_icon3x.png")}
                 style={styles.info_icons}
               />
               <Text
                 style={styles.lastMessage}
-                numberOfLines={1}>{`${messageCount}`}</Text>
+                numberOfLines={1}
+              >{`${messageCount}`}</Text>
             </View>
           </View>
           {/* {pinned && <View style={styles.pinned} />} */}
@@ -177,12 +181,13 @@ const ExploreFeedItem: React.FC<Props> = ({
                   onPress={() => {
                     leaveChatroom(true);
                   }}
-                  style={styles.joinBtnContainer}>
+                  style={styles.joinBtnContainer}
+                >
                   <Image
-                    source={require('../../assets/images/join_group3x.png')}
+                    source={require("../../assets/images/join_group3x.png")}
                     style={styles.joinIcon}
                   />
-                  <Text style={styles.join}>{'Join'}</Text>
+                  <Text style={styles.join}>{"Join"}</Text>
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
@@ -191,18 +196,19 @@ const ExploreFeedItem: React.FC<Props> = ({
                       leaveChatroom(false);
                     }
                   }}
-                  style={styles.joinedBtnContainer}>
+                  style={styles.joinedBtnContainer}
+                >
                   <Image
-                    source={require('../../assets/images/joined_group3x.png')}
+                    source={require("../../assets/images/joined_group3x.png")}
                     style={styles.icon}
                   />
-                  <Text style={styles.joined}>{'Joined'}</Text>
+                  <Text style={styles.joined}>{"Joined"}</Text>
                 </TouchableOpacity>
               )}
             </View>
           ) : null}
         </View>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <Text style={styles.chatroomInfo}>{title}</Text>
         </View>
       </View>

@@ -3,8 +3,6 @@ import { UserInfo } from "../db/models";
 import { GetConversationsType } from "../enums";
 import { Client } from "../client";
 
-const myClient = Client.myClient;
-
 // This method is to create a temporary state message for updation of chatroom topic
 export const createTemporaryStateMessage = (
   currentChatroomTopic: Conversation,
@@ -65,7 +63,7 @@ export const getCurrentConversation = async (
 ) => {
   let topicConversation;
   if (currentChatroomTopic?.id) {
-    topicConversation = await myClient?.getConversation(
+    topicConversation = await Client.myClient?.getConversation(
       currentChatroomTopic?.id
     );
   }
@@ -75,9 +73,9 @@ export const getCurrentConversation = async (
     medianConversation: currentChatroomTopic,
     type: GetConversationsType.ABOVE,
   };
-  const aboveConversations = await myClient?.getConversations(payload);
+  const aboveConversations = await Client.myClient?.getConversations(payload);
   payload.type = GetConversationsType.BELOW;
-  const belowConversations = await myClient?.getConversations(payload);
+  const belowConversations = await Client.myClient?.getConversations(payload);
   let newConversation = aboveConversations.concat(
     topicConversation,
     belowConversations

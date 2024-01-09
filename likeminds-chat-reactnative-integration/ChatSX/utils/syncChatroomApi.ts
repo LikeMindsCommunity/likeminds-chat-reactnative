@@ -1,8 +1,6 @@
 import { SyncChatroomRequest } from "@likeminds.community/chat-rn";
 import { Client } from "../client";
 
-const myClient = Client.myClient;
-
 // Sync Chatrrom API
 async function syncChatroomAPI(
   page: number,
@@ -11,7 +9,7 @@ async function syncChatroomAPI(
   isDm: boolean
 ) {
   const chatroomTypes = isDm ? [10] : [0, 7];
-  const res = await myClient?.syncChatroom(
+  const res = await Client.myClient?.syncChatroom(
     SyncChatroomRequest.builder()
       .setPage(page)
       .setPageSize(50)
@@ -31,7 +29,7 @@ export const paginatedSyncAPI = async (
   user: any,
   isDm: boolean
 ) => {
-  const timeStampStored = await myClient?.getTimeStamp();
+  const timeStampStored = await Client.myClient?.getTimeStamp();
 
   const minTimeStampNow = isDm
     ? timeStampStored[0].minTimeStampDm
@@ -49,19 +47,19 @@ export const paginatedSyncAPI = async (
   const DB_RESPONSE = val?.data;
 
   if (page === INITIAL_SYNC_PAGE && DB_RESPONSE?.chatroomsData.length !== 0) {
-    await myClient?.saveCommunity(
+    await Client.myClient?.saveCommunity(
       DB_RESPONSE?.communityMeta[user?.sdkClientInfo?.community]
     );
   }
 
   if (DB_RESPONSE?.chatroomsData.length !== 0) {
-    await myClient?.saveChatroomResponse(
+    await Client.myClient?.saveChatroomResponse(
       DB_RESPONSE,
       DB_RESPONSE?.chatroomsData,
       user?.sdkClientInfo?.community
     );
   }
-  await myClient.updateTimeStamp(maxTimeStampNow, isDm);
+  await Client.myClient.updateTimeStamp(maxTimeStampNow, isDm);
 
   if (DB_RESPONSE?.chatroomsData?.length === 0) {
     return;

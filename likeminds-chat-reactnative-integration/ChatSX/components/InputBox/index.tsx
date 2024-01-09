@@ -2335,7 +2335,7 @@ const InputBox = ({
                   plainTextStyle={[
                     inputBoxStyles?.plainTextStyle,
                     {
-                      color: !isUploadScreen
+                      color: isUploadScreen
                         ? STYLES.$BACKGROUND_COLORS.LIGHT
                         : STYLES.$BACKGROUND_COLORS.DARK,
                     },

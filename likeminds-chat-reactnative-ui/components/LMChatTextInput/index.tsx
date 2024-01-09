@@ -137,7 +137,7 @@ export const LMChatTextInput: FC<LMChatTexInputProps> = ({
       onContentSizeChange={onContentSizeChange}
       onSelectionChange={handleSelectionChange}
       placeholderTextColor={
-        placeholderTextColor ? placeholderTextColor : "#000"
+        placeholderTextColor ? placeholderTextColor : "#aaa"
       }
       placeholder={placeholderText}
       autoCapitalize={autoCapitalize ? autoCapitalize : "none"}

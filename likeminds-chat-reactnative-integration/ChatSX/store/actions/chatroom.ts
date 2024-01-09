@@ -23,15 +23,13 @@ import {
 } from "../types/types";
 import { Client } from "../../client";
 
-const myClient = Client.myClient;
-
 export const getConversations =
   (payload: any, showLoader: boolean) => async (dispatch: Dispatch) => {
     try {
       return await dispatch({
         type: GET_CONVERSATIONS_SUCCESS,
         [CALL_API]: {
-          func: myClient?.getConversations(payload),
+          func: Client.myClient?.getConversations(payload),
           body: payload,
           types: [
             GET_CONVERSATIONS,
@@ -52,7 +50,7 @@ export const paginatedConversationsEnd =
       return await dispatch({
         type: PAGINATED_CONVERSATIONS_END_SUCCESS,
         [CALL_API]: {
-          func: myClient?.getConversations(payload),
+          func: Client.myClient?.getConversations(payload),
           body: payload,
           types: [
             PAGINATED_CONVERSATIONS,
@@ -73,7 +71,7 @@ export const paginatedConversationsStart =
       return await dispatch({
         type: PAGINATED_CONVERSATIONS_START_SUCCESS,
         [CALL_API]: {
-          func: myClient?.getConversations(payload),
+          func: Client.myClient?.getConversations(payload),
           body: payload,
           types: [
             PAGINATED_CONVERSATIONS,
@@ -94,7 +92,7 @@ export const paginatedConversations =
       return await dispatch({
         type: PAGINATED_CONVERSATIONS_SUCCESS,
         [CALL_API]: {
-          func: myClient?.getConversations(payload),
+          func: Client.myClient?.getConversations(payload),
           body: payload,
           types: [
             PAGINATED_CONVERSATIONS,
@@ -115,7 +113,7 @@ export const firebaseConversation =
       return await dispatch({
         type: FIREBASE_CONVERSATIONS_SUCCESS,
         [CALL_API]: {
-          func: myClient?.getConversationMeta(payload),
+          func: Client.myClient?.getConversationMeta(payload),
           body: payload,
           types: [
             FIREBASE_CONVERSATIONS,
@@ -136,7 +134,7 @@ export const onConversationsCreate =
       return await dispatch({
         type: ON_CONVERSATIONS_CREATE_SUCCESS,
         [CALL_API]: {
-          func: myClient?.postConversation(payload),
+          func: Client.myClient?.postConversation(payload),
           body: payload,
           types: [
             ON_CONVERSATIONS_CREATE,
@@ -156,7 +154,7 @@ export const getChatroom = (payload: any) => async (dispatch: Dispatch) => {
     return await dispatch({
       type: GET_CHATROOM_ACTIONS_SUCCESS,
       [CALL_API]: {
-        func: myClient?.getChatroomActions(payload),
+        func: Client.myClient?.getChatroomActions(payload),
         body: payload,
         types: [
           GET_CHATROOM,

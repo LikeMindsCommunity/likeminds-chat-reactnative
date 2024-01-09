@@ -11,7 +11,6 @@ export async function parseDeepLink(
   request: DeepLinkRequest,
   responseCallback?: (response: DeepLinkResponse) => void
 ) {
-  const myClient = Client.myClient;
   const uri = request.uri;
 
   if (isValidURI(uri)) {
@@ -40,7 +39,7 @@ export async function parseDeepLink(
           uuid: request?.uuid,
           isGuest: false,
         };
-        const initiateUserResponse = await myClient?.initiateUser(
+        const initiateUserResponse = await Client.myClient?.initiateUser(
           initiateUserRequest
         );
 

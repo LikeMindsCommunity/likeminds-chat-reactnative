@@ -102,6 +102,7 @@ export interface LMChatProviderProps {
   children: React.ReactNode;
   userName: string;
   userUniqueId: string;
+  cohortId: string;
   reactionListStyles?: ReactionListStylesProps;
   chatBubbleStyles?: ChatBubbleStylesProps;
   inputBoxStyles?: InputBoxStyles;

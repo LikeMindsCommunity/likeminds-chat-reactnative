@@ -11,15 +11,13 @@ import {
 import { Dispatch } from "@reduxjs/toolkit";
 import { Client } from "../../client";
 
-const myClient = Client.myClient;
-
 export const getExploreFeedData =
   (payload: any, showLoader?: boolean) => async (dispatch: Dispatch) => {
     try {
       return await dispatch({
         type: GET_EXPLORE_FEED_CHAT_SUCCESS,
         [CALL_API]: {
-          func: myClient?.getExploreFeed(payload),
+          func: Client.myClient?.getExploreFeed(payload),
           body: payload,
           types: [
             GET_EXPLORE_FEED_CHAT,
@@ -40,7 +38,7 @@ export const updateExploreFeedData =
       return await dispatch({
         type: UPDATE_EXPLORE_FEED_CHAT_SUCCESS,
         [CALL_API]: {
-          func: myClient?.getExploreFeed(payload),
+          func: Client.myClient?.getExploreFeed(payload),
           body: payload,
           types: [
             UPDATE_EXPLORE_FEED_CHAT,
