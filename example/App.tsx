@@ -6,7 +6,7 @@
  */
 
 import React, {useEffect} from 'react';
-import {KeyboardAvoidingView, Platform} from 'react-native';
+import {KeyboardAvoidingView, Platform, StatusBar, View} from 'react-native';
 import {
   NavigationContainer,
   createNavigationContainerRef,
@@ -24,6 +24,7 @@ import {
   PollResult,
   VideoPlayer,
   LMOverlayProvider,
+  RadialGradient,
 } from 'likeminds_chat_reactnative_integration';
 import {myClient} from '.';
 
@@ -120,6 +121,11 @@ function App(): React.JSX.Element {
   //   },
   // };
 
+  const gradientStyling = {
+    colors: ['#3BA773', '#0B713F'],
+    style: {flex: 1},
+  };
+
   return (
     <LMOverlayProvider
       myClient={myClient}
@@ -142,6 +148,23 @@ function App(): React.JSX.Element {
               initialParams={{
                 chatroomID: chatroomId,
                 isInvited: false,
+              }}
+              options={() => {
+                if (Object.keys(gradientStyling).length !== 0) {
+                  return {
+                    headerBackground: () => (
+                      <View style={{flex: 1}}>
+                        <StatusBar
+                          translucent
+                          backgroundColor="transparent"
+                          barStyle="light-content"
+                        />
+                        <RadialGradient {...gradientStyling} />
+                      </View>
+                    ),
+                  };
+                }
+                return {};
               }}
             />
             <Stack.Screen

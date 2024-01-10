@@ -9,11 +9,13 @@ import CreatePollScreen from "./ChatSX/components/Poll/CreatePollScreen";
 import ImageCropScreen from "./ChatSX/screens/ImageCrop";
 import VideoPlayer from "./ChatSX/screens/VideoPlayer";
 import store from "./ChatSX/store";
+import { RadialGradient } from "./ChatSX/radialGradient";
 
 export {
   ChatRoom,
   LMChatProvider,
   LMOverlayProvider,
+  RadialGradient,
   store,
   FileUpload,
   CarouselScreen,
