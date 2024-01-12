@@ -34,6 +34,7 @@ function App(): React.JSX.Element {
   const userName = '';
   const userUniqueId = '';
   const chatroomId = '';
+  const announcementRoomId = '';
   const cohortId = '';
 
   // themeStyling
@@ -147,7 +148,7 @@ function App(): React.JSX.Element {
               component={ChatRoom}
               initialParams={{
                 chatroomID: chatroomId,
-                isInvited: false,
+                announcementRoomId: announcementRoomId,
               }}
               options={() => {
                 if (Object.keys(gradientStyling).length !== 0) {
