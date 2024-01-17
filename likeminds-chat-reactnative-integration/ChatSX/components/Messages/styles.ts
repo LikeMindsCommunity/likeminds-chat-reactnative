@@ -14,7 +14,15 @@ export const styles = StyleSheet.create({
     backgroundColor: "#fff",
     minWidth: 100,
   },
-
+  chatroomTopicAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: STYLES.$AVATAR.BORDER_RADIUS,
+    position: "absolute",
+    bottom: 0,
+    left: -45,
+    top: -30,
+  },
   pollMessage: {
     padding: 10,
     width: "80%",

@@ -589,7 +589,16 @@ const Messages = ({
                       }
                     : null,
                 ]}
-              />
+              >
+                <Image
+                  source={
+                    item?.member?.imageUrl
+                      ? { uri: item?.member?.imageUrl }
+                      : require("../../assets/images/default_pic.png")
+                  }
+                  style={styles.chatroomTopicAvatar}
+                />
+              </View>
             )}
           </View>
         ) : null}

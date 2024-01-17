@@ -817,7 +817,7 @@ const MessageList = forwardRef(
             }
 
             return (
-              <View>
+              <View style={{ marginLeft: 30 }}>
                 {index < conversations?.length &&
                 conversations[index]?.date !==
                   conversations[index + 1]?.date ? (
