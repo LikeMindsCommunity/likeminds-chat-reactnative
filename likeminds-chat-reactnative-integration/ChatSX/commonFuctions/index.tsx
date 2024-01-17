@@ -7,6 +7,8 @@ import moment from "moment";
 import { Events, Keys } from "../enums";
 import { LMChatAnalytics } from "../analytics/LMChatAnalytics";
 import { getConversationType } from "../utils/analyticsUtils";
+import { useLMChat } from "../lmChatProvider";
+import { NavigateToProfileParams } from "../callBacks/type";
 
 const REGEX_USER_SPLITTING = /(<<.+?\|route:\/\/[^>]+>>)/gu;
 export const REGEX_USER_TAGGING =
@@ -156,6 +158,9 @@ export const decode = ({
   const arr: any[] = [];
   const parts = text?.split(REGEX_USER_SPLITTING);
 
+  const lmChatInterface = useLMChat();
+  let taggedUserId = "";
+
   if (parts) {
     for (const matchResult of parts) {
       if (matchResult.match(REGEX_USER_TAGGING)) {
@@ -165,7 +170,7 @@ export const decode = ({
           let { route } = match?.groups!;
 
           const startingIndex = route.indexOf("/");
-          const taggedUserId = route.substring(startingIndex + 1);
+          taggedUserId = route.substring(startingIndex + 1);
 
           LMChatAnalytics.track(
             Events.USER_TAGS_SOMEONE,
@@ -215,6 +220,11 @@ export const decode = ({
               <Text
                 onPress={() => {
                   if (!isLongPress) {
+                    const params: NavigateToProfileParams = {
+                      taggedUserId: taggedUserId,
+                      member: null,
+                    };
+                    lmChatInterface.navigateToProfile(params);
                     Alert.alert(`navigate to the route ${val?.route}`);
                   }
                 }}

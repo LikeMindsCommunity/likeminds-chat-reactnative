@@ -1,4 +1,5 @@
 import { LMChatClient } from "@likeminds.community/chat-rn";
+import LMChatCallbacksInterface from "../callBacks";
 
 interface ReactionListStylesProps {
   reactionSize?: number;
@@ -102,6 +103,7 @@ export interface LMChatProviderProps {
   children: React.ReactNode;
   userName: string;
   userUniqueId: string;
+  lmChatInterface: LMChatCallbacksInterface;
   reactionListStyles?: ReactionListStylesProps;
   chatBubbleStyles?: ChatBubbleStylesProps;
   inputBoxStyles?: InputBoxStyles;

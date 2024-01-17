@@ -25,8 +25,9 @@ import { ChatroomType } from "../../enums";
 import LinkPreview from "../LinkPreview";
 import { LMChatAnalytics } from "../../analytics/LMChatAnalytics";
 import { Credentials } from "../../credentials";
-import { useLMChatStyles } from "../../lmChatProvider";
+import { useLMChat, useLMChatStyles } from "../../lmChatProvider";
 import ReactionList from "../ReactionList";
+import { NavigateToProfileParams } from "../../callBacks/type";
 
 interface Messages {
   item: any;
@@ -58,6 +59,7 @@ const Messages = ({
   chatroomName,
 }: Messages) => {
   const { user } = useAppSelector((state) => state.homefeed);
+  const lmChatInterface = useLMChat();
 
   const { stateArr, conversations, chatroomDBDetails, selectedMessages }: any =
     useAppSelector((state) => state.chatroom);
@@ -502,7 +504,17 @@ const Messages = ({
                   ]}
                 >
                   {item?.member?.id == userIdStringified ? null : (
-                    <Text style={styles.messageInfo} numberOfLines={1}>
+                    <Text
+                      style={styles.messageInfo}
+                      numberOfLines={1}
+                      onPress={() => {
+                        const params: NavigateToProfileParams = {
+                          taggedUserId: null,
+                          member: item?.member,
+                        };
+                        lmChatInterface.navigateToProfile(params);
+                      }}
+                    >
                       {item?.member?.name}
                       {item?.member?.customTitle ? (
                         <Text

@@ -47,7 +47,8 @@ import { Events, Keys } from "../../enums";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { Base64 } from "../../awsExports";
 import { onSeekTo } from "../../audio/Controls";
-import { useLMChatStyles } from "../../lmChatProvider";
+import { useLMChat, useLMChatStyles } from "../../lmChatProvider";
+import { NavigateToProfileParams } from "../../callBacks/type";
 
 interface AttachmentConversations {
   item: any;
@@ -78,6 +79,7 @@ const AttachmentConversations = ({
   const [isGifPlaying, setIsGifPlaying] = useState(false);
   const progress = useProgress();
   const activeTrack = useActiveTrack();
+  const lmChatInterface = useLMChat();
 
   let firstAttachment = item?.attachments[0];
   const isAudioActive =
@@ -257,7 +259,17 @@ const AttachmentConversations = ({
         ]}
       >
         {!!(item?.member?.id == user?.id) || isReply ? null : (
-          <Text style={styles.messageInfo} numberOfLines={1}>
+          <Text
+            style={styles.messageInfo}
+            numberOfLines={1}
+            onPress={() => {
+              const params: NavigateToProfileParams = {
+                taggedUserId: null,
+                member: item?.member,
+              };
+              lmChatInterface.navigateToProfile(params);
+            }}
+          >
             {item?.member?.name}
             {item?.member?.customTitle ? (
               <Text

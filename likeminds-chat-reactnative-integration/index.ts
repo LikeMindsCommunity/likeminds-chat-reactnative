@@ -8,6 +8,8 @@ import CreatePollScreen from "./ChatSX/components/Poll/CreatePollScreen";
 import ImageCropScreen from "./ChatSX/screens/ImageCrop";
 import VideoPlayer from "./ChatSX/screens/VideoPlayer";
 import store from "./ChatSX/store";
+import LMChatCallbacksInterface from "./ChatSX/callBacks";
+import { NavigateToProfileParams } from "./ChatSX/callBacks/type";
 
 export {
   ChatRoom,
@@ -20,4 +22,6 @@ export {
   ImageCropScreen,
   VideoPlayer,
   initMyClient,
+  LMChatCallbacksInterface,
+  NavigateToProfileParams,
 };

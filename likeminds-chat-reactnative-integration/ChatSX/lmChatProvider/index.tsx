@@ -6,27 +6,29 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import STYLES from "./constants/Styles";
+import STYLES from "../constants/Styles";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useAppDispatch } from "./store";
-import { Credentials } from "./credentials";
+import { useAppDispatch } from "../store";
+import { Credentials } from "../credentials";
 import {
   INIT_API_SUCCESS,
   PROFILE_DATA_SUCCESS,
   STORE_MY_CLIENT,
   UPDATE_FILE_UPLOADING_OBJECT,
-} from "./store/types/types";
+} from "../store/types/types";
 import notifee from "@notifee/react-native";
-import { getRoute } from "./notifications/routes";
-import * as RootNavigation from "./RootNavigation";
-import { setupPlayer } from "./audio";
+import { getRoute } from "../notifications/routes";
+import * as RootNavigation from "../RootNavigation";
+import { setupPlayer } from "../audio";
 import { LMChatClient } from "@likeminds.community/chat-rn";
 import { GiphySDK } from "@giphy/react-native-sdk";
-import { GIPHY_SDK_API_KEY } from "./awsExports";
-import { Client } from "./client";
-import { FAILED } from "./constants/Strings";
+import { GIPHY_SDK_API_KEY } from "../awsExports";
+import { Client } from "../client";
+import { FAILED } from "../constants/Strings";
 import { LMChatProviderProps, ThemeContextProps } from "./type";
+import LMChatCallbacksInterface from "../callBacks";
+import { CallBack } from "../callBacks/callBackClass";
 
 // Create the theme context
 export const LMChatStylesContext = createContext<ThemeContextProps | undefined>(
@@ -36,7 +38,9 @@ export const LMChatStylesContext = createContext<ThemeContextProps | undefined>(
 //PropTypes for the LMChatProvider component
 
 // Create a context for LMChatProvider
-const LMChatContext = createContext<LMChatClient | undefined>(undefined);
+const LMChatContext = createContext<LMChatCallbacksInterface | undefined>(
+  undefined
+);
 
 // Create a hook to use the LMChatContext
 export const useLMChat = () => {
@@ -60,6 +64,7 @@ export const LMChatProvider = ({
   children,
   userName,
   userUniqueId,
+  lmChatInterface,
   reactionListStyles,
   chatBubbleStyles,
   inputBoxStyles,
@@ -129,6 +134,9 @@ export const LMChatProvider = ({
     //setting client in Client class
     Client.setMyClient(myClient);
 
+    // setting lmChatInterface in CallBack class
+    CallBack.setLMChatInterface(lmChatInterface);
+
     // storing myClient followed by community details
     const callInitApi = async () => {
       const payload = {
@@ -167,7 +175,7 @@ export const LMChatProvider = ({
   }, []);
 
   return isInitiated ? (
-    <LMChatContext.Provider value={myClient}>
+    <LMChatContext.Provider value={lmChatInterface}>
       <LMChatStylesContext.Provider
         value={{ reactionListStyles, chatBubbleStyles, inputBoxStyles }}
       >
