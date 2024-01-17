@@ -103,6 +103,7 @@ export interface LMChatProviderProps {
   children: React.ReactNode;
   userName: string;
   userUniqueId: string;
+  profileImageUrl: string;
   lmChatInterface: LMChatCallbacksInterface;
   reactionListStyles?: ReactionListStylesProps;
   chatBubbleStyles?: ChatBubbleStylesProps;

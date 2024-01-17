@@ -64,6 +64,7 @@ export const LMChatProvider = ({
   children,
   userName,
   userUniqueId,
+  profileImageUrl,
   lmChatInterface,
   reactionListStyles,
   chatBubbleStyles,
@@ -143,6 +144,7 @@ export const LMChatProvider = ({
         uuid: userUniqueId, // uuid
         userName: userName, // user name
         isGuest: false,
+        imageUrl: profileImageUrl,
       };
 
       Credentials.setCredentials(userName, userUniqueId);

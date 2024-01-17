@@ -51,6 +51,7 @@ function App(): React.JSX.Element {
   const userName = '';
   const userUniqueId = '';
   const chatroomId = '';
+  const profileImageUrl = '';
 
   const lmChatInterface = new CustomCallbacks();
 
@@ -145,6 +146,7 @@ function App(): React.JSX.Element {
         myClient={myClient}
         userName={userName}
         userUniqueId={userUniqueId}
+        profileImageUrl={profileImageUrl}
         lmChatInterface={lmChatInterface}
         // chatBubbleStyles={chatBubbleStyles}
         // reactionListStyles={reactionListStyles}

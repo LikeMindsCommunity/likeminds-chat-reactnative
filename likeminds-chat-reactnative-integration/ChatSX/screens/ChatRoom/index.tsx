@@ -835,7 +835,8 @@ const ChatRoom = ({ navigation, route }: ChatRoomProps) => {
   //this function fetchChatroomDetails when we first move inside Chatroom
   async function fetchChatroomDetails() {
     const payload = { chatroomId: chatroomID };
-    const DB_DATA = await myClient?.getChatroom(chatroomID?.toString());
+    const chatroom = await myClient?.getChatroom(chatroomID?.toString());
+    const DB_DATA = chatroom?.data;
     if (DB_DATA?.isChatroomVisited) {
       setShimmerIsLoading(false);
     }
