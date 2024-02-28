@@ -15,7 +15,7 @@ const ChatroomScreen = ({navigation, route}: any) => {
       <ChatroomHeader />
 
       {/* Message List */}
-      <MessageList ReactionList={<ReactionList />} />
+      <MessageList />
 
       {/* Input Box Flow */}
       <MessageInput />

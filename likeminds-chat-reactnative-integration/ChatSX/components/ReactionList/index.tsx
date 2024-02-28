@@ -1,17 +1,12 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import ReactionGridModal from "../ReactionGridModal";
-import {
-  LONG_PRESSED,
-  SELECTED_MESSAGES,
-  SET_POSITION,
-} from "../../store/types/types";
-import { useAppDispatch, useAppSelector } from "../../store";
 import STYLES from "../../constants/Styles";
 import { LMChatAnalytics } from "../../analytics/LMChatAnalytics";
 import { Events, Keys } from "../../enums";
 import { styles } from "./styles";
 import Layout from "../../constants/Layout";
+import { useMessageContext } from "../../context/MessageContext";
 
 const ReactionList = ({
   item,
@@ -23,8 +18,12 @@ const ReactionList = ({
   handleLongPress,
   removeReaction,
 }: any) => {
-  const [selectedReaction, setSelectedReaction] = useState();
-  const [modalVisible, setModalVisible] = useState(false);
+  const {
+    handleReactionOnPress,
+    selectedReaction,
+    modalVisible,
+    setModalVisible,
+  } = useMessageContext();
 
   const reactionListStyles = STYLES.$REACTION_LIST_STYLE;
 
@@ -41,52 +40,14 @@ const ReactionList = ({
     ? selectedMessageBackgroundColor
     : STYLES.$COLORS.SELECTED_BLUE;
 
-  const { selectedMessages, isLongPress, stateArr }: any = useAppSelector(
-    (state) => state.chatroom
-  );
-
-  const dispatch = useAppDispatch();
-
   const reactionLen = reactionArr.length;
 
-  // function handles event on Press reaction below a message
-  const handleReactionOnPress = (event: any, val?: any) => {
-    const { pageX, pageY } = event.nativeEvent;
-    dispatch({
-      type: SET_POSITION,
-      body: { pageX: pageX, pageY: pageY },
-    });
-    const isStateIncluded = stateArr.includes(item?.state);
-    if (isLongPress) {
-      if (isIncluded) {
-        const filterdMessages = selectedMessages.filter(
-          (val: any) => val?.id !== item?.id && !isStateIncluded
-        );
-        if (filterdMessages.length > 0) {
-          dispatch({
-            type: SELECTED_MESSAGES,
-            body: [...filterdMessages],
-          });
-        } else {
-          dispatch({
-            type: SELECTED_MESSAGES,
-            body: [...filterdMessages],
-          });
-          dispatch({ type: LONG_PRESSED, body: false });
-        }
-      } else {
-        if (!isStateIncluded) {
-          dispatch({
-            type: SELECTED_MESSAGES,
-            body: [...selectedMessages, item],
-          });
-        }
-      }
-    } else {
-      setSelectedReaction(val);
-      setModalVisible(true);
-    }
+  const customiserFunction = (event: any, val?: any) => {
+    handleReactionOnPress(event, val);
+    // do anything here, add a screen or anything
+    console.log("hey i am working");
   };
+
   return (
     <View>
       {!item?.deletedBy ? (
@@ -103,7 +64,7 @@ const ReactionList = ({
                 onLongPress={handleLongPress}
                 delayLongPress={200}
                 onPress={(event) => {
-                  handleReactionOnPress(event, val?.reaction);
+                  customiserFunction(event, val?.reaction);
                 }}
                 style={[
                   styles.reaction,
@@ -146,7 +107,7 @@ const ReactionList = ({
               onLongPress={handleLongPress}
               delayLongPress={200}
               onPress={(event) => {
-                handleReactionOnPress(event, reactionArr[0]?.reaction);
+                customiserFunction(event, reactionArr[0]?.reaction);
               }}
               style={[
                 styles.reaction,
@@ -171,7 +132,7 @@ const ReactionList = ({
               onLongPress={handleLongPress}
               delayLongPress={200}
               onPress={(event) => {
-                handleReactionOnPress(event, reactionArr[1]?.reaction);
+                customiserFunction(event, reactionArr[1]?.reaction);
               }}
               style={[
                 styles.reaction,
@@ -196,7 +157,7 @@ const ReactionList = ({
               onLongPress={handleLongPress}
               delayLongPress={200}
               onPress={(event) => {
-                handleReactionOnPress(event, null);
+                customiserFunction(event, null);
               }}
               style={[
                 styles.moreReaction,

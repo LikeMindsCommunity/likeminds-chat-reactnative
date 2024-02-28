@@ -12,7 +12,11 @@ import { useAppDispatch, useAppSelector } from "../store";
 import { ActivityIndicator, GestureResponderEvent, View } from "react-native";
 import STYLES from "../constants/Styles";
 import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
-import { SET_POSITION } from "../store/types/types";
+import {
+  LONG_PRESSED,
+  SELECTED_MESSAGES,
+  SET_POSITION,
+} from "../store/types/types";
 import { Credentials } from "../credentials";
 import { ChatroomContextValues, useChatroomContext } from "./ChatroomContext";
 
@@ -41,7 +45,10 @@ export interface MessageContextValues {
   index: number;
   isStateIncluded: boolean;
   isIncluded: boolean;
-
+  handleReactionOnPress: any;
+  selectedReaction: any;
+  modalVisible: any;
+  setModalVisible: any;
   handleLongPress: (event: GestureResponderEvent) => void;
   handleOnPress: (event: GestureResponderEvent) => void;
   answerTrimming: (answer: string) => any;
@@ -70,7 +77,7 @@ export const MessageContextProvider = ({
 }: MessageContextProps) => {
   const { user } = useAppSelector((state) => state.homefeed);
 
-  const { stateArr, chatroomDBDetails }: any = useAppSelector(
+  const { stateArr, chatroomDBDetails, isLongPress }: any = useAppSelector(
     (state) => state.chatroom
   );
 
@@ -169,6 +176,48 @@ export const MessageContextProvider = ({
     }
   };
 
+  const [selectedReaction, setSelectedReaction] = useState();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // function handles event on Press reaction below a message
+  const handleReactionOnPress = (event: any, val?: any) => {
+    const { pageX, pageY } = event.nativeEvent;
+    dispatch({
+      type: SET_POSITION,
+      body: { pageX: pageX, pageY: pageY },
+    });
+    const isStateIncluded = stateArr.includes(item?.state);
+    if (isLongPress) {
+      if (isIncluded) {
+        const filterdMessages = selectedMessages.filter(
+          (val: any) => val?.id !== item?.id && !isStateIncluded
+        );
+        if (filterdMessages.length > 0) {
+          dispatch({
+            type: SELECTED_MESSAGES,
+            body: [...filterdMessages],
+          });
+        } else {
+          dispatch({
+            type: SELECTED_MESSAGES,
+            body: [...filterdMessages],
+          });
+          dispatch({ type: LONG_PRESSED, body: false });
+        }
+      } else {
+        if (!isStateIncluded) {
+          dispatch({
+            type: SELECTED_MESSAGES,
+            body: [...selectedMessages, item],
+          });
+        }
+      }
+    } else {
+      setSelectedReaction(val);
+      setModalVisible(true);
+    }
+  };
+
   const contextValues: MessageContextValues = {
     reactionArr,
     isTypeSent,
@@ -186,7 +235,10 @@ export const MessageContextProvider = ({
     index,
     isStateIncluded,
     isIncluded,
-
+    selectedReaction,
+    setModalVisible,
+    modalVisible,
+    handleReactionOnPress,
     handleLongPress,
     handleOnPress,
     answerTrimming,
