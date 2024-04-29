@@ -104,7 +104,6 @@ import {
 import { getChatroom } from "../store/actions/chatroom";
 import { fetchResourceFromURI, formatTime } from "../commonFuctions";
 import { Image as CompressedImage } from "react-native-compressor";
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
 import { Client } from "../client";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
 
