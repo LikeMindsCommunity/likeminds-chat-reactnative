@@ -46,9 +46,9 @@ import {
 import FileUploadScreen from './screens/FileUpload';
 import FileUploadScreenWrapper from './screens/FileUpload/FileUploadWrapper';
 import {useQuery} from '@realm/react';
-import {Credentials} from './sample/credentials';
-import {LoginSchemaRO} from './sample/loginSchemaRO';
-import FetchKeyInputScreen from './sample';
+import {Credentials} from './login/credentials';
+import {LoginSchemaRO} from './login/loginSchemaRO';
+import FetchKeyInputScreen from './login';
 import {ConversationState} from '@likeminds.community/chat-rn';
 
 const Stack = createNativeStackNavigator();

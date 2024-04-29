@@ -5,7 +5,7 @@ import {AppRegistry} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 import {RealmProvider} from '@realm/react';
-import {LoginSchemaRO} from './sample/loginSchemaRO';
+import {LoginSchemaRO} from './login/loginSchemaRO';
 
 const WrappedApp = () => (
   <RealmProvider schema={[LoginSchemaRO]}>
