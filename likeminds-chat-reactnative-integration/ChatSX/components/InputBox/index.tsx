@@ -102,6 +102,7 @@ import {
   VoiceNotesProps,
 } from "./models";
 import Animated, {
+  AnimatedStyleProp,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -438,7 +439,9 @@ const MessageInputBox = ({
   const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture);
 
   // draggle mic panGesture styles
-  const panStyle = useAnimatedStyle((): ViewStyle | ImageStyle | TextStyle => {
+  const panStyle = useAnimatedStyle((): AnimatedStyleProp<
+    ViewStyle | ImageStyle | TextStyle
+  > => {
     return {
       transform: [
         {
