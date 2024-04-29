@@ -4,14 +4,13 @@
 import {AppRegistry} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
-import {initMyClient} from '@likeminds.community/chat-rn-core';
-import { ConversationState } from "@likeminds.community/chat-rn";
+import {RealmProvider} from '@realm/react';
+import {LoginSchemaRO} from './sample/loginSchemaRO';
 
-const filterStateMessage = []; // give type of conversation to be filtered using ConversationState enum
+const WrappedApp = () => (
+  <RealmProvider schema={[LoginSchemaRO]}>
+    <App />
+  </RealmProvider>
+);
 
-// proivde apiKey below to initMyClient
-const myClient = initMyClient("", filterStateMessage);  // pass api key as first param and filterStateMessage array as second
-
-AppRegistry.registerComponent(appName, () => App);
-
-export { myClient };
+AppRegistry.registerComponent(appName, () => WrappedApp);
