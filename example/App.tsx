@@ -136,21 +136,7 @@ function App(): React.JSX.Element {
     }
   }, [isTrue, apiKey]);
 
-  // const themeStyles = {
-  //   fontTypes: {
-  //     LIGHT: 'SofiaPro-Light',
-  //     MEDIUM: 'SofiaPro-Medium',
-  //     SEMI_BOLD: 'SofiaPro-SemiBold',
-  //     BOLD: 'SofiaPro-Bold',
-  //     BLACK: 'SofiaPro-Black',
-  //   },
-  // };
-
   const themeStyles = {
-    // fontColor: 'black',
-    // primaryColor: '#B7D340',
-    // secondaryColor: '#B7D340',
-    // lightBackgroundColor: 'hsl(161, 67%, 91%)',
     fontTypes: {
       LIGHT: 'SofiaPro-Light',
       MEDIUM: 'SofiaPro-Medium',
@@ -199,10 +185,6 @@ function App(): React.JSX.Element {
                       options={{
                         gestureEnabled: Platform.OS === 'ios' ? false : true,
                       }}
-                      // initialParams={{
-                      //   chatroomID: chatroomId,
-                      //   isInvited: false,
-                      // }}
                     />
                     <Stack.Screen
                       options={{
@@ -287,10 +269,6 @@ function App(): React.JSX.Element {
                     options={{
                       gestureEnabled: Platform.OS === 'ios' ? false : true,
                     }}
-                    // initialParams={{
-                    //   chatroomID: chatroomId,
-                    //   isInvited: false,
-                    // }}
                   />
                   <Stack.Screen
                     options={{
