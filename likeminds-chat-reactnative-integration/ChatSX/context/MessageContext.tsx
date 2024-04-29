@@ -9,9 +9,7 @@ import React, {
   useState,
 } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
-import { ActivityIndicator, GestureResponderEvent, View } from "react-native";
-import STYLES from "../constants/Styles";
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { GestureResponderEvent, View } from "react-native";
 import { SET_POSITION } from "../store/types/types";
 import { Credentials } from "../credentials";
 import { ChatroomContextValues, useChatroomContext } from "./ChatroomContext";

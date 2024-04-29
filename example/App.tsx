@@ -33,7 +33,6 @@ import {
   DmAllMembers,
   initMyClient,
 } from '@likeminds.community/chat-rn-core';
-import {myClient} from '.';
 import ChatroomScreenWrapper from './screens/Chatroom/ChatroomScreenWrapper';
 import {setStyles} from './styles';
 import {
