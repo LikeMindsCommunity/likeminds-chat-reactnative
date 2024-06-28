@@ -5,6 +5,7 @@ import {
   Image,
   Alert,
   Keyboard,
+  StatusBar,
 } from "react-native";
 import React, { useEffect } from "react";
 import { Client } from "../../client";
@@ -34,12 +35,19 @@ import { VOICE_NOTE_TEXT } from "../../constants/Strings";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 import RNClipboard from "../../optionalDependecies/RNClipboard";
 import CommunityClipboard from "../../optionalDependecies/CommunityClipboard";
+import { RadialGradient } from "../../../ChatSX/radialGradient";
 
 interface ChatroomHeaderProps {
   hideThreeDotsMenu?: boolean;
+  isChatroomTabNavigatorPresent?: boolean;
+  gender?: string;
 }
 
-const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
+const ChatroomHeader = ({
+  hideThreeDotsMenu,
+  isChatroomTabNavigatorPresent,
+  gender,
+}: ChatroomHeaderProps) => {
   const myClient = Client.myClient;
   const {
     navigation,
@@ -69,6 +77,15 @@ const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
   }: ChatroomContextValues = useChatroomContext();
 
   const dispatch = useAppDispatch();
+
+  const gradientStyling = {
+    colors: gender === "male" ? ["#3BA773", "#0B713F"] : ["#B25647", "#CC8A7A"],
+    style: {
+      flex: 1,
+      borderBottomLeftRadius: 16,
+      borderBottomRightRadius: 16,
+    },
+  };
 
   // Initial header of chatroom screen
   const setInitialHeader = () => {
@@ -124,7 +141,7 @@ const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
                     color: STYLES.$COLORS.FONT_PRIMARY,
                     fontSize: STYLES.$FONT_SIZES.LARGE,
                     fontFamily: STYLES.$FONT_TYPES.BOLD,
-                    maxWidth: 150,
+                    maxWidth: 250,
                   }}
                 >
                   {chatroomName}
@@ -165,6 +182,22 @@ const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
             ) : null}
           </View>
         ),
+      ...(isChatroomTabNavigatorPresent &&
+      gender &&
+      Object.keys(gradientStyling).length !== 0
+        ? {
+            headerBackground: () => (
+              <View style={{ flex: 1 }}>
+                <StatusBar
+                  translucent
+                  backgroundColor="transparent"
+                  barStyle="light-content"
+                />
+                <RadialGradient {...gradientStyling} />
+              </View>
+            ),
+          }
+        : {}),
     });
   };
 

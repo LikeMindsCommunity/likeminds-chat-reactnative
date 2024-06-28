@@ -94,7 +94,7 @@ const PDFConversation = () => {
           ]}
         >
           {/* Message Header */}
-          {!!(item?.member?.id !== user?.id) ||
+          {item?.member?.id == user?.id?.toString() ||
           isReply ? null : customMessageHeader ? (
             customMessageHeader
           ) : (

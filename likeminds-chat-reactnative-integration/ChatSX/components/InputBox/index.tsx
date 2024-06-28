@@ -439,9 +439,7 @@ const MessageInputBox = ({
   const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture);
 
   // draggle mic panGesture styles
-  const panStyle = useAnimatedStyle((): AnimatedStyleProp<
-    ViewStyle | ImageStyle | TextStyle
-  > => {
+  const panStyle = useAnimatedStyle((): any => {
     return {
       transform: [
         {
