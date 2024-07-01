@@ -34,6 +34,7 @@ import { VOICE_NOTE_TEXT } from "../../constants/Strings";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 import RNClipboard from "../../optionalDependecies/RNClipboard";
 import CommunityClipboard from "../../optionalDependecies/CommunityClipboard";
+import { SEARCH_IN_CHATROOM } from "../../constants/Screens";
 
 interface ChatroomHeaderProps {
   hideThreeDotsMenu?: boolean;
@@ -151,6 +152,16 @@ const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
         filteredChatroomActions?.length > 0 &&
         !hideThreeDotsMenu && (
           <View style={styles.headerRight}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate(SEARCH_IN_CHATROOM, {chatroomId: chatroomID})
+              }}
+            >
+              <Image
+                source={require("../../assets/images/search_icon3x.png")}
+                style={styles.threeDots}
+              />
+            </TouchableOpacity>
             {chatroomDetails ? (
               <TouchableOpacity
                 onPress={() => {

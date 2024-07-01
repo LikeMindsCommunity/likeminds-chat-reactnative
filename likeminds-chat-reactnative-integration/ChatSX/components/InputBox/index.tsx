@@ -142,7 +142,8 @@ import Layout from "../../constants/Layout";
 import GIFPicker from "../../optionalDependecies/Gif";
 import AudioRecorder from "../../optionalDependecies/AudioRecorder";
 import LottieView from "../../optionalDependecies/LottieView";
-import { SyncConversationRequest } from "@likeminds.community/chat-rn";
+import { SyncConversationRequest } from "@likeminds.community/chat-rn-beta";
+import { DefaultStyle } from "react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes";
 
 // to intialise audio recorder player
 const audioRecorderPlayerAttachment = AudioRecorder
@@ -439,9 +440,7 @@ const MessageInputBox = ({
   const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture);
 
   // draggle mic panGesture styles
-  const panStyle = useAnimatedStyle((): AnimatedStyleProp<
-    ViewStyle | ImageStyle | TextStyle
-  > => {
+  const panStyle = useAnimatedStyle((): DefaultStyle => {
     return {
       transform: [
         {

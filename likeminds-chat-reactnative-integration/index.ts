@@ -35,6 +35,7 @@ import ReportScreen from "./ChatSX/screens/ReportMessage";
 import ViewParticipants from "./ChatSX/screens/ViewParticipants";
 import AddParticipants from "./ChatSX/screens/AddParticipants";
 import DmAllMembers from "./ChatSX/screens/DmAllMembers";
+import SearchInChatroom from "./ChatSX/screens/SearchInChatroom";
 
 export {
   ChatRoom,
@@ -72,4 +73,5 @@ export {
   ViewParticipants,
   AddParticipants,
   DmAllMembers,
+  SearchInChatroom,
 };

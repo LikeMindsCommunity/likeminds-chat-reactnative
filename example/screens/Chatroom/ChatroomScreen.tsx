@@ -12,6 +12,7 @@ import {ReactionList} from '../../customisableComponents/ReactionList';
 import ChatroomTabNavigator from '../../src/ChatroomTabNavigator';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import ChatroomTopic from '@likeminds.community/chat-rn-core/ChatSX/components/ChatroomTopic';
 
 interface HintMessages {
   messageForRightsDisabled?: string;
@@ -159,6 +160,9 @@ export function ChatroomScreen() {
       unblockMember={customUnBlockMember}>
       {/* ChatroomHeader */}
       <ChatroomHeader />
+      
+      {/* Chtroom Topic */}
+      <ChatroomTopic />
 
       {/* Message List */}
       <MessageList

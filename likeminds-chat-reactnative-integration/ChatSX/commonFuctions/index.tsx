@@ -750,3 +750,34 @@ export const getNotificationsMessage = (
     return conversation;
   }
 };
+
+// this function return formatted data in DD/MM/YYYY format.
+export const formatSearchDate = (date: Date): string => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set time to 00:00:00 to compare only the date part
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1); // Set date to yesterday
+
+  // Set the time part of the given date to 00:00:00 to compare only the date part
+  const inputDate = new Date(date);
+  inputDate.setHours(0, 0, 0, 0);
+
+  if (inputDate.getTime() === today.getTime()) {
+    return 'Today';
+  }
+
+  if (inputDate.getTime() === yesterday.getTime()) {
+    return 'Yesterday';
+  }
+
+  if (inputDate < today) {
+    const day = inputDate.getDate().toString().padStart(2, '0');
+    const month = (inputDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = inputDate.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
+  return '';
+};
