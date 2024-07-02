@@ -106,7 +106,7 @@ export const MessageListContextProvider = ({
   const { messageSent }: any = useAppSelector((state) => state.chatroom);
   const myClient = Client.myClient;
   const PAGE_SIZE = 200;
-  const isFocused = useIsFocused()
+  const isFocused = useIsFocused();
 
   const scrollToBottom = async () => {
     const payload = GetConversationsRequestBuilder.builder()
@@ -317,7 +317,7 @@ export const MessageListContextProvider = ({
       if (index >= 0) {
         scrollToIndex(index);
         setReplyConversationId(searchedConversation?.id);
-        setIsReplyFound(true);
+        setIsFound(true);
       }
     }
     if (isNavigationToSearchedConversation) {

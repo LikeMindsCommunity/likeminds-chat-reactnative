@@ -73,6 +73,7 @@ const MessageListComponent = ({
     currentChatroomTopic,
     shimmerIsLoading,
     refInput,
+    searchedConversation,
     handleLongPress,
     handleClick,
   }: ChatroomContextValues = useChatroomContext();
@@ -310,6 +311,10 @@ const MessageListComponent = ({
                 (val: any) => val?.id === item?.id && !isStateIncluded
               );
 
+              if (isFound && item?.id == searchedConversation?.id) {
+                isIncluded = true;
+              }
+
               if (isFound && item?.id == currentChatroomTopic?.id) {
                 isIncluded = true;
               }
@@ -453,6 +458,10 @@ const MessageListComponent = ({
               let isIncluded = selectedMessages.some(
                 (val: any) => val?.id === item?.id && !isStateIncluded
               );
+
+              if (isFound && item?.id == searchedConversation?.id) {
+                isIncluded = true;
+              }
 
               if (isFound && item?.id == currentChatroomTopic?.id) {
                 isIncluded = true;
