@@ -45,10 +45,10 @@ interface ChatroomHeaderProps {
   customChatroomUserTitle?: string;
   showThreeDotsOnHeader?: boolean;
   showThreeDotsOnSelectedHeader?: boolean;
-  gradientStyling?: any;
+  gradientStyling?: object;
   gender?: string;
   backIconPath?: string;
-  groupIcon?: any;
+  groupIcon?: string;
 }
 
 const ChatroomHeader = ({
