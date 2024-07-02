@@ -15,6 +15,7 @@ import { FAILED } from "../constants/Strings";
 import { LMChatProviderProps } from "./type";
 import { CallBack } from "../callBacks/callBackClass";
 import GIFPicker from "../optionalDependecies/Gif";
+import { Token } from "../tokens";
 
 export const LMChatProvider = ({
   myClient,
@@ -36,8 +37,8 @@ export const LMChatProvider = ({
 
   // to configure gifphy sdk
   useEffect(() => {
-    if(GIFPicker){
-      const {GiphySDK} = GIFPicker;
+    if (GIFPicker) {
+      const { GiphySDK } = GIFPicker;
       GiphySDK?.configure({ apiKey: GIPHY_SDK_API_KEY });
     }
   }, []);
@@ -91,6 +92,7 @@ export const LMChatProvider = ({
       Credentials.setCredentials(userName, userUniqueId);
 
       const initiateApiResponse = await myClient?.initiateUser(payload);
+      Token.setToken(initiateApiResponse?.data?.accessToken);
 
       dispatch({
         type: INIT_API_SUCCESS,

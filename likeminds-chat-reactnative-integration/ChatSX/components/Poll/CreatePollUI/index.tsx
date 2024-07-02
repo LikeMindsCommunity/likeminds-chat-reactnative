@@ -272,9 +272,7 @@ const CreatePollUI = () => {
                   true: styles.primaryColor.color,
                 }}
                 thumbColor={
-                  addOptionsEnabled
-                    ? styles.lightPrimaryColor.color
-                    : styles.lightGreyThumb.color
+                  addOptionsEnabled ? "fff" : styles.lightGreyThumb.color
                 }
                 ios_backgroundColor={styles.lightGreyBackground.color}
                 onValueChange={handleAddOptions}
@@ -299,9 +297,7 @@ const CreatePollUI = () => {
                   true: styles.primaryColor.color,
                 }}
                 thumbColor={
-                  anonymousPollEnabled
-                    ? styles.lightPrimaryColor.color
-                    : styles.lightGreyThumb.color
+                  anonymousPollEnabled ? "fff" : styles.lightGreyThumb.color
                 }
                 ios_backgroundColor={styles.lightGreyBackground.color}
                 onValueChange={handleAnonymousPoll}
@@ -326,9 +322,7 @@ const CreatePollUI = () => {
                   true: styles.primaryColor.color,
                 }}
                 thumbColor={
-                  liveResultsEnabled
-                    ? styles.lightPrimaryColor.color
-                    : styles.lightGreyThumb.color
+                  liveResultsEnabled ? "fff" : styles.lightGreyThumb.color
                 }
                 ios_backgroundColor={styles.lightGreyBackground.color}
                 onValueChange={handleLiveResults}
