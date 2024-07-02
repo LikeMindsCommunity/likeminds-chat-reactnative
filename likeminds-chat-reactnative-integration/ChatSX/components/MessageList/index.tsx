@@ -313,9 +313,7 @@ const MessageListComponent = ({
 
               if (isFound && item?.id == searchedConversation?.id) {
                 isIncluded = true;
-              }
-
-              if (isFound && item?.id == currentChatroomTopic?.id) {
+              } else if (isFound && item?.id == currentChatroomTopic?.id) {
                 isIncluded = true;
               }
 
@@ -461,9 +459,7 @@ const MessageListComponent = ({
 
               if (isFound && item?.id == searchedConversation?.id) {
                 isIncluded = true;
-              }
-
-              if (isFound && item?.id == currentChatroomTopic?.id) {
+              } else if (isFound && item?.id == currentChatroomTopic?.id) {
                 isIncluded = true;
               }
 

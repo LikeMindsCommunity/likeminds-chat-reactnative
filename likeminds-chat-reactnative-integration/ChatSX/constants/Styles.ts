@@ -10,6 +10,7 @@ import {
   InputBoxStyles,
   MemberDirectoryStyles,
   ReactionListStyles,
+  SearchInChatroomStyles,
   StylesProps,
 } from "./type";
 
@@ -97,6 +98,7 @@ export class STYLES {
   static $CAROUSEL_SCREEN_STYLE: CarouselScreenStyles = {};
   static $EXPLORE_CHATROOM_STYLE: ExploreChatroomStyles = {};
   static $HOME_FEED_STYLE: HomeFeedStyles = {};
+  static $SEARCH_IN_CHATROOM: SearchInChatroomStyles = {}
   static setTheme({
     hue,
     fontColor,
@@ -197,6 +199,11 @@ export class STYLES {
   static setHomeFeedStyle(homeFeedStyles: HomeFeedStyles) {
     STYLES.$HOME_FEED_STYLE = {
       ...homeFeedStyles,
+    };
+  }
+  static setSearchInChatroomStyle(searchInChatroomStyles: SearchInChatroomStyles) {
+    STYLES.$SEARCH_IN_CHATROOM = {
+      ...searchInChatroomStyles,
     };
   }
 }

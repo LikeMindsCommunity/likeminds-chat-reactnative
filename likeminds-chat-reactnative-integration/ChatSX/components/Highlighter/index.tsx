@@ -4,11 +4,11 @@ import { Text, TextStyle, TextProps } from "react-native";
 // Define the prop types
 interface HighlighterProps extends TextProps {
   autoEscape?: boolean;
-  highlightStyle?: TextStyle;
+  highlightStyle?: (TextStyle | null)[];
   searchWords: string[];
   textToHighlight: string;
   sanitize?: (text: string) => string;
-  style?: TextStyle;
+  style?: (TextStyle | null)[];
 }
 
 // Function to escape special characters in a string for use in a regular expression

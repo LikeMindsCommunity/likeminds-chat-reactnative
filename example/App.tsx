@@ -51,6 +51,7 @@ import {Credentials} from './login/credentials';
 import {LoginSchemaRO} from './login/loginSchemaRO';
 import FetchKeyInputScreen from './login';
 import {ConversationState} from '@likeminds.community/chat-rn-beta';
+import SearchInChatroomScreen from './screens/SearchInChatroom';
 
 const Stack = createNativeStackNavigator();
 
@@ -151,6 +152,22 @@ function App(): React.JSX.Element {
   //   STYLES.setTheme(themeStyles);
   // }, []);
 
+  // const searchInChatroomStyles = {
+  //   backArrowColor: 'yellow',
+  //   crossIconColor: 'pink',
+  //   searchPlaceholderTextColor: 'red',
+  //   searchText: {color: 'blue'},
+  //   userImageStyles: {borderRadius: 5},
+  //   userNameStyles: {color: 'green'},
+  //   timeStampStyles: {color: 'brown'},
+  //   searchedHighlightedTextStyle: {color: 'red'},
+  //   searchedNonHighlightedTextStyle: {color: 'purple'},
+  // };
+
+  // useEffect(() => {
+  //   STYLES.setSearchInChatroomStyle(searchInChatroomStyles);
+  // }, []);
+
   return (
     <>
       {userName && userUniqueID && apiKey && myClient ? (
@@ -167,15 +184,15 @@ function App(): React.JSX.Element {
                 lmChatInterface={lmChatInterface}>
                 <NavigationContainer ref={navigationRef} independent={true}>
                   <Stack.Navigator initialRouteName={'Homefeed'}>
-                  <Stack.Screen
+                    <Stack.Screen name={'Homefeed'} component={HomeFeed} />
+                    <Stack.Screen
                       name="SearchInChatroom"
-                      component={SearchInChatroom}
+                      component={SearchInChatroomScreen}
                       options={{
                         gestureEnabled: Platform.OS === 'ios' ? false : true,
-                        headerShown: false
+                        headerShown: false,
                       }}
                     />
-                    <Stack.Screen name={'Homefeed'} component={HomeFeed} />
                     <Stack.Screen
                       name={'ExploreFeed'}
                       component={ExploreFeed}
@@ -260,6 +277,14 @@ function App(): React.JSX.Element {
               <NavigationContainer ref={navigationRef} independent={true}>
                 <Stack.Navigator initialRouteName={'Homefeed'}>
                   <Stack.Screen name={'Homefeed'} component={HomeFeed} />
+                  <Stack.Screen
+                    name="SearchInChatroom"
+                    component={SearchInChatroomScreen}
+                    options={{
+                      gestureEnabled: Platform.OS === 'ios' ? false : true,
+                      headerShown: false,
+                    }}
+                  />
                   <Stack.Screen
                     name={'ExploreFeed'}
                     component={ExploreFeed}
