@@ -41,17 +41,25 @@ import { CallBack } from "../../../ChatSX/callBacks/callBackClass";
 import Layout from "../../../ChatSX/constants/Layout";
 
 interface ChatroomHeaderProps {
-  hideThreeDotsMenu?: boolean;
-  isChatroomTabNavigatorPresent?: boolean;
+  showChatroomIcon?: boolean;
+  customChatroomUserTitle?: string;
+  showThreeDotsOnHeader?: boolean;
+  showThreeDotsOnSelectedHeader?: boolean;
+  gradientStyling?: any;
   gender?: string;
   backIconPath?: string;
+  groupIcon?: any;
 }
 
 const ChatroomHeader = ({
-  hideThreeDotsMenu,
-  isChatroomTabNavigatorPresent,
+  showChatroomIcon,
+  customChatroomUserTitle,
+  showThreeDotsOnHeader,
+  showThreeDotsOnSelectedHeader,
+  gradientStyling,
   gender,
   backIconPath,
+  groupIcon,
 }: ChatroomHeaderProps) => {
   const myClient = Client.myClient;
   const {
@@ -89,15 +97,6 @@ const ChatroomHeader = ({
     chatroomHeaderStyles?.chatroomSelectedHeaderIcons;
 
   const dispatch = useAppDispatch();
-
-  const gradientStyling = {
-    colors: gender === "male" ? ["#3BA773", "#0B713F"] : ["#B25647", "#CC8A7A"],
-    style: {
-      flex: 1,
-      borderBottomLeftRadius: 16,
-      borderBottomRightRadius: 16,
-    },
-  };
 
   // Initial header of chatroom screen
   const setInitialHeader = () => {
@@ -151,23 +150,13 @@ const ChatroomHeader = ({
 
               <View style={styles.chatRoomInfo}>
                 <View>
-                  {isChatroomTabNavigatorPresent &&
-                  gender == "male" &&
+                  {showChatroomIcon &&
                   chatroomType !== ChatroomType.DMCHATROOM ? (
                     <Image
                       source={
                         chatroomDBDetails?.chatroomImageUrl
                           ? { uri: chatroomDBDetails?.chatroomImageUrl }
-                          : require("../../assets/images/defaultGroupIconMale.png")
-                      }
-                      style={styles.avatar}
-                    />
-                  ) : chatroomType !== ChatroomType.DMCHATROOM ? (
-                    <Image
-                      source={
-                        chatroomDBDetails?.chatroomImageUrl
-                          ? { uri: chatroomDBDetails?.chatroomImageUrl }
-                          : require("../../assets/images/defaultGroupIconFemale.png")
+                          : groupIcon
                       }
                       style={styles.avatar}
                     />
@@ -220,7 +209,7 @@ const ChatroomHeader = ({
                         : ""}
                     </Text>
                   ) : chatroomType === ChatroomType.DMCHATROOM &&
-                    isChatroomTabNavigatorPresent ? (
+                    customChatroomUserTitle ? (
                     <Text
                       style={{
                         color: chatroomSubHeaderStyle?.color
@@ -234,7 +223,7 @@ const ChatroomHeader = ({
                           : STYLES.$FONT_TYPES.LIGHT,
                       }}
                     >
-                      Moderator
+                      {customChatroomUserTitle}
                     </Text>
                   ) : null}
                 </View>
@@ -245,8 +234,7 @@ const ChatroomHeader = ({
       ),
       headerRight: () =>
         filteredChatroomActions?.length > 0 &&
-        !hideThreeDotsMenu &&
-        !isChatroomTabNavigatorPresent && (
+        showThreeDotsOnHeader && (
           <View style={styles.headerRight}>
             {chatroomDetails ? (
               <TouchableOpacity
@@ -262,9 +250,7 @@ const ChatroomHeader = ({
             ) : null}
           </View>
         ),
-      ...(isChatroomTabNavigatorPresent &&
-      gender &&
-      Object.keys(gradientStyling).length !== 0
+      ...(gradientStyling && gender && Object.keys(gradientStyling).length !== 0
         ? {
             headerBackground: () => (
               <View style={{ flex: 1 }}>
@@ -627,8 +613,7 @@ const ChatroomHeader = ({
             )}
             {len === 1 &&
               !isFirstMessageDeleted &&
-              !hideThreeDotsMenu &&
-              !isChatroomTabNavigatorPresent && (
+              showThreeDotsOnSelectedHeader && (
                 <TouchableOpacity
                   onPress={() => {
                     setReportModalVisible(true);
