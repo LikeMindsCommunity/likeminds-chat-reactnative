@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChatRoom,
   ChatroomHeader,
@@ -6,13 +6,19 @@ import {
   MessageInput,
   useChatroomContext,
   useMessageListContext,
-  useExploreFeedContext,
-  ChatroomTopic
+  Token,
 } from "@likeminds.community/chat-rn-core";
 import ChatroomTabNavigator from "../../src/ChatroomTabNavigator";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { CustomCallbacks } from "../../App";
+import {
+  announcementRoomId,
+  backIconPath,
+  backgroundImage,
+  chatroomId,
+  gender,
+  groupIcon,
+} from "../../src/userAndCommunityInfo";
+import { ImageBackground } from "react-native";
+import { pushAPI, token } from "../../src/pushNotification";
 
 interface HintMessages {
   messageForRightsDisabled?: string;
@@ -21,12 +27,7 @@ interface HintMessages {
   respondingDisabled?: string;
 }
 
-const lmChatInterface = new CustomCallbacks();
-
 export function ChatroomScreen() {
-  const chatroomId = "90137";
-  const announcementRoomId = "90136";
-
   const showViewParticipants = true;
   const showShareChatroom = true;
   const showMuteNotifications = true;
@@ -38,11 +39,17 @@ export function ChatroomScreen() {
   const showViewProfile = true;
   const showSecretLeaveChatroom = true;
   const showChatroomTopic = false;
-  const hintMessages: HintMessages = {
-    messagForMemberCanMessage:
-      "Sorry, at this time only CM's can message here!",
-    messageForRightsDisabled:
-      "Sorry your rights has been disabled, contact you CM for more info!",
+  const showChatroomIcon = true;
+  const customChatroomUserTitle = "Moderator";
+  const showThreeDotsOnHeader = false;
+  const showThreeDotsOnSelectedHeader = false;
+  const gradientStyling = {
+    colors: gender === "male" ? ["#3BA773", "#0B713F"] : ["#B25647", "#CC8A7A"],
+    style: {
+      flex: 1,
+      borderBottomLeftRadius: 16,
+      borderBottomRightRadius: 16,
+    },
   };
 
   const {
@@ -139,7 +146,22 @@ export function ChatroomScreen() {
     console.log("after custom scroll to bottom");
   };
 
-  const navigation = useNavigation<StackNavigationProp<any>>();
+  const [FCMToken, setFCMToken] = useState("");
+
+  /// Setup notifications
+  useEffect(() => {
+    token().then((res) => {
+      if (!!res) {
+        setFCMToken(res);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (FCMToken) {
+      pushAPI(FCMToken, Token.accessToken);
+    }
+  }, [FCMToken]);
 
   return (
     <ChatRoom
@@ -165,30 +187,52 @@ export function ChatroomScreen() {
       unblockMember={customUnBlockMember}
     >
       {/* ChatroomHeader */}
-      <ChatroomHeader hideSearchIcon={true} />
-
-      {/* Chatroom Tab Navigator */}
-      <ChatroomTabNavigator
-        navigation={navigation}
-        chatroomId={chatroomId}
-        announcementRoomId={announcementRoomId}
-        gender="male"
-        lmChatInterface={lmChatInterface}
+      <ChatroomHeader
+        showChatroomIcon={showChatroomIcon}
+        customChatroomUserTitle={customChatroomUserTitle}
+        showThreeDotsOnHeader={showThreeDotsOnHeader}
+        showThreeDotsOnSelectedHeader={showThreeDotsOnSelectedHeader}
+        gradientStyling={gradientStyling}
+        backIconPath={backIconPath}
+        groupIcon={groupIcon}
+        hideSearchIcon={true}
       />
-
-      {/* Message List */}
-      <MessageList
-        onTapToUndo={customOnTapToUndo}
-        scrollToBottom={customScrollToBottom}
-        showChatroomTopic={showChatroomTopic}
-      />
-
+      {backgroundImage ? (
+        <ImageBackground
+          resizeMode="cover"
+          style={{ flex: 1, justifyContent: "center" }}
+          source={backgroundImage}
+        >
+          <ChatroomTabNavigator
+            chatroomId={chatroomId}
+            announcementRoomId={announcementRoomId}
+            gender={gender}
+          />
+          <MessageList
+            onTapToUndo={customOnTapToUndo}
+            scrollToBottom={customScrollToBottom}
+            showChatroomTopic={showChatroomTopic}
+          />
+        </ImageBackground>
+      ) : (
+        <>
+          <ChatroomTabNavigator
+            chatroomId={chatroomId}
+            announcementRoomId={announcementRoomId}
+            gender={gender}
+          />
+          <MessageList
+            onTapToUndo={customOnTapToUndo}
+            scrollToBottom={customScrollToBottom}
+            showChatroomTopic={showChatroomTopic}
+          />
+        </>
+      )}
       {/* Input Box Flow */}
       <MessageInput
         joinSecretChatroomProp={customJoinSecretChatroom}
         showJoinAlertProp={customShowJoinAlert}
         showRejectAlertProp={customShowRejectAlert}
-        hintMessages={hintMessages}
       />
     </ChatRoom>
   );

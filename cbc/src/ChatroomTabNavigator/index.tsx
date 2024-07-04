@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { ChatroomTabNavigatorProps } from "./type";
 import { ScreenName } from "../enums/screenNameEnums";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { CallBack } from "@likeminds.community/chat-rn-core";
 
 function ChatroomTabNavigator({
-  navigation,
   chatroomId,
   announcementRoomId,
   gender,
-  lmChatInterface,
 }: ChatroomTabNavigatorProps) {
   const [activeTab, setActiveTab] = useState(1); // Defaulting to the first tab
+  const navigation = useNavigation<StackNavigationProp<any>>();
+  const lmChatInterface = CallBack.lmChatInterface;
 
   const handleTabPress = (tabIndex: number) => {
     setActiveTab(tabIndex);

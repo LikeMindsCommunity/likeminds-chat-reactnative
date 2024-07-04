@@ -9,38 +9,38 @@ export const setStyles = (gender: string) => {
           primaryColor: "#B7D340",
           secondaryColor: "#B7D340",
           lightBackgroundColor: "hsl(161, 67%, 91%)",
-          // fontTypes: {
-          //   LIGHT: "NunitoSans-Light",
-          //   MEDIUM: "NunitoSans-Medium",
-          //   SEMI_BOLD: "NunitoSans-SemiBold",
-          //   BOLD: "NunitoSans-Bold",
-          //   BLACK: "NunitoSans-Black",
-          // },
+          fontTypes: {
+            LIGHT: "NunitoSans-Light",
+            MEDIUM: "NunitoSans-Medium",
+            SEMI_BOLD: "NunitoSans-SemiBold",
+            BOLD: "NunitoSans-Bold",
+            BLACK: "NunitoSans-Black",
+          },
         }
       : {
           fontColor: "black",
           primaryColor: "#553B3B",
           secondaryColor: "#553B3B",
           lightBackgroundColor: "hsl(11,53%,94%)",
-          // fontTypes: {
-          //   LIGHT: "NunitoSans-Light",
-          //   MEDIUM: "NunitoSans-Medium",
-          //   SEMI_BOLD: "NunitoSans-SemiBold",
-          //   BOLD: "NunitoSans-Bold",
-          //   BLACK: "NunitoSans-Black",
-          // },
+          fontTypes: {
+            LIGHT: "NunitoSans-Light",
+            MEDIUM: "NunitoSans-Medium",
+            SEMI_BOLD: "NunitoSans-SemiBold",
+            BOLD: "NunitoSans-Bold",
+            BLACK: "NunitoSans-Black",
+          },
         };
 
   // styling for chatroom header
   const chatroomHeaderStyles = {
     chatroomNameHeaderStyle: {
       color: "white",
-      fontSize: 18,
+      fontSize: 16,
       fontFamily: "NunitoSans-Bold",
     },
     chatroomSubHeaderStyle: {
       color: "white",
-      fontSize: 13,
+      fontSize: 12,
     },
     chatroomSelectedHeaderIcons: {
       tintColor: "white",
@@ -59,7 +59,6 @@ export const setStyles = (gender: string) => {
           selectedMessagesBackgroundColor: "#3CA87429",
           stateMessagesTextStyles: {
             color: "#808080",
-            backgroundColor: "#C7E3D6",
           },
           dateStateMessage: {
             color: "#808080",
@@ -94,7 +93,6 @@ export const setStyles = (gender: string) => {
           selectedMessagesBackgroundColor: "#f7d7de",
           stateMessagesTextStyles: {
             color: "#808080",
-            backgroundColor: "#FAD9D2",
           },
           dateStateMessage: {
             color: "#808080",

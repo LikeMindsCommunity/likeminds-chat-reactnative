@@ -1,6 +1,6 @@
-import {Chat} from '@likeminds.community/chat-rn-core';
-import React from 'react';
-import {ChatroomScreen} from './ChatroomScreen';
+import { Chat } from "@likeminds.community/chat-rn-core";
+import React from "react";
+import { ChatroomScreen } from "./ChatroomScreen";
 
 function ChatroomScreenWrapper() {
   return (
