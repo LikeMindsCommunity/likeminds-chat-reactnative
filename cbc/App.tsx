@@ -25,16 +25,19 @@ import {
   NavigateToProfileParams,
   NavigateToGroupDetailsParams,
   RadialGradient,
+  SearchInChatroom,
 } from "@likeminds.community/chat-rn-core";
 import { myClient } from ".";
 import ChatroomTabNavigator from "./src/ChatroomTabNavigator";
 import { setStyles } from "./src/styles";
 import { ScreenName } from "./src/enums/screenNameEnums";
+import ChatroomScreenWrapper from "./screens/Chatroom/ChatroomScreenWrapper";
+import FileUploadScreenWrapper from "./screens/FileUpload/FileUploadWrapper";
 
 const Stack = createNativeStackNavigator();
 
 // Override callBacks with custom logic
-class CustomCallbacks implements LMChatCallbacks, LMChatroomCallbacks {
+export class CustomCallbacks implements LMChatCallbacks, LMChatroomCallbacks {
   navigateToProfile(params: NavigateToProfileParams) {
     // Override navigateToProfile with custom logic
   }
@@ -66,10 +69,10 @@ function HomeScreen() {
 }
 
 function SettingsScreen() {
-  const userName = "";
-  const userUniqueId = "";
-  const chatroomId = "";
-  const announcementRoomId = "";
+  const userName = "Jai";
+  const userUniqueId = "Jai";
+  const chatroomId = "90137";
+  const announcementRoomId = "90136";
   const profileImageUrl = "";
   const gender: string = "male";
 
@@ -96,16 +99,10 @@ function SettingsScreen() {
     >
       <Stack.Navigator>
         <Stack.Screen
-          name={ScreenName.ChatRoom}
-          component={ChatRoom}
+          name={ScreenName.Chatroom}
+          component={ChatroomScreenWrapper}
           initialParams={{
             chatroomID: chatroomId,
-            isInvited: false,
-            announcementRoomId: announcementRoomId,
-            gender: gender,
-            tabNavigator: ChatroomTabNavigator,
-            backIconPath: require("./assets/images/backIcon.png"),
-            backgroundImage: "", // add your background image here
           }}
           options={() => {
             if (Object.keys(gradientStyling).length !== 0) {
@@ -130,9 +127,17 @@ function SettingsScreen() {
           }}
         />
         <Stack.Screen
+          name="SearchInChatroom"
+          component={SearchInChatroom}
+          options={{
+            gestureEnabled: Platform.OS === "ios" ? false : true,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           options={{ gestureEnabled: Platform.OS === "ios" ? false : true }}
           name={ScreenName.FileUpload}
-          component={FileUpload}
+          component={FileUploadScreenWrapper}
         />
         <Stack.Screen name={"VideoPlayer"} component={VideoPlayer} />
         <Stack.Screen

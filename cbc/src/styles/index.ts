@@ -9,26 +9,26 @@ export const setStyles = (gender: string) => {
           primaryColor: "#B7D340",
           secondaryColor: "#B7D340",
           lightBackgroundColor: "hsl(161, 67%, 91%)",
-          fontTypes: {
-            LIGHT: "NunitoSans-Light",
-            MEDIUM: "NunitoSans-Medium",
-            SEMI_BOLD: "NunitoSans-SemiBold",
-            BOLD: "NunitoSans-Bold",
-            BLACK: "NunitoSans-Black",
-          },
+          // fontTypes: {
+          //   LIGHT: "NunitoSans-Light",
+          //   MEDIUM: "NunitoSans-Medium",
+          //   SEMI_BOLD: "NunitoSans-SemiBold",
+          //   BOLD: "NunitoSans-Bold",
+          //   BLACK: "NunitoSans-Black",
+          // },
         }
       : {
           fontColor: "black",
           primaryColor: "#553B3B",
           secondaryColor: "#553B3B",
           lightBackgroundColor: "hsl(11,53%,94%)",
-          fontTypes: {
-            LIGHT: "NunitoSans-Light",
-            MEDIUM: "NunitoSans-Medium",
-            SEMI_BOLD: "NunitoSans-SemiBold",
-            BOLD: "NunitoSans-Bold",
-            BLACK: "NunitoSans-Black",
-          },
+          // fontTypes: {
+          //   LIGHT: "NunitoSans-Light",
+          //   MEDIUM: "NunitoSans-Medium",
+          //   SEMI_BOLD: "NunitoSans-SemiBold",
+          //   BOLD: "NunitoSans-Bold",
+          //   BLACK: "NunitoSans-Black",
+          // },
         };
 
   // styling for chatroom header

@@ -1,4 +1,4 @@
-package com.likeminds_chat_reactnative_traya;
+package com.cbc;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

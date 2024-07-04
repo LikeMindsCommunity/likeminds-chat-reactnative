@@ -23,7 +23,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'likeminds_chat_reactnative_traya' do
+target 'cbc' do
   config = use_native_modules!
 
   use_frameworks! :linkage => :static
@@ -60,7 +60,7 @@ target 'likeminds_chat_reactnative_traya' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'likeminds_chat_reactnative_trayaTests' do
+  target 'cbcTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -74,6 +74,8 @@ target 'likeminds_chat_reactnative_traya' do
     'PhotoLibraryAddOnly',
   ])
 
+  platform :ios, '13.0'
+
   post_install do |installer|
     react_native_post_install(
       installer,
@@ -81,6 +83,14 @@ target 'likeminds_chat_reactnative_traya' do
       # necessary for Mac Catalyst builds
       :mac_catalyst_enabled => false
     )
+  
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
+      end
+    end
   end
+
 end

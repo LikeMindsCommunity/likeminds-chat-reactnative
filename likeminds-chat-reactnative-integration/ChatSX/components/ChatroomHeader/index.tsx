@@ -39,9 +39,13 @@ import { SEARCH_IN_CHATROOM } from "../../constants/Screens";
 
 interface ChatroomHeaderProps {
   hideThreeDotsMenu?: boolean;
+  hideSearchIcon?: boolean;
 }
 
-const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
+const ChatroomHeader = ({
+  hideThreeDotsMenu,
+  hideSearchIcon,
+}: ChatroomHeaderProps) => {
   const myClient = Client.myClient;
   const {
     navigation,
@@ -153,16 +157,21 @@ const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
         filteredChatroomActions?.length > 0 &&
         !hideThreeDotsMenu && (
           <View style={styles.headerRight}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate(SEARCH_IN_CHATROOM, {chatroomId: chatroomID})
-              }}
-            >
-              <Image
-                source={require("../../assets/images/search_icon3x.png")}
-                style={styles.threeDots}
-              />
-            </TouchableOpacity>
+            {!hideSearchIcon ? (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate(SEARCH_IN_CHATROOM, {
+                    chatroomId: chatroomID,
+                  });
+                }}
+              >
+                <Image
+                  source={require("../../assets/images/search_icon3x.png")}
+                  style={styles.threeDots}
+                />
+              </TouchableOpacity>
+            ) : null}
+
             {chatroomDetails ? (
               <TouchableOpacity
                 onPress={() => {

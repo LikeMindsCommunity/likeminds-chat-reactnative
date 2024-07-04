@@ -15,11 +15,11 @@ function ChatroomTabNavigator({
   const handleTabPress = (tabIndex: number) => {
     setActiveTab(tabIndex);
     if (tabIndex == 1) {
-      return navigation.navigate(ScreenName.ChatRoom, {
+      return navigation.navigate(ScreenName.Chatroom, {
         chatroomID: chatroomId?.toString(),
       });
     } else if (tabIndex == 2) {
-      return navigation.navigate(ScreenName.ChatRoom, {
+      return navigation.navigate(ScreenName.Chatroom, {
         chatroomID: announcementRoomId?.toString(),
       });
     } else if (tabIndex == 3) {

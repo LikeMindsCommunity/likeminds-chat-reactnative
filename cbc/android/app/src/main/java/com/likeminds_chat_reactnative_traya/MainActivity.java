@@ -1,4 +1,4 @@
-package com.likeminds_chat_reactnative_traya;
+package com.cbc;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -13,7 +13,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "likeminds_chat_reactnative_traya";
+    return "cbc";
   }
 
   /**

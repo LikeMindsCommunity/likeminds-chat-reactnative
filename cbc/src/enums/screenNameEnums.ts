@@ -1,5 +1,5 @@
 export enum ScreenName {
-  ChatRoom = "ChatRoom",
+  Chatroom = "Chatroom",
   FileUpload = "FileUpload",
   CarouselScreen = "CarouselScreen",
   PollResult = "PollResult",

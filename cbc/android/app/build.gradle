@@ -94,9 +94,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.likeminds_chat_reactnative_traya"
+    namespace "com.cbc"
     defaultConfig {
-        applicationId "com.likeminds_chat_reactnative_traya"
+        applicationId "com.cbc"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
