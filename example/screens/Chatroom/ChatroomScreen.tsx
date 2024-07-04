@@ -7,6 +7,7 @@ import {
   useChatroomContext,
   useMessageListContext,
   useExploreFeedContext,
+  ChatroomTopic
 } from '@likeminds.community/chat-rn-core';
 import {ReactionList} from '../../customisableComponents/ReactionList';
 import ChatroomTabNavigator from '../../src/ChatroomTabNavigator';
@@ -159,6 +160,9 @@ export function ChatroomScreen() {
       unblockMember={customUnBlockMember}>
       {/* ChatroomHeader */}
       <ChatroomHeader />
+      
+      {/* Chtroom Topic */}
+      <ChatroomTopic />
 
       {/* Message List */}
       <MessageList

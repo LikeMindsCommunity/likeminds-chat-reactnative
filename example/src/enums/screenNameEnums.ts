@@ -1,8 +1,9 @@
 export enum ScreenName {
-  ChatRoom = 'Chatroom',
+  Chatroom = 'Chatroom',
   FileUpload = 'FileUpload',
   CarouselScreen = 'CarouselScreen',
   PollResult = 'PollResult',
   CreatePollScreen = 'CreatePollScreen',
   ImageCropScreen = 'ImageCropScreen',
+  VideoPlayer = 'VideoPlayer';
 }

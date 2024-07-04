@@ -34,6 +34,9 @@ import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseM
 import { styles } from "../components/MessageList/styles";
 import { decode, generateGifString } from "../commonFuctions";
 import { CAPITAL_GIF_TEXT, VOICE_NOTE_STRING } from "../constants/Strings";
+import { getCurrentConversation } from "../utils/chatroomUtils";
+import { convertToChatroomTopicSchema } from "../assets/chatSchema";
+import { useIsFocused } from "@react-navigation/native";
 
 interface MessageListContextProps {
   children: ReactNode;
@@ -81,6 +84,8 @@ export const MessageListContextProvider = ({
     chatroomID,
     user,
     chatroomName,
+    isNavigationToSearchedConversation,
+    searchedConversation,
   }: ChatroomContextValues = useChatroomContext();
   const [endPage, setEndPage] = useState(1);
   const [startPage, setStartPage] = useState(1);
@@ -101,6 +106,7 @@ export const MessageListContextProvider = ({
   const { messageSent }: any = useAppSelector((state) => state.chatroom);
   const myClient = Client.myClient;
   const PAGE_SIZE = 200;
+  const isFocused = useIsFocused();
 
   const scrollToBottom = async () => {
     const payload = GetConversationsRequestBuilder.builder()
@@ -293,6 +299,31 @@ export const MessageListContextProvider = ({
     );
     return response;
   }
+
+  // this useEffect is used to jump to searched conversation
+  useEffect(() => {
+    async function scrollToSearchedConversation() {
+      const newConversation = await getCurrentConversation(
+        convertToChatroomTopicSchema(searchedConversation),
+        chatroomID?.toString()
+      );
+      dispatch({
+        type: GET_CONVERSATIONS_SUCCESS,
+        body: { conversations: newConversation },
+      });
+      const index = newConversation.findIndex(
+        (element) => element?.id == searchedConversation?.id
+      );
+      if (index >= 0) {
+        scrollToIndex(index);
+        setReplyConversationId(searchedConversation?.id);
+        setIsFound(true);
+      }
+    }
+    if (isNavigationToSearchedConversation) {
+      scrollToSearchedConversation();
+    }
+  }, [isFocused]);
 
   // This is for scrolling down mainly ie whenever response changes this useEffect will be triggered and it'll calculate the index of the last message before prepending of new data and scroll to that index
   useEffect(() => {

@@ -1,3 +1,5 @@
+import { ImageStyle, TextStyle } from "react-native";
+
 interface FontTypes {
   LIGHT?: string;
   MEDIUM?: string;
@@ -269,4 +271,16 @@ export interface InputBoxStyles {
     resizeMode?: string;
   };
   messageInputMarginBottom?: number;
+}
+
+export interface SearchInChatroomStyles {
+  backArrowColor?: string;
+  crossIconColor?: string;
+  searchPlaceholderTextColor?: string;
+  searchText?: TextStyle;
+  userImageStyles?: ImageStyle;
+  userNameStyles?: TextStyle;
+  timeStampStyles?: TextStyle;
+  searchedHighlightedTextStyle?: TextStyle;
+  searchedNonHighlightedTextStyle?: TextStyle;
 }

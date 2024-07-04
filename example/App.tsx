@@ -32,6 +32,7 @@ import {
   AddParticipants,
   DmAllMembers,
   initMyClient,
+  SearchInChatroom,
 } from '@likeminds.community/chat-rn-core';
 import ChatroomScreenWrapper from './screens/Chatroom/ChatroomScreenWrapper';
 import {setStyles} from './styles';
@@ -50,6 +51,8 @@ import {Credentials} from './login/credentials';
 import {LoginSchemaRO} from './login/loginSchemaRO';
 import FetchKeyInputScreen from './login';
 import {ConversationState} from '@likeminds.community/chat-rn';
+import SearchInChatroomScreen from './screens/SearchInChatroom';
+import { ScreenName } from './src/enums/screenNameEnums';
 
 const Stack = createNativeStackNavigator();
 
@@ -136,18 +139,8 @@ function App(): React.JSX.Element {
     }
   }, [isTrue, apiKey]);
 
-  const themeStyles = {
-    fontTypes: {
-      LIGHT: 'SofiaPro-Light',
-      MEDIUM: 'SofiaPro-Medium',
-      SEMI_BOLD: 'SofiaPro-SemiBold',
-      BOLD: 'SofiaPro-Bold',
-      BLACK: 'SofiaPro-Black',
-    },
-  };
-
   useEffect(() => {
-    STYLES.setTheme(themeStyles);
+    setStyles();
   }, []);
 
   return (
@@ -168,6 +161,14 @@ function App(): React.JSX.Element {
                   <Stack.Navigator initialRouteName={'Homefeed'}>
                     <Stack.Screen name={'Homefeed'} component={HomeFeed} />
                     <Stack.Screen
+                      name="SearchInChatroom"
+                      component={SearchInChatroomScreen}
+                      options={{
+                        gestureEnabled: Platform.OS === 'ios' ? false : true,
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
                       name={'ExploreFeed'}
                       component={ExploreFeed}
                       initialParams={{
@@ -180,7 +181,7 @@ function App(): React.JSX.Element {
                       }}
                     />
                     <Stack.Screen
-                      name="Chatroom"
+                      name={ScreenName.Chatroom}
                       component={ChatroomScreenWrapper}
                       options={{
                         gestureEnabled: Platform.OS === 'ios' ? false : true,
@@ -190,7 +191,7 @@ function App(): React.JSX.Element {
                       options={{
                         gestureEnabled: Platform.OS === 'ios' ? false : true,
                       }}
-                      name={'FileUpload'}
+                      name={ScreenName.FileUpload}
                       component={FileUploadScreenWrapper}
                       initialParams={{
                         backIconPath: '', // add your back icon path here
@@ -198,12 +199,12 @@ function App(): React.JSX.Element {
                       }}
                     />
                     <Stack.Screen
-                      name={'VideoPlayer'}
+                      name={ScreenName.VideoPlayer}
                       component={VideoPlayer}
                     />
                     <Stack.Screen
                       options={{gestureEnabled: false}}
-                      name={'CarouselScreen'}
+                      name={ScreenName.CarouselScreen}
                       component={CarouselScreen}
                       initialParams={{
                         backIconPath: '', // add your back icon path here
@@ -211,16 +212,16 @@ function App(): React.JSX.Element {
                     />
                     <Stack.Screen
                       options={{gestureEnabled: false}}
-                      name={'PollResult'}
+                      name={ScreenName.PollResult}
                       component={PollResult}
                     />
                     <Stack.Screen
-                      name={'CreatePollScreen'}
+                      name={ScreenName.CreatePollScreen}
                       component={CreatePollScreen}
                     />
                     <Stack.Screen
                       options={{headerShown: false}}
-                      name={'ImageCropScreen'}
+                      name={ScreenName.ImageCropScreen}
                       component={ImageCropScreen}
                     />
                     <Stack.Screen name={REPORT} component={ReportScreen} />
@@ -251,6 +252,14 @@ function App(): React.JSX.Element {
               <NavigationContainer ref={navigationRef} independent={true}>
                 <Stack.Navigator initialRouteName={'Homefeed'}>
                   <Stack.Screen name={'Homefeed'} component={HomeFeed} />
+                  <Stack.Screen
+                    name="SearchInChatroom"
+                    component={SearchInChatroomScreen}
+                    options={{
+                      gestureEnabled: Platform.OS === 'ios' ? false : true,
+                      headerShown: false,
+                    }}
+                  />
                   <Stack.Screen
                     name={'ExploreFeed'}
                     component={ExploreFeed}
