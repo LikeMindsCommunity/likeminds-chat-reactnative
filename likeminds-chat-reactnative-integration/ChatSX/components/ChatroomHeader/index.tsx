@@ -46,7 +46,6 @@ interface ChatroomHeaderProps {
   showThreeDotsOnHeader?: boolean;
   showThreeDotsOnSelectedHeader?: boolean;
   gradientStyling?: object;
-  gender?: string;
   backIconPath?: string;
   groupIcon?: string;
 }
@@ -57,7 +56,6 @@ const ChatroomHeader = ({
   showThreeDotsOnHeader,
   showThreeDotsOnSelectedHeader,
   gradientStyling,
-  gender,
   backIconPath,
   groupIcon,
 }: ChatroomHeaderProps) => {
@@ -250,7 +248,7 @@ const ChatroomHeader = ({
             ) : null}
           </View>
         ),
-      ...(gradientStyling && gender && Object.keys(gradientStyling).length !== 0
+      ...(gradientStyling && Object.keys(gradientStyling).length !== 0
         ? {
             headerBackground: () => (
               <View style={{ flex: 1 }}>
