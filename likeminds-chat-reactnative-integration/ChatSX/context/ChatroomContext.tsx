@@ -71,7 +71,7 @@ import {
 import {
   GetConversationsRequestBuilder,
   SyncConversationRequest,
-} from "@likeminds.community/chat-rn-beta";
+} from "@likeminds.community/chat-rn";
 import { Credentials } from "../credentials";
 import { initAPI } from "../store/actions/homefeed";
 import { createTemporaryStateMessage } from "../utils/chatroomUtils";
@@ -251,7 +251,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     previousChatroomID,
     navigationFromNotification,
     deepLinking,
-    isNavigationToSearchedConversation, 
+    isNavigationToSearchedConversation,
     searchedConversation,
   } = route.params as {
     chatroomID: any; // Adjust the type accordingly

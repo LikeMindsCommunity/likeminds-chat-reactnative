@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@giphy/react-native-sdk": "2.1.3",
-    "@likeminds.community/chat-rn-beta": "1.1.7",
-    "@likeminds.community/chat-rn-core": "file:../likeminds-chat-reactnative-integration/likeminds.community-chat-rn-core-1.0.3.tgz",
+    "@likeminds.community/chat-rn": "1.1.7",
+    "@likeminds.community/chat-rn-core": "1.0.3",
     "@notifee/react-native": "7.6.1",
     "@react-native-clipboard/clipboard": "1.11.2",
     "@react-native-community/datetimepicker": "7.4.1",

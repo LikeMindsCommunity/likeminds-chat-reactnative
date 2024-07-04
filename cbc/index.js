@@ -5,7 +5,7 @@ import { AppRegistry } from "react-native";
 import App from "./App";
 import { name as appName } from "./app.json";
 import { initMyClient } from "@likeminds.community/chat-rn-core";
-import { ConversationState } from "@likeminds.community/chat-rn-beta";
+import { ConversationState } from "@likeminds.community/chat-rn";
 
 const filterStateMessage = [ConversationState.MEMBER_LEFT_SECRET_CHATROOM,]; // give type of conversation to be filtered using ConversationState enum
 

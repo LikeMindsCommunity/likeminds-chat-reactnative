@@ -5,6 +5,7 @@ import {
   Image,
   Alert,
   Keyboard,
+  StatusBar,
 } from "react-native";
 import React, { useEffect } from "react";
 import { Client } from "../../client";
@@ -35,15 +36,31 @@ import { VOICE_NOTE_TEXT } from "../../constants/Strings";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 import RNClipboard from "../../optionalDependecies/RNClipboard";
 import CommunityClipboard from "../../optionalDependecies/CommunityClipboard";
+import { RadialGradient } from "../../../ChatSX/radialGradient";
+import { NavigateToGroupDetailsParams } from "../../../ChatSX/callBacks/type";
+import { CallBack } from "../../../ChatSX/callBacks/callBackClass";
+import Layout from "../../../ChatSX/constants/Layout";
 import { SEARCH_IN_CHATROOM } from "../../constants/Screens";
 
 interface ChatroomHeaderProps {
-  hideThreeDotsMenu?: boolean;
+  showChatroomIcon?: boolean;
+  customChatroomUserTitle?: string;
+  showThreeDotsOnHeader?: boolean;
+  showThreeDotsOnSelectedHeader?: boolean;
+  gradientStyling?: object;
+  backIconPath?: string;
+  groupIcon?: string;
   hideSearchIcon?: boolean;
 }
 
 const ChatroomHeader = ({
-  hideThreeDotsMenu,
+  showChatroomIcon,
+  customChatroomUserTitle,
+  showThreeDotsOnHeader,
+  showThreeDotsOnSelectedHeader,
+  gradientStyling,
+  backIconPath,
+  groupIcon,
   hideSearchIcon,
 }: ChatroomHeaderProps) => {
   const myClient = Client.myClient;
@@ -74,6 +91,13 @@ const ChatroomHeader = ({
     backAction,
   }: ChatroomContextValues = useChatroomContext();
 
+  const lmChatInterface = CallBack.lmChatInterface;
+  const chatroomHeaderStyles = STYLES.$CHATROOM_HEADER_STYLE;
+  const chatroomNameHeaderStyle = chatroomHeaderStyles?.chatroomNameHeaderStyle;
+  const chatroomSubHeaderStyle = chatroomHeaderStyles?.chatroomSubHeaderStyle;
+  const chatroomSelectedHeaderIcons =
+    chatroomHeaderStyles?.chatroomSelectedHeaderIcons;
+
   const dispatch = useAppDispatch();
 
   // Initial header of chatroom screen
@@ -103,8 +127,12 @@ const ChatroomHeader = ({
             }}
           >
             <Image
-              source={require("../../assets/images/back_arrow3x.png")}
-              style={styles.backBtn}
+              source={
+                backIconPath
+                  ? backIconPath
+                  : require("../../assets/images/back_arrow3x.png")
+              }
+              style={backIconPath ? styles.backOptionalBtn : styles.backBtn}
             />
           </TouchableOpacity>
           {!(Object.keys(chatroomDBDetails)?.length === 0) ? (
@@ -123,31 +151,84 @@ const ChatroomHeader = ({
               ) : null}
 
               <View style={styles.chatRoomInfo}>
-                <Text
-                  ellipsizeMode="tail"
-                  numberOfLines={1}
-                  style={{
-                    color: STYLES.$COLORS.FONT_PRIMARY,
-                    fontSize: STYLES.$FONT_SIZES.LARGE,
-                    fontFamily: STYLES.$FONT_TYPES.BOLD,
-                    maxWidth: 150,
-                  }}
-                >
-                  {chatroomName}
-                </Text>
-                {chatroomType !== ChatroomType.DMCHATROOM ? (
-                  <Text
-                    style={{
-                      color: STYLES.$COLORS.MSG,
-                      fontSize: STYLES.$FONT_SIZES.SMALL,
-                      fontFamily: STYLES.$FONT_TYPES.LIGHT,
+                <View>
+                  {showChatroomIcon &&
+                  chatroomType !== ChatroomType.DMCHATROOM ? (
+                    <Image
+                      source={
+                        chatroomDBDetails?.chatroomImageUrl
+                          ? { uri: chatroomDBDetails?.chatroomImageUrl }
+                          : groupIcon
+                      }
+                      style={styles.avatar}
+                    />
+                  ) : null}
+                </View>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      const params: NavigateToGroupDetailsParams = {
+                        chatroom: chatroomDBDetails,
+                      };
+                      lmChatInterface.navigateToGroupDetails(params);
                     }}
                   >
-                    {chatroomDetails?.participantCount != undefined
-                      ? `${chatroomDetails?.participantCount} participants`
-                      : ""}
-                  </Text>
-                ) : null}
+                    <Text
+                      ellipsizeMode="tail"
+                      numberOfLines={1}
+                      style={{
+                        color: chatroomNameHeaderStyle?.color
+                          ? chatroomNameHeaderStyle?.color
+                          : STYLES.$COLORS.FONT_PRIMARY,
+                        fontSize: chatroomNameHeaderStyle?.fontSize
+                          ? chatroomNameHeaderStyle?.fontSize
+                          : STYLES.$FONT_SIZES.LARGE,
+                        fontFamily: chatroomNameHeaderStyle?.fontFamily
+                          ? chatroomNameHeaderStyle?.fontFamily
+                          : STYLES.$FONT_TYPES.BOLD,
+                        maxWidth: Layout.normalize(250),
+                      }}
+                    >
+                      {chatroomName}
+                    </Text>
+                  </TouchableOpacity>
+                  {chatroomType !== ChatroomType.DMCHATROOM ? (
+                    <Text
+                      style={{
+                        color: chatroomSubHeaderStyle?.color
+                          ? chatroomSubHeaderStyle?.color
+                          : STYLES.$COLORS.MSG,
+                        fontSize: chatroomSubHeaderStyle?.fontSize
+                          ? chatroomSubHeaderStyle?.fontSize
+                          : STYLES.$FONT_SIZES.SMALL,
+                        fontFamily: chatroomSubHeaderStyle?.fontFamily
+                          ? chatroomSubHeaderStyle?.fontFamily
+                          : STYLES.$FONT_TYPES.LIGHT,
+                      }}
+                    >
+                      {chatroomDetails?.participantCount != undefined
+                        ? `${chatroomDetails?.participantCount} participants`
+                        : ""}
+                    </Text>
+                  ) : chatroomType === ChatroomType.DMCHATROOM &&
+                    customChatroomUserTitle ? (
+                    <Text
+                      style={{
+                        color: chatroomSubHeaderStyle?.color
+                          ? chatroomSubHeaderStyle?.color
+                          : STYLES.$COLORS.MSG,
+                        fontSize: chatroomSubHeaderStyle?.fontSize
+                          ? chatroomSubHeaderStyle?.fontSize
+                          : STYLES.$FONT_SIZES.SMALL,
+                        fontFamily: chatroomSubHeaderStyle?.fontFamily
+                          ? chatroomSubHeaderStyle?.fontFamily
+                          : STYLES.$FONT_TYPES.LIGHT,
+                      }}
+                    >
+                      {customChatroomUserTitle}
+                    </Text>
+                  ) : null}
+                </View>
               </View>
             </View>
           ) : null}
@@ -155,7 +236,7 @@ const ChatroomHeader = ({
       ),
       headerRight: () =>
         filteredChatroomActions?.length > 0 &&
-        !hideThreeDotsMenu && (
+        showThreeDotsOnHeader && (
           <View style={styles.headerRight}>
             {!hideSearchIcon ? (
               <TouchableOpacity
@@ -186,6 +267,20 @@ const ChatroomHeader = ({
             ) : null}
           </View>
         ),
+      ...(gradientStyling && Object.keys(gradientStyling).length !== 0
+        ? {
+            headerBackground: () => (
+              <View style={{ flex: 1 }}>
+                <StatusBar
+                  translucent
+                  backgroundColor="transparent"
+                  barStyle="light-content"
+                />
+                <RadialGradient {...gradientStyling} />
+              </View>
+            ),
+          }
+        : {}),
     });
   };
 
@@ -205,7 +300,15 @@ const ChatroomHeader = ({
           >
             <Image
               source={require("../../assets/images/blue_back_arrow3x.png")}
-              style={styles.selectedBackBtn}
+              style={[
+                styles.selectedBackBtn,
+                {
+                  tintColor:
+                    chatroomSelectedHeaderIcons?.tintColor !== undefined
+                      ? chatroomSelectedHeaderIcons?.tintColor
+                      : undefined,
+                },
+              ]}
             />
           </TouchableOpacity>
           <View style={styles.chatRoomInfo}>
@@ -337,7 +440,15 @@ const ChatroomHeader = ({
                 >
                   <Image
                     source={require("../../assets/images/reply_icon3x.png")}
-                    style={styles.threeDots}
+                    style={[
+                      styles.threeDots,
+                      {
+                        tintColor:
+                          chatroomSelectedHeaderIcons?.tintColor !== undefined
+                            ? chatroomSelectedHeaderIcons?.tintColor
+                            : undefined,
+                      },
+                    ]}
                   />
                 </TouchableOpacity>
               )}
@@ -368,7 +479,15 @@ const ChatroomHeader = ({
                   >
                     <Image
                       source={require("../../assets/images/copy_icon3x.png")}
-                      style={styles.threeDots}
+                      style={[
+                        styles.threeDots,
+                        {
+                          tintColor:
+                            chatroomSelectedHeaderIcons?.tintColor !== undefined
+                              ? chatroomSelectedHeaderIcons?.tintColor
+                              : undefined,
+                        },
+                      ]}
                     />
                   </TouchableOpacity>
                 ) : len > 1 && isCopy ? (
@@ -415,7 +534,15 @@ const ChatroomHeader = ({
               >
                 <Image
                   source={require("../../assets/images/edit_icon3x.png")}
-                  style={styles.editIcon}
+                  style={[
+                    styles.editIcon,
+                    {
+                      tintColor:
+                        chatroomSelectedHeaderIcons?.tintColor !== undefined
+                          ? chatroomSelectedHeaderIcons?.tintColor
+                          : undefined,
+                    },
+                  ]}
                 />
               </TouchableOpacity>
             ) : null}
@@ -493,22 +620,40 @@ const ChatroomHeader = ({
               >
                 <Image
                   source={require("../../assets/images/delete_icon3x.png")}
-                  style={styles.threeDots}
+                  style={[
+                    styles.threeDots,
+                    {
+                      tintColor:
+                        chatroomSelectedHeaderIcons?.tintColor !== undefined
+                          ? chatroomSelectedHeaderIcons?.tintColor
+                          : undefined,
+                    },
+                  ]}
                 />
               </TouchableOpacity>
             )}
-            {len === 1 && !isFirstMessageDeleted && !hideThreeDotsMenu && (
-              <TouchableOpacity
-                onPress={() => {
-                  setReportModalVisible(true);
-                }}
-              >
-                <Image
-                  source={require("../../assets/images/three_dots3x.png")}
-                  style={styles.threeDots}
-                />
-              </TouchableOpacity>
-            )}
+            {len === 1 &&
+              !isFirstMessageDeleted &&
+              showThreeDotsOnSelectedHeader && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setReportModalVisible(true);
+                  }}
+                >
+                  <Image
+                    source={require("../../assets/images/three_dots3x.png")}
+                    style={[
+                      styles.threeDots,
+                      {
+                        tintColor:
+                          chatroomSelectedHeaderIcons?.tintColor !== undefined
+                            ? chatroomSelectedHeaderIcons?.tintColor
+                            : undefined,
+                      },
+                    ]}
+                  />
+                </TouchableOpacity>
+              )}
           </View>
         );
       },
