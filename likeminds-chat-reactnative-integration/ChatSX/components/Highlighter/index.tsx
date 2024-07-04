@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, TextStyle, TextProps } from "react-native";
+import { decodeTaggingRoute } from "../../commonFuctions";
 
 // Define the prop types
 interface HighlighterProps extends TextProps {
@@ -71,11 +72,16 @@ const findAll = ({
   });
 
   if (lastIndex < textToHighlight.length) {
-    chunks.push({
-      highlight: false,
-      start: lastIndex,
-      end: textToHighlight.length,
-    });
+    if (
+      chunks[0].start !== lastIndex ||
+      chunks[0].end !== textToHighlight.length
+    ) {
+      chunks.push({
+        highlight: false,
+        start: lastIndex,
+        end: textToHighlight.length,
+      });
+    }
   }
 
   return chunks;
@@ -90,8 +96,9 @@ const Highlighter: React.FC<HighlighterProps> = ({
   style,
   ...props
 }) => {
+  let decodedTextToHighLight = decodeTaggingRoute({ text: textToHighlight });
   const chunks = findAll({
-    textToHighlight,
+    textToHighlight: decodedTextToHighLight,
     searchWords,
     sanitize,
     autoEscape,
@@ -100,7 +107,7 @@ const Highlighter: React.FC<HighlighterProps> = ({
   return (
     <Text style={style} {...props} numberOfLines={3} ellipsizeMode="tail">
       {chunks.map((chunk, index) => {
-        const text = textToHighlight.substring(chunk.start, chunk.end);
+        const text = decodedTextToHighLight.substring(chunk.start, chunk.end);
 
         return !chunk.highlight ? (
           text

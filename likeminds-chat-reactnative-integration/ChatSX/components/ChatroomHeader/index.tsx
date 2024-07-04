@@ -25,6 +25,7 @@ import {
   SET_EDIT_MESSAGE,
   SET_IS_REPLY,
   SET_REPLY_MESSAGE,
+  SHOW_TOAST,
 } from "../../store/types/types";
 import { LMChatAnalytics } from "../../analytics/LMChatAnalytics";
 import { getConversationType } from "../../utils/analyticsUtils";
@@ -349,6 +350,10 @@ const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
                       }
                       dispatch({ type: SELECTED_MESSAGES, body: [] });
                       dispatch({ type: LONG_PRESSED, body: false });
+                      dispatch({
+                        type: SHOW_TOAST,
+                        body: { isToast: true, msg: "Message copied" },
+                      });
                       setInitialHeader();
                     }}
                   >

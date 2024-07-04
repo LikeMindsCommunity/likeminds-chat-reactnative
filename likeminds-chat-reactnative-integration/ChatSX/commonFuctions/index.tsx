@@ -137,8 +137,8 @@ export function getNameInitials(name: string) {
 interface DecodeProps {
   text: string | undefined;
   enableClick: boolean;
-  chatroomName: string;
-  communityId: string;
+  chatroomName?: string;
+  communityId?: string;
   isLongPress?: boolean;
   memberUuid?: string;
   chatroomWithUserUuid?: string;
@@ -297,6 +297,58 @@ export const decode = ({
     return text;
   }
 };
+
+// this function return a string which have decoded tagging route name in it
+export const decodeTaggingRoute = ({
+  text,
+  memberUuid,
+  chatroomWithUserUuid,
+  chatroomWithUserMemberId,
+}: {
+  text: string;
+  memberUuid?: string;
+  chatroomWithUserUuid?: string;
+  chatroomWithUserMemberId?: string;
+}) => {
+  if (!text) {
+    return "";
+  }
+
+  const parts = text.split(REGEX_USER_SPLITTING);
+  let decodedText = "";
+
+  if (parts) {
+    for (const matchResult of parts) {
+      if (matchResult.match(REGEX_USER_TAGGING)) {
+        const match = REGEX_USER_TAGGING.exec(matchResult);
+        if (match !== null) {
+          const { name } = match.groups!;
+          let { route } = match.groups!;
+
+          const startingIndex = route.indexOf("/");
+          const taggedUserId = route.substring(startingIndex + 1);
+
+          if (memberUuid && chatroomWithUserUuid && chatroomWithUserMemberId) {
+            const currentMemberId = route.substring(startingIndex + 1);
+
+            if (currentMemberId == chatroomWithUserMemberId) {
+              route = `user_profile/${chatroomWithUserUuid}`;
+            } else {
+              route = `user_profile/${memberUuid}`;
+            }
+          }
+
+          decodedText += `${name}`;
+        }
+      } else {
+        decodedText += matchResult;
+      }
+    }
+  }
+
+  return decodedText;
+};
+
 
 // this method is used to decode notifications
 export const decodeForNotifications = (text: string | undefined) => {

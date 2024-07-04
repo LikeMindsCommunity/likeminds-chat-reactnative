@@ -10,6 +10,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { CHATROOM } from "../../constants/Screens";
 import Highlighter from "../Highlighter";
 import { formatSearchDate } from "../../commonFuctions";
+import { useAppSelector } from "../../store";
 
 const SearchList = () => {
   const {
@@ -31,6 +32,7 @@ const SearchList = () => {
     searchInChatroomStyles?.searchedNonHighlightedTextStyle;
 
   const navigation = useNavigation<StackNavigationProp<any>>();
+  const { user } = useAppSelector((state) => state.homefeed);
   return (
     <>
       {!isEmptyResult ? (
@@ -76,7 +78,10 @@ const SearchList = () => {
                         userNameStyles ? userNameStyles : null,
                       ]}
                     >
-                      {item?.member.name}
+                      {item?.member?.sdkClientInfo?.uuid ===
+                      user?.sdkClientInfo?.uuid
+                        ? "You"
+                        : item?.member.name}
                     </Text>
                     <Text
                       style={[
@@ -111,6 +116,7 @@ const SearchList = () => {
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.1}
           ListFooterComponent={renderFooter}
+          keyboardShouldPersistTaps="always"
           keyExtractor={(item: any) => item?.id?.toString()}
         />
       ) : (
@@ -120,7 +126,7 @@ const SearchList = () => {
               style={styles.nothingImg}
               source={require("../../assets/images/nothing3x.png")}
             />
-            <Text style={styles.title}>{"No result found"}</Text>
+            <Text style={styles.title}>{"No results found"}</Text>
             <Text style={styles.secondaryTitle}>
               {"Try changing search query"}
             </Text>
