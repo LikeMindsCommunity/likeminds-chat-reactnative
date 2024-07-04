@@ -47,9 +47,9 @@ interface ChatroomHeaderProps {
   customChatroomUserTitle?: string;
   showThreeDotsOnHeader?: boolean;
   showThreeDotsOnSelectedHeader?: boolean;
-  gradientStyling?: object;
+  gradientStyling?: any;
   backIconPath?: string;
-  groupIcon?: string;
+  groupIcon?: any;
   hideSearchIcon?: boolean;
 }
 
