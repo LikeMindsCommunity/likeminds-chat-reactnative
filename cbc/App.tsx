@@ -134,7 +134,7 @@ function SettingsScreen() {
     >
       <Stack.Navigator>
         <Stack.Screen
-          name={ScreenName.ChatRoom}
+          name={ScreenName.Chatroom}
           component={ChatroomScreenWrapper}
           initialParams={{
             chatroomID: chatroomId,
@@ -147,7 +147,7 @@ function SettingsScreen() {
           component={FileUploadScreenWrapper}
         />
         <Stack.Screen
-          name="SearchInChatroom"
+          name={ScreenName.SearchInChatroom}
           component={SearchInChatroom}
           options={{
             gestureEnabled: Platform.OS === "ios" ? false : true,

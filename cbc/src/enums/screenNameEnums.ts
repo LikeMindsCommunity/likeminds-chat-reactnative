@@ -5,4 +5,5 @@ export enum ScreenName {
   PollResult = "PollResult",
   CreatePollScreen = "CreatePollScreen",
   ImageCropScreen = "ImageCropScreen",
+  SearchInChatroom = "SearchInChatroom"
 }
