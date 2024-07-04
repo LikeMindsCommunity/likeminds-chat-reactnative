@@ -7,11 +7,11 @@ import {
   useChatroomContext,
   useMessageListContext,
   useExploreFeedContext,
+  ChatroomTopic
 } from "@likeminds.community/chat-rn-core";
 import ChatroomTabNavigator from "../../src/ChatroomTabNavigator";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import ChatroomTopic from "@likeminds.community/chat-rn-core/ChatSX/components/ChatroomTopic";
 import { CustomCallbacks } from "../../App";
 
 interface HintMessages {

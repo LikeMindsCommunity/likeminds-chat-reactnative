@@ -27,10 +27,10 @@ import {
   paginatedConversationsEnd,
   paginatedConversationsStart,
 } from "../store/actions/chatroom";
-import { GetConversationsRequestBuilder } from "@likeminds.community/chat-rn-beta";
+import { GetConversationsRequestBuilder } from "@likeminds.community/chat-rn";
 import { GET_CONVERSATIONS_SUCCESS } from "../store/types/types";
 import { DocumentType, GetConversationsType } from "../enums";
-import { Conversation } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Conversation";
+import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
 import { styles } from "../components/MessageList/styles";
 import { decode, generateGifString } from "../commonFuctions";
 import { CAPITAL_GIF_TEXT, VOICE_NOTE_STRING } from "../constants/Strings";

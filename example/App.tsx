@@ -50,7 +50,7 @@ import {useQuery} from '@realm/react';
 import {Credentials} from './login/credentials';
 import {LoginSchemaRO} from './login/loginSchemaRO';
 import FetchKeyInputScreen from './login';
-import {ConversationState} from '@likeminds.community/chat-rn-beta';
+import {ConversationState} from '@likeminds.community/chat-rn';
 import SearchInChatroomScreen from './screens/SearchInChatroom';
 
 const Stack = createNativeStackNavigator();

@@ -49,6 +49,7 @@ import {
   CreatePollContextProvider,
   SearchInChatroomContextProvider,
 } from "./ChatSX/context";
+import ChatroomTopic from "./ChatSX/components/ChatroomTopic";
 
 export {
   ChatRoom,
@@ -98,4 +99,5 @@ export {
   MessageContextProvider,
   CreatePollContextProvider,
   SearchInChatroomContextProvider,
+  ChatroomTopic,
 };
