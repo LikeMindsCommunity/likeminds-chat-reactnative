@@ -29,11 +29,11 @@ export default {
     BOLD: "700" as "700",
   },
   $FONT_TYPES: {
-    LIGHT: isIOS ? "San Francisco" : "Roboto",
-    MEDIUM: isIOS ? "San Francisco" : "Roboto",
-    SEMI_BOLD: isIOS ? "San Francisco" : "Roboto",
-    BOLD: isIOS ? "San Francisco" : "Roboto",
-    BLACK: isIOS ? "San Francisco" : "Roboto",
+    LIGHT: isIOS ? "Helvetica" : "Roboto",
+    MEDIUM: isIOS ? "Helvetica" : "Roboto",
+    SEMI_BOLD: isIOS ? "Helvetica" : "Roboto",
+    BOLD: isIOS ? "Helvetica" : "Roboto",
+    BLACK: isIOS ? "Helvetica" : "Roboto",
   },
   $BACKGROUND_COLORS: {
     LIGHT: "#ffffff",

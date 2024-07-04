@@ -26,6 +26,7 @@ import {
   SET_EDIT_MESSAGE,
   SET_IS_REPLY,
   SET_REPLY_MESSAGE,
+  SHOW_TOAST,
 } from "../../store/types/types";
 import { LMChatAnalytics } from "../../analytics/LMChatAnalytics";
 import { getConversationType } from "../../utils/analyticsUtils";
@@ -39,6 +40,7 @@ import { RadialGradient } from "../../../ChatSX/radialGradient";
 import { NavigateToGroupDetailsParams } from "../../../ChatSX/callBacks/type";
 import { CallBack } from "../../../ChatSX/callBacks/callBackClass";
 import Layout from "../../../ChatSX/constants/Layout";
+import { SEARCH_IN_CHATROOM } from "../../constants/Screens";
 
 interface ChatroomHeaderProps {
   showChatroomIcon?: boolean;
@@ -48,6 +50,7 @@ interface ChatroomHeaderProps {
   gradientStyling?: object;
   backIconPath?: string;
   groupIcon?: string;
+  hideSearchIcon?: boolean;
 }
 
 const ChatroomHeader = ({
@@ -58,6 +61,7 @@ const ChatroomHeader = ({
   gradientStyling,
   backIconPath,
   groupIcon,
+  hideSearchIcon,
 }: ChatroomHeaderProps) => {
   const myClient = Client.myClient;
   const {
@@ -234,6 +238,21 @@ const ChatroomHeader = ({
         filteredChatroomActions?.length > 0 &&
         showThreeDotsOnHeader && (
           <View style={styles.headerRight}>
+            {!hideSearchIcon ? (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate(SEARCH_IN_CHATROOM, {
+                    chatroomId: chatroomID,
+                  });
+                }}
+              >
+                <Image
+                  source={require("../../assets/images/search_icon3x.png")}
+                  style={styles.threeDots}
+                />
+              </TouchableOpacity>
+            ) : null}
+
             {chatroomDetails ? (
               <TouchableOpacity
                 onPress={() => {
@@ -451,6 +470,10 @@ const ChatroomHeader = ({
                       }
                       dispatch({ type: SELECTED_MESSAGES, body: [] });
                       dispatch({ type: LONG_PRESSED, body: false });
+                      dispatch({
+                        type: SHOW_TOAST,
+                        body: { isToast: true, msg: "Message copied" },
+                      });
                       setInitialHeader();
                     }}
                   >

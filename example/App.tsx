@@ -32,6 +32,7 @@ import {
   AddParticipants,
   DmAllMembers,
   initMyClient,
+  SearchInChatroom,
 } from '@likeminds.community/chat-rn-core';
 import ChatroomScreenWrapper from './screens/Chatroom/ChatroomScreenWrapper';
 import {setStyles} from './styles';
@@ -49,7 +50,8 @@ import {useQuery} from '@realm/react';
 import {Credentials} from './login/credentials';
 import {LoginSchemaRO} from './login/loginSchemaRO';
 import FetchKeyInputScreen from './login';
-import {ConversationState} from '@likeminds.community/chat-rn';
+import {ConversationState} from '@likeminds.community/chat-rn-beta';
+import SearchInChatroomScreen from './screens/SearchInChatroom';
 
 const Stack = createNativeStackNavigator();
 
@@ -136,18 +138,8 @@ function App(): React.JSX.Element {
     }
   }, [isTrue, apiKey]);
 
-  const themeStyles = {
-    fontTypes: {
-      LIGHT: 'SofiaPro-Light',
-      MEDIUM: 'SofiaPro-Medium',
-      SEMI_BOLD: 'SofiaPro-SemiBold',
-      BOLD: 'SofiaPro-Bold',
-      BLACK: 'SofiaPro-Black',
-    },
-  };
-
   useEffect(() => {
-    STYLES.setTheme(themeStyles);
+    setStyles();
   }, []);
 
   return (
@@ -167,6 +159,14 @@ function App(): React.JSX.Element {
                 <NavigationContainer ref={navigationRef} independent={true}>
                   <Stack.Navigator initialRouteName={'Homefeed'}>
                     <Stack.Screen name={'Homefeed'} component={HomeFeed} />
+                    <Stack.Screen
+                      name="SearchInChatroom"
+                      component={SearchInChatroomScreen}
+                      options={{
+                        gestureEnabled: Platform.OS === 'ios' ? false : true,
+                        headerShown: false,
+                      }}
+                    />
                     <Stack.Screen
                       name={'ExploreFeed'}
                       component={ExploreFeed}
@@ -251,6 +251,14 @@ function App(): React.JSX.Element {
               <NavigationContainer ref={navigationRef} independent={true}>
                 <Stack.Navigator initialRouteName={'Homefeed'}>
                   <Stack.Screen name={'Homefeed'} component={HomeFeed} />
+                  <Stack.Screen
+                    name="SearchInChatroom"
+                    component={SearchInChatroomScreen}
+                    options={{
+                      gestureEnabled: Platform.OS === 'ios' ? false : true,
+                      headerShown: false,
+                    }}
+                  />
                   <Stack.Screen
                     name={'ExploreFeed'}
                     component={ExploreFeed}

@@ -39,6 +39,16 @@ import { CallBack } from "./ChatSX/callBacks/callBackClass";
 import getNotification from "./ChatSX/notifications";
 import { getRoute } from "./ChatSX/notifications/routes";
 import { Token } from "./ChatSX/tokens";
+import SearchInChatroom from "./ChatSX/screens/SearchInChatroom";
+import { useSearchInChatroomContext } from "./ChatSX/context/SearchInChatroomContext";
+import {
+  ChatroomContextProvider,
+  ExploreFeedContextProvider,
+  MessageListContextProvider,
+  MessageContextProvider,
+  CreatePollContextProvider,
+  SearchInChatroomContextProvider,
+} from "./ChatSX/context";
 
 export {
   ChatRoom,
@@ -80,4 +90,12 @@ export {
   getNotification,
   getRoute,
   Token,
+  SearchInChatroom,
+  useSearchInChatroomContext,
+  ChatroomContextProvider,
+  ExploreFeedContextProvider,
+  MessageListContextProvider,
+  MessageContextProvider,
+  CreatePollContextProvider,
+  SearchInChatroomContextProvider,
 };
