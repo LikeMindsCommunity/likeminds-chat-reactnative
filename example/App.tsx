@@ -138,35 +138,9 @@ function App(): React.JSX.Element {
     }
   }, [isTrue, apiKey]);
 
-  // const themeStyles = {
-  //   fontTypes: {
-  //     LIGHT: 'SofiaPro-Light',
-  //     MEDIUM: 'SofiaPro-Medium',
-  //     SEMI_BOLD: 'SofiaPro-SemiBold',
-  //     BOLD: 'SofiaPro-Bold',
-  //     BLACK: 'SofiaPro-Black',
-  //   },
-  // };
-
-  // useEffect(() => {
-  //   STYLES.setTheme(themeStyles);
-  // }, []);
-
-  // const searchInChatroomStyles = {
-  //   backArrowColor: 'yellow',
-  //   crossIconColor: 'pink',
-  //   searchPlaceholderTextColor: 'red',
-  //   searchText: {color: 'blue'},
-  //   userImageStyles: {borderRadius: 5},
-  //   userNameStyles: {color: 'green'},
-  //   timeStampStyles: {color: 'brown'},
-  //   searchedHighlightedTextStyle: {color: 'red'},
-  //   searchedNonHighlightedTextStyle: {color: 'purple'},
-  // };
-
-  // useEffect(() => {
-  //   STYLES.setSearchInChatroomStyle(searchInChatroomStyles);
-  // }, []);
+  useEffect(() => {
+    setStyles();
+  }, []);
 
   return (
     <>

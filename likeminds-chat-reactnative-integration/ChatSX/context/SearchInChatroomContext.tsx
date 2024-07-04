@@ -58,9 +58,13 @@ export const SearchInChatroomContextProvider = ({
   const { chatroomId } = route?.params;
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    const focusTimeout = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 500);
+
+    return () => clearTimeout(focusTimeout);
   }, []);
 
   const searchConversation = async () => {
