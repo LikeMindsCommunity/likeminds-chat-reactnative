@@ -142,7 +142,7 @@ import Layout from "../../constants/Layout";
 import GIFPicker from "../../optionalDependecies/Gif";
 import AudioRecorder from "../../optionalDependecies/AudioRecorder";
 import LottieView from "../../optionalDependecies/LottieView";
-import { SyncConversationRequest } from "@likeminds.community/chat-rn-beta";
+import { SyncConversationRequest } from "@likeminds.community/chat-rn";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes";
 
 // to intialise audio recorder player

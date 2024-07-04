@@ -7,12 +7,12 @@ import {
   useChatroomContext,
   useMessageListContext,
   useExploreFeedContext,
+  ChatroomTopic
 } from '@likeminds.community/chat-rn-core';
 import {ReactionList} from '../../customisableComponents/ReactionList';
 import ChatroomTabNavigator from '../../src/ChatroomTabNavigator';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import ChatroomTopic from '@likeminds.community/chat-rn-core/ChatSX/components/ChatroomTopic';
 
 interface HintMessages {
   messageForRightsDisabled?: string;
