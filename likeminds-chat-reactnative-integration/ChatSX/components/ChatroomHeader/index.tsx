@@ -25,6 +25,7 @@ import {
   SET_EDIT_MESSAGE,
   SET_IS_REPLY,
   SET_REPLY_MESSAGE,
+  SHOW_TOAST,
 } from "../../store/types/types";
 import { LMChatAnalytics } from "../../analytics/LMChatAnalytics";
 import { getConversationType } from "../../utils/analyticsUtils";
@@ -34,6 +35,7 @@ import { VOICE_NOTE_TEXT } from "../../constants/Strings";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 import RNClipboard from "../../optionalDependecies/RNClipboard";
 import CommunityClipboard from "../../optionalDependecies/CommunityClipboard";
+import { SEARCH_IN_CHATROOM } from "../../constants/Screens";
 
 interface ChatroomHeaderProps {
   hideThreeDotsMenu?: boolean;
@@ -151,6 +153,16 @@ const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
         filteredChatroomActions?.length > 0 &&
         !hideThreeDotsMenu && (
           <View style={styles.headerRight}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate(SEARCH_IN_CHATROOM, {chatroomId: chatroomID})
+              }}
+            >
+              <Image
+                source={require("../../assets/images/search_icon3x.png")}
+                style={styles.threeDots}
+              />
+            </TouchableOpacity>
             {chatroomDetails ? (
               <TouchableOpacity
                 onPress={() => {
@@ -338,6 +350,10 @@ const ChatroomHeader = ({ hideThreeDotsMenu }: ChatroomHeaderProps) => {
                       }
                       dispatch({ type: SELECTED_MESSAGES, body: [] });
                       dispatch({ type: LONG_PRESSED, body: false });
+                      dispatch({
+                        type: SHOW_TOAST,
+                        body: { isToast: true, msg: "Message copied" },
+                      });
                       setInitialHeader();
                     }}
                   >

@@ -73,6 +73,7 @@ const MessageListComponent = ({
     currentChatroomTopic,
     shimmerIsLoading,
     refInput,
+    searchedConversation,
     handleLongPress,
     handleClick,
   }: ChatroomContextValues = useChatroomContext();
@@ -310,7 +311,9 @@ const MessageListComponent = ({
                 (val: any) => val?.id === item?.id && !isStateIncluded
               );
 
-              if (isFound && item?.id == currentChatroomTopic?.id) {
+              if (isFound && item?.id == searchedConversation?.id) {
+                isIncluded = true;
+              } else if (isFound && item?.id == currentChatroomTopic?.id) {
                 isIncluded = true;
               }
 
@@ -454,7 +457,9 @@ const MessageListComponent = ({
                 (val: any) => val?.id === item?.id && !isStateIncluded
               );
 
-              if (isFound && item?.id == currentChatroomTopic?.id) {
+              if (isFound && item?.id == searchedConversation?.id) {
+                isIncluded = true;
+              } else if (isFound && item?.id == currentChatroomTopic?.id) {
                 isIncluded = true;
               }
 

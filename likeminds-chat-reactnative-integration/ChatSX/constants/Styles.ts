@@ -10,6 +10,7 @@ import {
   InputBoxStyles,
   MemberDirectoryStyles,
   ReactionListStyles,
+  SearchInChatroomStyles,
   StylesProps,
 } from "./type";
 
@@ -43,11 +44,11 @@ export class STYLES {
     BOLD: "700" as const,
   };
   static $FONT_TYPES = {
-    LIGHT: isIOS ? "San Francisco" : "Roboto",
-    MEDIUM: isIOS ? "San Francisco" : "Roboto",
-    SEMI_BOLD: isIOS ? "San Francisco" : "Roboto",
-    BOLD: isIOS ? "San Francisco" : "Roboto",
-    BLACK: isIOS ? "San Francisco" : "Roboto",
+    LIGHT: isIOS ? "Helvetica" : "Roboto",
+    MEDIUM: isIOS ? "Helvetica" : "Roboto",
+    SEMI_BOLD: isIOS ? "Helvetica" : "Roboto",
+    BOLD: isIOS ? "Helvetica" : "Roboto",
+    BLACK: isIOS ? "Helvetica" : "Roboto",
   };
   static $BACKGROUND_COLORS = {
     LIGHT: "#ffffff",
@@ -97,6 +98,7 @@ export class STYLES {
   static $CAROUSEL_SCREEN_STYLE: CarouselScreenStyles = {};
   static $EXPLORE_CHATROOM_STYLE: ExploreChatroomStyles = {};
   static $HOME_FEED_STYLE: HomeFeedStyles = {};
+  static $SEARCH_IN_CHATROOM: SearchInChatroomStyles = {}
   static setTheme({
     hue,
     fontColor,
@@ -125,27 +127,27 @@ export class STYLES {
       LIGHT: fontTypes?.LIGHT
         ? fontTypes?.LIGHT
         : isIOS
-        ? "San Francisco"
+        ? "Helvetica"
         : "Roboto",
       MEDIUM: fontTypes?.MEDIUM
         ? fontTypes?.MEDIUM
         : isIOS
-        ? "San Francisco"
+        ? "Helvetica"
         : "Roboto",
       SEMI_BOLD: fontTypes?.SEMI_BOLD
         ? fontTypes?.SEMI_BOLD
         : isIOS
-        ? "San Francisco"
+        ? "Helvetica"
         : "Roboto",
       BOLD: fontTypes?.BOLD
         ? fontTypes?.BOLD
         : isIOS
-        ? "San Francisco"
+        ? "Helvetica"
         : "Roboto",
       BLACK: fontTypes?.BLACK
         ? fontTypes?.BLACK
         : isIOS
-        ? "San Francisco"
+        ? "Helvetica"
         : "Roboto",
     };
   }
@@ -197,6 +199,11 @@ export class STYLES {
   static setHomeFeedStyle(homeFeedStyles: HomeFeedStyles) {
     STYLES.$HOME_FEED_STYLE = {
       ...homeFeedStyles,
+    };
+  }
+  static setSearchInChatroomStyle(searchInChatroomStyles: SearchInChatroomStyles) {
+    STYLES.$SEARCH_IN_CHATROOM = {
+      ...searchInChatroomStyles,
     };
   }
 }

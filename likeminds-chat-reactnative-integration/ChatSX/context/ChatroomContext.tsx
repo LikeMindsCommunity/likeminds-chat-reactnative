@@ -71,7 +71,7 @@ import {
 import {
   GetConversationsRequestBuilder,
   SyncConversationRequest,
-} from "@likeminds.community/chat-rn";
+} from "@likeminds.community/chat-rn-beta";
 import { Credentials } from "../credentials";
 import { initAPI } from "../store/actions/homefeed";
 import { createTemporaryStateMessage } from "../utils/chatroomUtils";
@@ -124,6 +124,8 @@ export interface ChatroomContextValues {
   navigation: any;
   conversations: any;
   chatroomID: string;
+  isNavigationToSearchedConversation: boolean;
+  searchedConversation: any;
   previousChatroomID: any;
   showDM: boolean;
   user: any;
@@ -249,11 +251,15 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     previousChatroomID,
     navigationFromNotification,
     deepLinking,
+    isNavigationToSearchedConversation, 
+    searchedConversation,
   } = route.params as {
     chatroomID: any; // Adjust the type accordingly
     previousChatroomID: any; // Adjust the type accordingly
     navigationFromNotification: any; // Adjust the type accordingly
     deepLinking: any; // Adjust the type accordingly
+    isNavigationToSearchedConversation: any;
+    searchedConversation: any;
   };
 
   const refInput = useRef<any>();
@@ -2050,6 +2056,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     navigation,
     conversations,
     chatroomID,
+    isNavigationToSearchedConversation,
+    searchedConversation,
     previousChatroomID,
     showDM,
     user,

@@ -268,6 +268,9 @@ export const styles = StyleSheet.create({
   },
   headerRight: {
     marginTop: Platform.OS === "ios" ? Layout.normalize(-5) : 0,
+    gap: 10,
+    flexDirection: "row",
+    alignItems: "center",
   },
   requestMessageTextButton: {
     display: "flex",
