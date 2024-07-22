@@ -6,7 +6,13 @@
  */
 
 import React, {useEffect, useState} from 'react';
-import {KeyboardAvoidingView, Platform} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {navigationRef} from './RootNavigation';
@@ -52,7 +58,11 @@ import {LoginSchemaRO} from './login/loginSchemaRO';
 import FetchKeyInputScreen from './login';
 import {ConversationState} from '@likeminds.community/chat-rn';
 import SearchInChatroomScreen from './screens/SearchInChatroom';
-import { ScreenName } from './src/enums/screenNameEnums';
+import {ScreenName} from './src/enums/screenNameEnums';
+import {pickImage, pickVideo} from 'react-native-media-picker';
+import { NativeModules } from 'react-native';
+
+const { MediaPicker } = NativeModules;
 
 const Stack = createNativeStackNavigator();
 
@@ -145,7 +155,24 @@ function App(): React.JSX.Element {
 
   return (
     <>
-      {userName && userUniqueID && apiKey && myClient ? (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <TouchableOpacity
+          onPress={() => {
+            MediaPicker.pickImage()
+          }}
+          style={{padding: 10, backgroundColor: 'blue', marginBottom: 10}}>
+          <Text>Pick Images</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => {
+            MediaPicker.pickVideo();
+          }}
+          style={{padding: 10, backgroundColor: 'blue', marginBottom: 10}}>
+          <Text>Pick Videos</Text>
+        </TouchableOpacity>
+      </View>
+      {/* {userName && userUniqueID && apiKey && myClient ? (
         <>
           {Platform.OS === 'ios' ? (
             <KeyboardAvoidingView
@@ -334,7 +361,7 @@ function App(): React.JSX.Element {
         </>
       ) : !userName && !userUniqueID && !apiKey ? (
         <FetchKeyInputScreen isTrue={isTrue} setIsTrue={setIsTrue} />
-      ) : null}
+      ) : null} */}
     </>
   );
 }

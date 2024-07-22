@@ -5,5 +5,5 @@ export enum ScreenName {
   PollResult = 'PollResult',
   CreatePollScreen = 'CreatePollScreen',
   ImageCropScreen = 'ImageCropScreen',
-  VideoPlayer = 'VideoPlayer';
+  VideoPlayer = 'VideoPlayer',
 }
