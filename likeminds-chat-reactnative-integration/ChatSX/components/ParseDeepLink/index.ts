@@ -32,18 +32,22 @@ export async function parseDeepLink(
 
       if (chatroomId) {
         const internalRoute = `route://collabcard?collabcard_id=${chatroomId}`;
-
+        const apiKey = await Client.myClient.getApiKeyFromLocalStorage();
         // initiate API call
         const initiateUserRequest = {
           userName: request?.userName,
           uuid: request?.uuid,
           isGuest: false,
+          apiKey: apiKey,
         };
         const initiateUserResponse = await Client.myClient?.initiateUser(
           initiateUserRequest
         );
 
-        if (initiateUserResponse?.success) {
+        if (
+          initiateUserResponse !== undefined &&
+          initiateUserResponse !== null
+        ) {
           // navigation flow
 
           const routes = getLinkingRoute(internalRoute);

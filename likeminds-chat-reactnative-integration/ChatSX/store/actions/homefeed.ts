@@ -28,8 +28,12 @@ import {
   UPDATE_INVITES,
   UPDATE_INVITES_FAILED,
   UPDATE_INVITES_SUCCESS,
+  VALIDATE_API,
+  VALIDATE_API_FAILED,
+  VALIDATE_API_SUCCESS,
 } from "../types/types";
 import { Client } from "../../client";
+import { ValidateUser } from "@likeminds.community/chat-rn";
 
 export const initAPI = (payload: any) => () => {
   try {
@@ -63,6 +67,23 @@ export const getMemberState = (payload?: any) => () => {
     Alert.alert(`${error}`);
   }
 };
+
+export const validateUser =
+  (payload: ValidateUser, showLoader: boolean) => () => {
+    try {
+      return {
+        type: VALIDATE_API_SUCCESS,
+        [CALL_API]: {
+          func: Client.myClient.validateUser(payload),
+          body: payload,
+          types: [VALIDATE_API, VALIDATE_API_SUCCESS, VALIDATE_API_FAILED],
+          showLoader: showLoader,
+        },
+      };
+    } catch (error) {
+      Alert.alert(`${error}`);
+    }
+  };
 
 export const getInvites = (payload: any, showLoader?: boolean) => () => {
   try {

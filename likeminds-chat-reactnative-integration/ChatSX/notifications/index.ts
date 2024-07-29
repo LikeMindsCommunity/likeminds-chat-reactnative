@@ -66,10 +66,12 @@ export default async function getNotification(remoteMessage: any) {
     const userName =
       Credentials.username.length > 0 ? Credentials.username : users?.username;
 
+    const apiKey = await Client.myClient.getApiKeyFromLocalStorage();
     const payload = {
       uuid: UUID, // uuid
       userName: userName, // user name
       isGuest: false,
+      apiKey: apiKey,
     };
 
     if (isIOS) {
@@ -90,7 +92,7 @@ export default async function getNotification(remoteMessage: any) {
       });
     } else {
       const res = await Client.myClient.initiateUser(payload);
-      if (res?.success === true) {
+      if (res !== undefined && res !== null) {
         const response =
           await Client.myClient?.getUnreadConversationNotification();
         if (response?.success === false) {
