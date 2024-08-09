@@ -1,6 +1,9 @@
 package com.example;
 
 import android.app.Application;
+
+import androidx.fragment.app.FragmentActivity;
+
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;

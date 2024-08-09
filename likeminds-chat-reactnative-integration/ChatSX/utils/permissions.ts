@@ -40,7 +40,7 @@ export async function requestStoragePermission() {
       } catch (err) {
         return false;
       }
-    } else {
+    } else if (Number(OSVersion) < 14) {
       try {
         const grantedImageStorage = await PermissionsAndroid.requestMultiple([
           PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
@@ -57,6 +57,41 @@ export async function requestStoragePermission() {
             PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN ||
           grantedImageStorage["android.permission.READ_MEDIA_VIDEO"] ===
             PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
+        ) {
+          Alert.alert(Storage_Permission, App_Permission_To_Read_Files, [
+            { text: Cancel, style: "cancel" },
+            { text: Open_Settings, onPress: Linking.openSettings },
+          ]);
+          return false;
+        } else {
+          return false;
+        }
+      } catch (err) {
+        return false;
+      }
+    } else {
+      try {
+        const grantedImageStorage = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_VISUAL_USER_SELECTED,
+        ]);
+        if (
+          grantedImageStorage["android.permission.READ_MEDIA_IMAGES"] &&
+          grantedImageStorage["android.permission.READ_MEDIA_VIDEO"] &&
+          grantedImageStorage[
+            "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
+          ] === PermissionsAndroid.RESULTS.GRANTED
+        ) {
+          return true;
+        } else if (
+          grantedImageStorage["android.permission.READ_MEDIA_IMAGES"] ===
+            PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN ||
+          grantedImageStorage["android.permission.READ_MEDIA_VIDEO"] ===
+            PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN ||
+          grantedImageStorage[
+            "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
+          ] === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
         ) {
           Alert.alert(Storage_Permission, App_Permission_To_Read_Files, [
             { text: Cancel, style: "cancel" },

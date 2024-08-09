@@ -6,7 +6,13 @@
  */
 
 import React, {useEffect, useState} from 'react';
-import {KeyboardAvoidingView, Platform} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {navigationRef} from './RootNavigation';
@@ -52,7 +58,7 @@ import {LoginSchemaRO} from './login/loginSchemaRO';
 import FetchKeyInputScreen from './login';
 import {ConversationState} from '@likeminds.community/chat-rn';
 import SearchInChatroomScreen from './screens/SearchInChatroom';
-import { ScreenName } from './src/enums/screenNameEnums';
+import {ScreenName} from './src/enums/screenNameEnums';
 
 const Stack = createNativeStackNavigator();
 

@@ -867,26 +867,32 @@ const MessageInputBox = ({
 
   // function handles the selection of images and videos
   const handleGallery = async () => {
-    if (isIOS) {
-      selectGallery();
-    } else {
-      const res = await requestStoragePermission();
-      if (res === true) {
-        selectGallery();
-      }
-    }
+    selectGallery();
+
+    // TODO in future for handling permissions
+    // if (isIOS) {
+    //   selectGallery();
+    // } else {
+    //   const res = await requestStoragePermission();
+    //   if (res === true) {
+    //     selectGallery();
+    //   }
+    // }
   };
 
   // function handles the slection of documents
   const handleDoc = async () => {
-    if (isIOS) {
-      selectDoc();
-    } else {
-      const res = await requestStoragePermission();
-      if (res === true) {
-        selectDoc();
-      }
-    }
+    selectDoc();
+
+    // TODO in future for handling permissions
+    // if (isIOS) {
+    //   selectDoc();
+    // } else {
+    //   const res = await requestStoragePermission();
+    //   if (res === true) {
+    //     selectDoc();
+    //   }
+    // }
   };
 
   async function syncConversationAPI(
