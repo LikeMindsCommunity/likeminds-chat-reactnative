@@ -33,6 +33,8 @@ import {
 } from "../../context/MessageListContext";
 import ChatroomTopic from "../ChatroomTopic";
 import Layout from "../../constants/Layout";
+import { VOICE_NOTE_TEXT } from "@likeminds.community/chat-rn-core/ChatSX/constants/Strings";
+import AudioPlayer from "@likeminds.community/chat-rn-core/ChatSX/optionalDependecies/AudioPlayer";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
@@ -443,6 +445,7 @@ const MessageListComponent = ({
             }}
             estimatedItemSize={250}
             renderItem={({ item: value, index }: any) => {
+              let hideDate = false;
               const uploadingFilesMessagesIDArr = Object.keys(
                 uploadingFilesMessages
               );
@@ -467,11 +470,16 @@ const MessageListComponent = ({
                 isIncluded = true;
               }
 
+              if(conversations[index]?.date !== conversations[index + 1]?.date){
+                if(((conversations[index])?.attachments[0])?.type == VOICE_NOTE_TEXT && AudioPlayer == undefined){
+                  hideDate = true;
+                }
+              }
               return (
                 <View>
                   {index < conversations?.length &&
                   conversations[index]?.date !==
-                    conversations[index + 1]?.date ? (
+                    conversations[index + 1]?.date && !hideDate ? (
                     <View style={[styles.statusMessage]}>
                       <Text
                         style={{
