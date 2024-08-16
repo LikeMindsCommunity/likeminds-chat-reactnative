@@ -143,7 +143,7 @@ import GIFPicker from "../../optionalDependecies/Gif";
 import AudioRecorder from "../../optionalDependecies/AudioRecorder";
 import LottieView from "../../optionalDependecies/LottieView";
 import { SyncConversationRequest } from "@likeminds.community/chat-rn";
-import { DefaultStyle } from "react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes";
+// import { DefaultStyle } from "react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes";
 
 // to intialise audio recorder player
 const audioRecorderPlayerAttachment = AudioRecorder
@@ -440,7 +440,7 @@ const MessageInputBox = ({
   const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture);
 
   // draggle mic panGesture styles
-  const panStyle = useAnimatedStyle((): DefaultStyle => {
+  const panStyle = useAnimatedStyle((): any => {
     return {
       transform: [
         {
@@ -1073,6 +1073,7 @@ const MessageInputBox = ({
         replyObj.replyConversation = replyMessage?.id?.toString();
         replyObj.replyConversationObject = replyMessage;
         replyObj.member.name = user?.name;
+        replyObj.createdEpoch = Date.now();
         replyObj.member.id = user?.id?.toString();
         replyObj.member.sdkClientInfo = user?.sdkClientInfo;
         replyObj.member.uuid = user?.uuid;
@@ -1108,6 +1109,7 @@ const MessageInputBox = ({
       }
       const obj = chatSchema.normal;
       obj.member.name = user?.name;
+      obj.createdEpoch = Date.now();
       obj.member.id = user?.id?.toString();
       obj.member.sdkClientInfo = user?.sdkClientInfo;
       obj.member.uuid = user?.uuid;
@@ -1281,6 +1283,33 @@ const MessageInputBox = ({
           ChatroomChatRequestState.ACCEPTED
         );
       } else {
+        // storing DM chats in localDB
+        if(chatroomType === ChatroomType.DMCHATROOM){
+          if (isReply) {
+            if (attachmentsCount > 0) {
+              const editedReplyObj = { ...replyObj, isInProgress: SUCCESS };
+              await myClient?.saveNewConversation(
+                chatroomID?.toString(),
+                editedReplyObj
+              );
+            } else {
+              await myClient?.saveNewConversation(
+                chatroomID?.toString(),
+                replyObj
+              );
+            }
+          } else {
+            if (attachmentsCount > 0) {
+              const editedObj = { ...obj, isInProgress: SUCCESS };
+              await myClient?.saveNewConversation(
+                chatroomID?.toString(),
+                editedObj
+              );
+            } else {
+              await myClient?.saveNewConversation(chatroomID?.toString(), obj);
+            }
+          }
+        }
         if (!isUploadScreen) {
           const payload: any = {
             chatroomId: chatroomID,
@@ -1318,10 +1347,10 @@ const MessageInputBox = ({
                 msg: BLOCKED_DM,
               },
             });
-            dispatch({
-              type: EMPTY_BLOCK_DELETION,
-              body: {},
-            });
+            // dispatch({
+            //   type: EMPTY_BLOCK_DELETION,
+            //   body: {},
+            // });
           } else if (response && attachmentsCount > 0) {
             // start uploading
 
