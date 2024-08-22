@@ -143,7 +143,7 @@ import GIFPicker from "../../optionalDependecies/Gif";
 import AudioRecorder from "../../optionalDependecies/AudioRecorder";
 import LottieView from "../../optionalDependecies/LottieView";
 import { SyncConversationRequest } from "@likeminds.community/chat-rn";
-import { DefaultStyle } from "react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes";
+import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
 
 // to intialise audio recorder player
 const audioRecorderPlayerAttachment = AudioRecorder
