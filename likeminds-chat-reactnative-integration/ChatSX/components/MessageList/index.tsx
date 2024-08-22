@@ -295,7 +295,7 @@ const MessageListComponent = ({
                 conversations,
               ],
             }}
-            estimatedItemSize={250}
+            estimatedItemSize={150}
             renderItem={({ item: value, index }: any) => {
               const uploadingFilesMessagesIDArr = Object.keys(
                 uploadingFilesMessages
@@ -441,7 +441,7 @@ const MessageListComponent = ({
                 conversations,
               ],
             }}
-            estimatedItemSize={250}
+            estimatedItemSize={150}
             renderItem={({ item: value, index }: any) => {
               const uploadingFilesMessagesIDArr = Object.keys(
                 uploadingFilesMessages
