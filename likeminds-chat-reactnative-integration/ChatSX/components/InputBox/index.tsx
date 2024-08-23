@@ -143,7 +143,8 @@ import GIFPicker from "../../optionalDependecies/Gif";
 import AudioRecorder from "../../optionalDependecies/AudioRecorder";
 import LottieView from "../../optionalDependecies/LottieView";
 import { SyncConversationRequest } from "@likeminds.community/chat-rn";
-import { DefaultStyle } from "react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes";
+import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
+import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 
 // to intialise audio recorder player
 const audioRecorderPlayerAttachment = AudioRecorder
@@ -2557,7 +2558,7 @@ const MessageInputBox = ({
           </TouchableOpacity>
         ) : (
           <View>
-            {isRecordingPermission && AudioRecorder ? (
+            {isRecordingPermission && AudioRecorder && AudioPlayer ? (
               <GestureDetector gesture={composedGesture}>
                 <Animated.View>
                   {voiceNotes.recordTime && !isRecordingLocked && (
