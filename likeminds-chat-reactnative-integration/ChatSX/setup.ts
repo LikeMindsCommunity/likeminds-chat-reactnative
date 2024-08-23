@@ -9,7 +9,7 @@ export const initMyClient = (
 ) => {
   const myClient = LMChatClient.setApiKey(apiKey)
     .setfilterStateConversation(filterStateMessage)
-    .setVersionCode(32)
+    .setVersionCode(33)
     .build();
 
   Client.setMyClient(myClient);
