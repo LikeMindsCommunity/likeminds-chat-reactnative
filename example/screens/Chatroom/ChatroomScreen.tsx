@@ -32,9 +32,9 @@ export function ChatroomScreen() {
   const showUnBlockMember = true;
   const showViewProfile = true;
   const showSecretLeaveChatroom = true;
-  const showChatroomTopic = false;
+  const showChatroomTopic = true;
   const hintMessages: HintMessages = {
-    messagForMemberCanMessage:
+    messageForMemberCanMessage:
       "Sorry, at this time only CM's can message here!",
     messageForRightsDisabled:
       'Sorry your rights has been disabled, contact you CM for more info!',
@@ -159,7 +159,7 @@ export function ChatroomScreen() {
       blockMember={customBlockMember}
       unblockMember={customUnBlockMember}>
       {/* ChatroomHeader */}
-      <ChatroomHeader />
+      <ChatroomHeader showThreeDotsOnHeader={true} showThreeDotsOnSelectedHeader={true} />
       
       {/* Chtroom Topic */}
       <ChatroomTopic />
