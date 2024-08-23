@@ -1080,6 +1080,7 @@ const MessageInputBox = ({
         replyObj.replyConversation = replyMessage?.id?.toString();
         replyObj.replyConversationObject = replyMessage;
         replyObj.member.name = user?.name;
+        replyObj.createdEpoch = Date.now();
         replyObj.member.id = user?.id?.toString();
         replyObj.member.sdkClientInfo = user?.sdkClientInfo;
         replyObj.member.uuid = user?.uuid;
@@ -1115,6 +1116,7 @@ const MessageInputBox = ({
       }
       const obj = chatSchema.normal;
       obj.member.name = user?.name;
+      obj.createdEpoch = Date.now();
       obj.member.id = user?.id?.toString();
       obj.member.sdkClientInfo = user?.sdkClientInfo;
       obj.member.uuid = user?.uuid;
@@ -1325,6 +1327,7 @@ const MessageInputBox = ({
                 msg: BLOCKED_DM,
               },
             });
+
             dispatch({
               type: EMPTY_BLOCK_DELETION,
               body: {},
