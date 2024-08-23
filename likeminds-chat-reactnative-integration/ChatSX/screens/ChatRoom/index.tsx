@@ -9,6 +9,8 @@ import {
 import ChatroomModals from "../../components/ChatroomModals";
 import { CustomisableMethodsContextProvider } from "../../context/CustomisableMethodsContext";
 import { CustomComponentContextProvider } from "../../context/CustomComponentContextProvider";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { SHOW_TOAST } from "../../store/types/types";
 
 interface Data {
   id: string;
@@ -160,7 +162,8 @@ const ChatRoom = ({
 const ChatroomComponent = ({ children }: ChatRoomComponentProps) => {
   const { isToast, msg, setIsToast }: ChatroomContextValues =
     useChatroomContext();
-
+  const { isToast: isToastFromStore, toastMessage: toastMessageFromStore } = useAppSelector((state) => state.homefeed);
+  const dispatch = useAppDispatch()
   return (
     <View style={styles.container}>
       {/* Children components */}
@@ -171,10 +174,17 @@ const ChatroomComponent = ({ children }: ChatRoomComponentProps) => {
 
       {/* Toast Message Flow inside Chatroom */}
       <ToastMessage
-        message={msg}
-        isToast={isToast}
+        message={isToast ? msg : isToastFromStore ? toastMessageFromStore : ""}
+        isToast={isToast || isToastFromStore}
         onDismiss={() => {
           setIsToast(false);
+          dispatch({
+            type: SHOW_TOAST,
+            body: {
+              isToast: false,
+              msg: ""
+            }
+          });
         }}
       />
     </View>
