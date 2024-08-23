@@ -41,7 +41,7 @@ import { DocumentType } from "../../enums";
 import { Client } from "../../client";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import AudioPlayer from "@likeminds.community/chat-rn-core/ChatSX/optionalDependecies/AudioPlayer";
+import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 
 interface Props {
   avatar: string;
@@ -367,7 +367,7 @@ const HomeFeedItem: React.FC<Props> = ({
           <Text style={styles.attachment_msg}>{val?.answer}</Text>
         </View>
       );
-    } else if (ogTags && ogTags?.title != null && val?.answer) {
+    } else if (ogTags && ogTags?.title != null) {
       return (
         <View
           style={[

@@ -33,8 +33,8 @@ import {
 } from "../../context/MessageListContext";
 import ChatroomTopic from "../ChatroomTopic";
 import Layout from "../../constants/Layout";
-import { VOICE_NOTE_TEXT } from "@likeminds.community/chat-rn-core/ChatSX/constants/Strings";
-import AudioPlayer from "@likeminds.community/chat-rn-core/ChatSX/optionalDependecies/AudioPlayer";
+import { VOICE_NOTE_TEXT } from "../../constants/Strings";
+import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
