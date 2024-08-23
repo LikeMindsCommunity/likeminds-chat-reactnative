@@ -1283,33 +1283,6 @@ const MessageInputBox = ({
           ChatroomChatRequestState.ACCEPTED
         );
       } else {
-        // storing DM chats in localDB
-        if(chatroomType === ChatroomType.DMCHATROOM){
-          if (isReply) {
-            if (attachmentsCount > 0) {
-              const editedReplyObj = { ...replyObj, isInProgress: SUCCESS };
-              await myClient?.saveNewConversation(
-                chatroomID?.toString(),
-                editedReplyObj
-              );
-            } else {
-              await myClient?.saveNewConversation(
-                chatroomID?.toString(),
-                replyObj
-              );
-            }
-          } else {
-            if (attachmentsCount > 0) {
-              const editedObj = { ...obj, isInProgress: SUCCESS };
-              await myClient?.saveNewConversation(
-                chatroomID?.toString(),
-                editedObj
-              );
-            } else {
-              await myClient?.saveNewConversation(chatroomID?.toString(), obj);
-            }
-          }
-        }
         if (!isUploadScreen) {
           const payload: any = {
             chatroomId: chatroomID,
@@ -1348,12 +1321,10 @@ const MessageInputBox = ({
               },
             });
 
-            // Commenting this logic to avoid removing/unsending msgs when sent without internet connection
-
-            // dispatch({
-            //   type: EMPTY_BLOCK_DELETION,
-            //   body: {},
-            // });
+            dispatch({
+              type: EMPTY_BLOCK_DELETION,
+              body: {},
+            });
           } else if (response && attachmentsCount > 0) {
             // start uploading
 
