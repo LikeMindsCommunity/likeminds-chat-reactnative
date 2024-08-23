@@ -1684,7 +1684,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     const response = await myClient?.blockMember(payload);
     dispatch({
       type: SHOW_TOAST,
-      body: { isToast: true, msg: "Member blocked" },
+      body: { isToast: true, msg: "Member unblocked" },
     });
     dispatch({
       type: ADD_STATE_MESSAGE,

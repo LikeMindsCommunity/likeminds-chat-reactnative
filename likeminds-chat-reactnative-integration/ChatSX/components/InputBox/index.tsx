@@ -143,7 +143,8 @@ import GIFPicker from "../../optionalDependecies/Gif";
 import AudioRecorder from "../../optionalDependecies/AudioRecorder";
 import LottieView from "../../optionalDependecies/LottieView";
 import { SyncConversationRequest } from "@likeminds.community/chat-rn";
-import { DefaultStyle } from "react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes";
+import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
+import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 
 // to intialise audio recorder player
 const audioRecorderPlayerAttachment = AudioRecorder
@@ -867,26 +868,32 @@ const MessageInputBox = ({
 
   // function handles the selection of images and videos
   const handleGallery = async () => {
-    if (isIOS) {
-      selectGallery();
-    } else {
-      const res = await requestStoragePermission();
-      if (res === true) {
-        selectGallery();
-      }
-    }
+    selectGallery();
+
+    // TODO in future for handling permissions
+    // if (isIOS) {
+    //   selectGallery();
+    // } else {
+    //   const res = await requestStoragePermission();
+    //   if (res === true) {
+    //     selectGallery();
+    //   }
+    // }
   };
 
   // function handles the slection of documents
   const handleDoc = async () => {
-    if (isIOS) {
-      selectDoc();
-    } else {
-      const res = await requestStoragePermission();
-      if (res === true) {
-        selectDoc();
-      }
-    }
+    selectDoc();
+
+    // TODO in future for handling permissions
+    // if (isIOS) {
+    //   selectDoc();
+    // } else {
+    //   const res = await requestStoragePermission();
+    //   if (res === true) {
+    //     selectDoc();
+    //   }
+    // }
   };
 
   async function syncConversationAPI(
@@ -1073,6 +1080,7 @@ const MessageInputBox = ({
         replyObj.replyConversation = replyMessage?.id?.toString();
         replyObj.replyConversationObject = replyMessage;
         replyObj.member.name = user?.name;
+        replyObj.createdEpoch = Date.now();
         replyObj.member.id = user?.id?.toString();
         replyObj.member.sdkClientInfo = user?.sdkClientInfo;
         replyObj.member.uuid = user?.uuid;
@@ -1108,6 +1116,7 @@ const MessageInputBox = ({
       }
       const obj = chatSchema.normal;
       obj.member.name = user?.name;
+      obj.createdEpoch = Date.now();
       obj.member.id = user?.id?.toString();
       obj.member.sdkClientInfo = user?.sdkClientInfo;
       obj.member.uuid = user?.uuid;
@@ -1318,6 +1327,7 @@ const MessageInputBox = ({
                 msg: BLOCKED_DM,
               },
             });
+
             dispatch({
               type: EMPTY_BLOCK_DELETION,
               body: {},
@@ -2551,7 +2561,7 @@ const MessageInputBox = ({
           </TouchableOpacity>
         ) : (
           <View>
-            {isRecordingPermission && AudioRecorder ? (
+            {isRecordingPermission && AudioRecorder && AudioPlayer ? (
               <GestureDetector gesture={composedGesture}>
                 <Animated.View>
                   {voiceNotes.recordTime && !isRecordingLocked && (
