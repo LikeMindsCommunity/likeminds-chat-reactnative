@@ -143,7 +143,7 @@ import GIFPicker from "../../optionalDependecies/Gif";
 import AudioRecorder from "../../optionalDependecies/AudioRecorder";
 import LottieView from "../../optionalDependecies/LottieView";
 import { SyncConversationRequest } from "@likeminds.community/chat-rn";
-// import { DefaultStyle } from "react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes";
+import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
 
 // to intialise audio recorder player
 const audioRecorderPlayerAttachment = AudioRecorder
@@ -440,7 +440,7 @@ const MessageInputBox = ({
   const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture);
 
   // draggle mic panGesture styles
-  const panStyle = useAnimatedStyle((): any => {
+  const panStyle = useAnimatedStyle((): DefaultStyle => {
     return {
       transform: [
         {
@@ -1347,6 +1347,9 @@ const MessageInputBox = ({
                 msg: BLOCKED_DM,
               },
             });
+
+            // Commenting this logic to avoid removing/unsending msgs when sent without internet connection
+
             // dispatch({
             //   type: EMPTY_BLOCK_DELETION,
             //   body: {},
