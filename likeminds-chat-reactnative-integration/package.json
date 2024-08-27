@@ -68,8 +68,7 @@
     "react-native-tab-view": ">=3.5.0",
     "react-native-track-player": ">=4.0.1",
     "react-native-video": ">=5.2.1",
-    "rn-emoji-keyboard": ">=1.2.1",
-    "@react-native-async-storage/async-storage": ">=1.23.1"
+    "rn-emoji-keyboard": ">=1.2.1"
   },
   "peerDependenciesMeta": {
     "@giphy/react-native-sdk": {

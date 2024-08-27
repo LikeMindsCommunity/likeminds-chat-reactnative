@@ -46,7 +46,7 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
     if (user?.apiKey) {
       const payload: InitUserWithUuid = {
         apiKey: user.apiKey,
-        uuid: user.userUniqueId,
+        uuid: user.userUniqueID,
         userName: user.userName,
         isGuest: false,
       };

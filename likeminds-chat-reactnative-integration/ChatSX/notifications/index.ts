@@ -32,7 +32,6 @@ export const fetchFCMToken = async () => {
 
 export default async function getNotification(remoteMessage: any) {
   const users = await Client.myClient?.getUserSchema();
-  Credentials.setCredentials(users?.userName, users?.userUniqueID);
   const isIOS = Platform.OS === "ios" ? true : false;
   const message = isIOS
     ? generateGifString(remoteMessage?.notification?.body)

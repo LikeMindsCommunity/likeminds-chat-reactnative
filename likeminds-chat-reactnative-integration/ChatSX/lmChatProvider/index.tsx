@@ -82,10 +82,6 @@ export const LMChatProvider = ({
     //setting client in Client class
     Client.setMyClient(myClient);
 
-    if(userName && userUniqueId){
-      Credentials.setCredentials(userName, userUniqueId);
-    }
-
     // setting lmChatInterface in CallBack class
     CallBack.setLMChatInterface(lmChatInterface);
 
