@@ -1,4 +1,11 @@
-import { View, Text, Image, Linking, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Linking,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
 import { styles } from "./styles";
 import STYLES from "../../constants/Styles";
@@ -16,7 +23,8 @@ import { useCustomComponentsContext } from "../../context/CustomComponentContext
 const LinkPreview = () => {
   const { user } = useAppSelector((state) => state.homefeed);
 
-  const { isIncluded, item, isTypeSent } = useMessageContext();
+  const { isIncluded, item, isTypeSent, isItemIncludedInStateArr } =
+    useMessageContext();
   const { chatroomName } = useChatroomContext();
 
   const { customMessageHeader, customMessageFooter } =
@@ -52,66 +60,128 @@ const LinkPreview = () => {
   // styling props ended
 
   return (
-    <View
-      style={[
-        styles.displayRow,
-        {
-          justifyContent: isTypeSent ? "flex-end" : "flex-start",
-        },
-        styles.messageParent,
-      ]}
-    >
+    <View style={styles.messageParent}>
       <View
         style={[
-          styles.linkPreview,
-          borderRadius
-            ? {
-                borderRadius: borderRadius,
-              }
-            : null,
-          isTypeSent
-            ? [
-                styles.sentMessage,
-                sentMessageBackgroundColor
-                  ? { backgroundColor: sentMessageBackgroundColor }
-                  : null,
-              ]
-            : [
-                styles.receivedMessage,
-                receivedMessageBackgroundColor
-                  ? { backgroundColor: receivedMessageBackgroundColor }
-                  : null,
-              ],
-          isIncluded ? { backgroundColor: SELECTED_BACKGROUND_COLOR } : null,
+          styles.displayRow,
+          {
+            justifyContent: isTypeSent ? "flex-end" : "flex-start",
+          },
         ]}
       >
-        {/* Reply conversation message sender name */}
-        {item?.member?.id == user?.id ? null : customMessageHeader ? (
-          customMessageHeader
-        ) : (
-          <MessageHeader />
-        )}
-        <LinkPreviewBox
-          description={description}
-          title={title}
-          url={url}
-          image={image}
-        />
-        <View>
-          <View style={styles.messageText as any}>
-            {decode({
-              text: item?.answer,
-              enableClick: true,
-              chatroomName: chatroomName,
-              communityId: user?.sdkClientInfo?.community,
-              textStyles: textStyles,
-              linkTextColor: linkTextColor,
-              taggingTextColor: taggingTextColor,
-            })}
+        <View
+          style={[
+            styles.linkPreview,
+            borderRadius
+              ? {
+                  borderRadius: borderRadius,
+                }
+              : null,
+            isTypeSent
+              ? [
+                  styles.sentMessage,
+                  sentMessageBackgroundColor
+                    ? { backgroundColor: sentMessageBackgroundColor }
+                    : null,
+                ]
+              : [
+                  styles.receivedMessage,
+                  receivedMessageBackgroundColor
+                    ? { backgroundColor: receivedMessageBackgroundColor }
+                    : null,
+                ],
+            isIncluded ? { backgroundColor: SELECTED_BACKGROUND_COLOR } : null,
+          ]}
+        >
+          {/* Reply conversation message sender name */}
+          {item?.member?.id == user?.id ? null : customMessageHeader ? (
+            customMessageHeader
+          ) : (
+            <MessageHeader />
+          )}
+          <LinkPreviewBox
+            description={description}
+            title={title}
+            url={url}
+            image={image}
+          />
+          <View>
+            <View style={styles.messageText as any}>
+              {decode({
+                text: item?.answer,
+                enableClick: true,
+                chatroomName: chatroomName,
+                communityId: user?.sdkClientInfo?.community,
+                textStyles: textStyles,
+                linkTextColor: linkTextColor,
+                taggingTextColor: taggingTextColor,
+              })}
+            </View>
+            {customMessageFooter ? customMessageFooter : <MessageFooter />}
           </View>
-          {customMessageFooter ? customMessageFooter : <MessageFooter />}
         </View>
       </View>
+      {/* Sharp corner styles of a chat bubble */}
+      {!isItemIncludedInStateArr && !(item?.attachmentCount > 0) ? (
+        <View>
+          {isTypeSent ? (
+            <View
+              style={[
+                styles.typeSent,
+                sentMessageBackgroundColor
+                  ? {
+                      borderBottomColor: sentMessageBackgroundColor,
+                      borderLeftColor: sentMessageBackgroundColor,
+                    }
+                  : null,
+                isIncluded
+                  ? {
+                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                      borderLeftColor: SELECTED_BACKGROUND_COLOR,
+                    }
+                  : null,
+              ]}
+            />
+          ) : (
+            <View
+              style={[
+                styles.typeReceived,
+                receivedMessageBackgroundColor
+                  ? {
+                      borderBottomColor: receivedMessageBackgroundColor,
+                      borderRightColor: receivedMessageBackgroundColor,
+                    }
+                  : null,
+                isIncluded
+                  ? {
+                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                      borderRightColor: SELECTED_BACKGROUND_COLOR,
+                    }
+                  : null,
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  const params: NavigateToProfileParams = {
+                    taggedUserId: null,
+                    member: item?.member,
+                  };
+                  lmChatInterface.navigateToProfile(params);
+                }}
+              >
+                <Image
+                  source={
+                    item?.member?.imageUrl
+                      ? { uri: item?.member?.imageUrl }
+                      : require("../../assets/images/default_pic.png")
+                  }
+                  style={styles.chatroomTopicAvatar}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      ) : null}
     </View>
   );
 };

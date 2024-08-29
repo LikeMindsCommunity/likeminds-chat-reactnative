@@ -40,6 +40,8 @@ import Layout from "../../constants/Layout";
 import MessageHeader from "../MessageHeader";
 import MessageFooter from "../MessageFooter";
 import { useCustomComponentsContext } from "../../context/CustomComponentContextProvider";
+import { NavigateToProfileParams } from "../../callBacks/type";
+import { CallBack } from "../../callBacks/callBackClass";
 
 interface ReplyConversations {
   item: any;
@@ -124,7 +126,7 @@ export const ReplyBox = ({ item, chatroomName }: ReplyBox) => {
                 />
               ) : null
             ) : null}
-          </Text>{" "}
+          </Text>
           <Text
             style={
               [
@@ -204,11 +206,15 @@ const ReplyConversations = () => {
     : STYLES.$COLORS.SELECTED_BLUE;
   // styling props ended
 
+  const lmChatInterface = CallBack.lmChatInterface;
+
   const {
     isIncluded,
     item,
     isTypeSent,
     reactionArr,
+    isItemIncludedInStateArr,
+
     handleLongPress,
     handleOnPress: openKeyboard,
   } = useMessageContext();
@@ -286,98 +292,164 @@ const ReplyConversations = () => {
     }
   };
   return (
-    <View
-      style={[
-        styles.displayRow,
-        {
-          justifyContent: isTypeSent ? "flex-end" : "flex-start",
-        },
-        styles.messageParent,
-      ]}
-    >
+    <View style={styles.messageParent}>
       <View
         style={[
-          styles.replyMessage,
-          borderRadius ? { borderRadius: borderRadius } : null,
-          isTypeSent
-            ? [
-                styles.sentMessage,
-                sentMessageBackgroundColor
-                  ? { backgroundColor: sentMessageBackgroundColor }
-                  : null,
-              ]
-            : [
-                styles.receivedMessage,
-                receivedMessageBackgroundColor
-                  ? { backgroundColor: receivedMessageBackgroundColor }
-                  : null,
-              ],
-          isIncluded ? { backgroundColor: SELECTED_BACKGROUND_COLOR } : null,
+          styles.displayRow,
+          {
+            justifyContent: isTypeSent ? "flex-end" : "flex-start",
+          },
         ]}
       >
-        {/* Reply conversation message sender name */}
-        {item?.member?.id == user?.id ? null : customMessageHeader ? (
-          customMessageHeader
-        ) : (
-          <MessageHeader />
-        )}
-        <TouchableOpacity
-          onLongPress={handleLongPress}
-          delayLongPress={200}
-          onPress={handleOnPress}
+        <View
+          style={[
+            styles.replyMessage,
+            borderRadius ? { borderRadius: borderRadius } : null,
+            isTypeSent
+              ? [
+                  styles.sentMessage,
+                  sentMessageBackgroundColor
+                    ? { backgroundColor: sentMessageBackgroundColor }
+                    : null,
+                ]
+              : [
+                  styles.receivedMessage,
+                  receivedMessageBackgroundColor
+                    ? { backgroundColor: receivedMessageBackgroundColor }
+                    : null,
+                ],
+            isIncluded ? { backgroundColor: SELECTED_BACKGROUND_COLOR } : null,
+          ]}
         >
-          {customReplyBox ? (
-            customReplyBox(item?.replyConversationObject, chatroomName)
+          {/* Reply conversation message sender name */}
+          {item?.member?.id == user?.id ? null : customMessageHeader ? (
+            customMessageHeader
           ) : (
-            <ReplyBox
-              isIncluded={isIncluded}
-              item={item?.replyConversationObject}
-              chatroomName={chatroomName}
-            />
+            <MessageHeader />
           )}
-        </TouchableOpacity>
-        {item?.attachmentCount > 0 ? (
-          <AttachmentConversations isReplyConversation={true} isReply={true} />
-        ) : (
-          <View>
-            <View
-              style={
-                [
-                  styles.messageText,
-                  textStyles ? { ...textStyles } : null,
-                ] as TextStyle
-              }
-            >
-              {decode({
-                text: item?.answer,
-                enableClick: true,
-                chatroomName: chatroomName,
-                communityId: user?.sdkClientInfo?.community,
-                textStyles: textStyles,
-                linkTextColor: linkTextColor,
-                taggingTextColor: taggingTextColor,
-              })}
+          <TouchableOpacity
+            onLongPress={handleLongPress}
+            delayLongPress={200}
+            onPress={handleOnPress}
+          >
+            {customReplyBox ? (
+              customReplyBox(item?.replyConversationObject, chatroomName)
+            ) : (
+              <ReplyBox
+                isIncluded={isIncluded}
+                item={item?.replyConversationObject}
+                chatroomName={chatroomName}
+              />
+            )}
+          </TouchableOpacity>
+          {item?.attachmentCount > 0 ? (
+            <AttachmentConversations
+              isReplyConversation={true}
+              isReply={true}
+            />
+          ) : (
+            <View>
+              <View
+                style={
+                  [
+                    styles.messageText,
+                    textStyles ? { ...textStyles } : null,
+                  ] as TextStyle
+                }
+              >
+                {decode({
+                  text: item?.answer,
+                  enableClick: true,
+                  chatroomName: chatroomName,
+                  communityId: user?.sdkClientInfo?.community,
+                  textStyles: textStyles,
+                  linkTextColor: linkTextColor,
+                  taggingTextColor: taggingTextColor,
+                })}
+              </View>
+              {customMessageFooter ? customMessageFooter : <MessageFooter />}
             </View>
-            {customMessageFooter ? customMessageFooter : <MessageFooter />}
-          </View>
-        )}
+          )}
+        </View>
+        {(reactionArr.length > 0 || item?.answer?.split("").length > 100) &&
+        !isTypeSent ? (
+          <Pressable
+            onLongPress={handleLongPress}
+            delayLongPress={200}
+            onPress={openKeyboard}
+          >
+            <Image
+              style={{
+                height: Layout.normalize(25),
+                width: Layout.normalize(25),
+                resizeMode: "contain",
+              }}
+              source={require("../../assets/images/add_more_emojis3x.png")}
+            />
+          </Pressable>
+        ) : null}
       </View>
-      {(reactionArr.length > 0 || item?.answer?.split("").length > 100) &&
-      !isTypeSent ? (
-        <Pressable
-          onLongPress={handleLongPress}
-          delayLongPress={200}
-          onPress={openKeyboard}
-        >
-          <Image
-            style={{
-              height: Layout.normalize(25),
-              width: Layout.normalize(25),
-              resizeMode: "contain",
-            }}
-            source={require("../../assets/images/add_more_emojis3x.png")}
-          />
-        </Pressable>
+
+      {/* Sharp corner styles of a chat bubble */}
+      {!isItemIncludedInStateArr && !(item?.attachmentCount > 0) ? (
+        <View>
+          {isTypeSent ? (
+            <View
+              style={[
+                styles.typeSent,
+                sentMessageBackgroundColor
+                  ? {
+                      borderBottomColor: sentMessageBackgroundColor,
+                      borderLeftColor: sentMessageBackgroundColor,
+                    }
+                  : null,
+                isIncluded
+                  ? {
+                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                      borderLeftColor: SELECTED_BACKGROUND_COLOR,
+                    }
+                  : null,
+              ]}
+            />
+          ) : (
+            <View
+              style={[
+                styles.typeReceived,
+                receivedMessageBackgroundColor
+                  ? {
+                      borderBottomColor: receivedMessageBackgroundColor,
+                      borderRightColor: receivedMessageBackgroundColor,
+                    }
+                  : null,
+                isIncluded
+                  ? {
+                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                      borderRightColor: SELECTED_BACKGROUND_COLOR,
+                    }
+                  : null,
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  const params: NavigateToProfileParams = {
+                    taggedUserId: null,
+                    member: item?.member,
+                  };
+                  lmChatInterface.navigateToProfile(params);
+                }}
+              >
+                <Image
+                  source={
+                    item?.member?.imageUrl
+                      ? { uri: item?.member?.imageUrl }
+                      : require("../../assets/images/default_pic.png")
+                  }
+                  style={styles.chatroomTopicAvatar}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       ) : null}
     </View>
   );
