@@ -6,7 +6,13 @@
  */
 
 import React, {useEffect, useState} from 'react';
-import {KeyboardAvoidingView, Platform} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {navigationRef} from './RootNavigation';
@@ -288,7 +294,8 @@ function App(): React.JSX.Element {
               userUniqueId={userUniqueID}
               apiKey={apiKey}
               profileImageUrl={profileImageUrl}
-              lmChatInterface={lmChatInterface}>
+              lmChatInterface={lmChatInterface}
+              callbackClass={callbackClass}>
               <NavigationContainer ref={navigationRef} independent={true}>
                 <Stack.Navigator initialRouteName={'Homefeed'}>
                   <Stack.Screen name={'Homefeed'} component={HomeFeed} />

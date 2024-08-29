@@ -41,6 +41,7 @@ import { DocumentType } from "../../enums";
 import { Client } from "../../client";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 
 interface Props {
   avatar: string;
@@ -322,7 +323,7 @@ const HomeFeedItem: React.FC<Props> = ({
           </Text>
         </View>
       );
-    } else if (voiceNoteCount > 0) {
+    } else if (voiceNoteCount > 0 && AudioPlayer != undefined) {
       return (
         <View
           style={[
@@ -366,7 +367,7 @@ const HomeFeedItem: React.FC<Props> = ({
           <Text style={styles.attachment_msg}>{val?.answer}</Text>
         </View>
       );
-    } else if (ogTags) {
+    } else if (ogTags && ogTags?.title != null) {
       return (
         <View
           style={[

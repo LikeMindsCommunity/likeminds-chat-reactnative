@@ -202,7 +202,7 @@ export function chatroomReducer(state = initialState, action: any) {
       const data = action.body;
       const { conversation = [] } = data;
 
-      if (conversation?.hasFiles || !!conversation?.replyConversation) {
+      if (conversation?.hasFiles || !!conversation?.replyConversation || conversation == undefined || Array.isArray(conversation) && conversation.length == 0) {
         return { ...state };
       }
 
