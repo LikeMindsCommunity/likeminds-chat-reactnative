@@ -42,7 +42,7 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
   async onRefreshTokenExpired() {
     const stringifiedUser: any =
       await Client.myClient.getUserFromLocalStorage(); // replace with actual method to get user
-    const user = JSON.parse(stringifiedUser);
+    const user = stringifiedUser ? JSON.parse(stringifiedUser) : null;
     if (user?.apiKey) {
       const payload: InitUserWithUuid = {
         apiKey: user.apiKey,

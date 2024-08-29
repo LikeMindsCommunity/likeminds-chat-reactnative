@@ -5,12 +5,12 @@ import { LMCoreCallbacks } from "../setupChat";
 export interface LMOverlayProviderProps {
   myClient: LMChatClient;
   children: React.ReactNode;
-  userName: string;
-  userUniqueId: string;
+  userName?: string;
+  userUniqueId?: string;
   apiKey?: string;
   accessToken?: string;
   refreshToken?: string;
   callbackClass: LMCoreCallbacks;
-  profileImageUrl: string;
+  profileImageUrl?: string;
   lmChatInterface?: any;
 }

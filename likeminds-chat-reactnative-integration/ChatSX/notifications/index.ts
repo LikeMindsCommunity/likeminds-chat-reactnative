@@ -65,12 +65,12 @@ export default async function getNotification(remoteMessage: any) {
     const userName =
       Credentials.username.length > 0 ? Credentials.username : users?.username;
 
-    const apiKey = await Client.myClient.getApiKeyFromLocalStorage();
+    const user: any = await Client.myClient.getUserFromLocalStorage();
     const payload = {
       uuid: UUID, // uuid
       userName: userName, // user name
       isGuest: false,
-      apiKey: apiKey,
+      apiKey: user?.apiKey,
     };
 
     if (isIOS) {

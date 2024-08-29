@@ -32,13 +32,13 @@ export async function parseDeepLink(
 
       if (chatroomId) {
         const internalRoute = `route://collabcard?collabcard_id=${chatroomId}`;
-        const apiKey = await Client.myClient.getApiKeyFromLocalStorage();
+        const user: any = await Client.myClient.getUserFromLocalStorage();
         // initiate API call
         const initiateUserRequest = {
           userName: request?.userName,
           uuid: request?.uuid,
           isGuest: false,
-          apiKey: apiKey,
+          apiKey: user?.apiKey,
         };
         const initiateUserResponse = await Client.myClient?.initiateUser(
           initiateUserRequest

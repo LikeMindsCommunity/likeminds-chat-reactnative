@@ -4,11 +4,11 @@ import React from "react";
 export interface LMChatProviderProps {
   myClient: LMChatClient;
   children?: React.ReactNode;
-  userName: string;
-  userUniqueId: string;
+  userName?: string;
+  userUniqueId?: string;
   apiKey?: string;
   accessToken?: string;
   refreshToken?: string;
-  profileImageUrl: string;
+  profileImageUrl?: string;
   lmChatInterface?: any;
 }
