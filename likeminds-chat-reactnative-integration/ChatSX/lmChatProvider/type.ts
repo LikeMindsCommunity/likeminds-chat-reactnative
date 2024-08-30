@@ -11,4 +11,5 @@ export interface LMChatProviderProps {
   refreshToken?: string;
   profileImageUrl?: string;
   lmChatInterface?: any;
+  imageUrl?: string;
 }

@@ -16,6 +16,7 @@ export const LMOverlayProvider = ({
   callbackClass,
   profileImageUrl,
   lmChatInterface,
+  imageUrl,
 }: LMOverlayProviderProps) => {
   useEffect(() => {
     myClient.setLMSDKCallbacks(
@@ -33,6 +34,7 @@ export const LMOverlayProvider = ({
         refreshToken={refreshToken}
         profileImageUrl={profileImageUrl}
         lmChatInterface={lmChatInterface}
+        imageUrl={imageUrl}
       >
         <View style={styles.flexStyling}>{children}</View>
       </LMChatProvider>

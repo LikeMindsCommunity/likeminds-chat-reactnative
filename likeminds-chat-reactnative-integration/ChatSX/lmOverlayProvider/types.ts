@@ -13,4 +13,5 @@ export interface LMOverlayProviderProps {
   callbackClass: LMCoreCallbacks;
   profileImageUrl?: string;
   lmChatInterface?: any;
+  imageUrl?: string;
 }

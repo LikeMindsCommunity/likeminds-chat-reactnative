@@ -29,6 +29,7 @@ export const LMChatProvider = ({
   refreshToken,
   profileImageUrl,
   lmChatInterface,
+  imageUrl,
 }: LMChatProviderProps) => {
   const [isInitiated, setIsInitiated] = useState(false);
 
@@ -111,16 +112,12 @@ export const LMChatProvider = ({
         apiKey: apiKey,
         uuid: userUniqueId,
         isGuest: false,
+        imageUrl: imageUrl ? imageUrl : "",
       };
       const initiateResponse: any = await dispatch(initAPI(payload));
       if (initiateResponse !== undefined && initiateResponse !== null) {
         // calling getMemberState API
         await dispatch(getMemberState());
-        await myClient.setTokens(
-          initiateResponse?.accessToken,
-          initiateResponse?.refreshToken
-        );
-        Token.setToken(initiateResponse?.accessToken);
         setIsInitiated(true);
       }
     }

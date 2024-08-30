@@ -163,13 +163,11 @@ function App(): React.JSX.Element {
   }, []);
 
   const callbackClass = new LMCoreCallbacks(
-    (a: string, b: string) => {
+    (accessToken: string, refreshToken: string) => {
       // when accessToken is expired then flow comes here
-      console.log(`Testing ${a} and ${b}`);
     },
     async function () {
       // here client should call the initiateApi and return accessToken and refreshToken
-      console.log('onRefreshTokenExpired called');
       const payload: InitUserWithUuid = {
         userName: userName,
         uuid: userUniqueID,
