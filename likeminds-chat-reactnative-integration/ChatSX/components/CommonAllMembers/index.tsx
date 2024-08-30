@@ -493,6 +493,8 @@ const CommonAllMembers = ({
           }
         } else {
           const userDMLimit = res?.userDmLimit;
+          
+          // to show alert only if API has valid response
           if (userDMLimit) {
             Alert.alert(
               REQUEST_DM_LIMIT,
