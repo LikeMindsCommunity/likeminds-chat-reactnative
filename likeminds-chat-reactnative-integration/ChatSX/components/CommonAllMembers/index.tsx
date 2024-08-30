@@ -270,7 +270,7 @@ const CommonAllMembers = ({
           };
     const res = await myClient.getAllMembers(initialPayload);
     res?.data?.members?.shift(); // to remove current from the list
-    
+
     setParticipants(res?.data?.members);
     setCount(0);
   };
@@ -493,20 +493,22 @@ const CommonAllMembers = ({
           }
         } else {
           const userDMLimit = res?.userDmLimit;
-          Alert.alert(
-            REQUEST_DM_LIMIT,
-            `You can only send ${
-              userDMLimit?.numberInDuration
-            } DM requests per ${
-              userDMLimit?.duration
-            }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp)}`,
-            [
-              {
-                text: CANCEL_BUTTON,
-                style: "default",
-              },
-            ]
-          );
+          if (userDMLimit) {
+            Alert.alert(
+              REQUEST_DM_LIMIT,
+              `You can only send ${
+                userDMLimit?.numberInDuration
+              } DM requests per ${
+                userDMLimit?.duration
+              }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp)}`,
+              [
+                {
+                  text: CANCEL_BUTTON,
+                  style: "default",
+                },
+              ]
+            );
+          }
         }
       }
     }
