@@ -139,17 +139,17 @@ export const ReplyBox = ({ item, chatroomName }: ReplyBox) => {
               text: !!answer
                 ? answer
                 : item?.attachments[0]?.type === PDF_TEXT
-                ? DOCUMENT_STRING
+                ? ` ${DOCUMENT_STRING}`
                 : item?.attachments[0]?.type === IMAGE_TEXT
-                ? PHOTO_STRING
+                ? ` ${PHOTO_STRING}`
                 : item?.attachments[0]?.type === VIDEO_TEXT
-                ? VIDEO_STRING
+                ? ` ${VIDEO_STRING}`
                 : item?.attachments[0]?.type === VOICE_NOTE_TEXT
-                ? VOICE_NOTE_STRING
+                ? ` ${VOICE_NOTE_STRING}`
                 : item?.attachments[0]?.type === GIF_TEXT
-                ? CAPITAL_GIF_TEXT
+                ? ` ${CAPITAL_GIF_TEXT}`
                 : item?.attachments[0]?.type === AUDIO_TEXT
-                ? NOT_SUPPORTED_TEXT
+                ? `${NOT_SUPPORTED_TEXT}`
                 : null,
               enableClick: false,
               chatroomName: chatroomName,
