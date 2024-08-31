@@ -109,8 +109,8 @@ export const LMChatProvider = ({
       }
       const payload: InitUserWithUuid = {
         userName: userName,
-        apiKey: apiKey,
-        uuid: userUniqueId,
+        apiKey: apiKey ? apiKey : "",
+        uuid: userUniqueId ? userUniqueId : "",
         isGuest: false,
         imageUrl: imageUrl ? imageUrl : "",
       };
@@ -129,9 +129,7 @@ export const LMChatProvider = ({
   }, [accessToken, refreshToken]);
 
   return isInitiated ? (
-    <GestureHandlerRootView style={styles.flexStyling}>
-      <View style={styles.flexStyling}>{children}</View>
-    </GestureHandlerRootView>
+    <View style={styles.flexStyling}>{children}</View>
   ) : (
     <></>
   );

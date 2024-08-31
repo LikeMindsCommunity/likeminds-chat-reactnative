@@ -62,7 +62,8 @@ import {
 } from '@likeminds.community/chat-rn';
 import SearchInChatroomScreen from './screens/SearchInChatroom';
 import {ScreenName} from './src/enums/screenNameEnums';
-import { LMCoreCallbacks } from '@likeminds.community/chat-rn-core/ChatSX/setupChat';
+import {LMCoreCallbacks} from '@likeminds.community/chat-rn-core/ChatSX/setupChat';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const Stack = createNativeStackNavigator();
 
@@ -149,13 +150,11 @@ function App(): React.JSX.Element {
   }, [users, isTrue]);
 
   useEffect(() => {
-      const filterStateMessage = [
-        ConversationState.MEMBER_LEFT_SECRET_CHATROOM,
-      ]; // give type of conversation to be filtered using ConversationState enum
+    const filterStateMessage = [ConversationState.MEMBER_LEFT_SECRET_CHATROOM]; // give type of conversation to be filtered using ConversationState enum
 
-      // proivde apiKey below to initMyClient
-      const res: any = initMyClient(filterStateMessage); // pass api key as first param and filterStateMessage array as second
-      setMyClient(res);
+    // proivde apiKey below to initMyClient
+    const res: any = initMyClient(filterStateMessage); // pass api key as first param and filterStateMessage array as second
+    setMyClient(res);
   }, [isTrue, apiKey]);
 
   useEffect(() => {
@@ -185,7 +184,7 @@ function App(): React.JSX.Element {
   );
 
   return (
-    <>
+    <GestureHandlerRootView style={{flex: 1}}>
       {userName && userUniqueID && apiKey && myClient ? (
         <>
           {Platform.OS === 'ios' ? (
@@ -380,7 +379,7 @@ function App(): React.JSX.Element {
       ) : !userName && !userUniqueID && !apiKey ? (
         <FetchKeyInputScreen isTrue={isTrue} setIsTrue={setIsTrue} />
       ) : null}
-    </>
+    </GestureHandlerRootView>
   );
 }
 
