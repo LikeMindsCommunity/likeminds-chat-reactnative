@@ -46,6 +46,7 @@ const HomeFeed = ({ navigation }: Props) => {
   const [invitePage, setInvitePage] = useState(1);
   const [FCMToken, setFCMToken] = useState("");
   const [accessToken, setAccessToken] = useState("");
+  const [hideDMTab, setHideDMTab] = useState(true);
   const dispatch = useAppDispatch();
   const isFocused = useIsFocused();
 
@@ -161,8 +162,16 @@ const HomeFeed = ({ navigation }: Props) => {
   }
 
   useLayoutEffect(() => {
-    fetchData();
-  }, [navigation, myClient]);
+    async function fetchCheckDMTab() {
+      const response = await myClient.checkDMTab();
+
+      if (response?.success) {
+        setHideDMTab(response?.data?.hideDmTab);
+      }
+    }
+
+    fetchCheckDMTab();
+  }, []);
 
   useEffect(() => {
     const listener = Linking.addEventListener("url", ({ url }) => {
@@ -256,7 +265,7 @@ const HomeFeed = ({ navigation }: Props) => {
 
   return (
     <View style={styles.page}>
-      {community?.hideDmTab === false ? (
+      {hideDMTab === false ? (
         <Tab.Navigator
           screenOptions={{
             tabBarLabelStyle: styles.font,
@@ -304,7 +313,7 @@ const HomeFeed = ({ navigation }: Props) => {
             component={DMFeed}
           />
         </Tab.Navigator>
-      ) : community?.hideDmTab === true ? (
+      ) : hideDMTab === true ? (
         <GroupFeed />
       ) : null}
     </View>

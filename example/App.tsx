@@ -56,9 +56,13 @@ import {useQuery} from '@realm/react';
 import {Credentials} from './login/credentials';
 import {LoginSchemaRO} from './login/loginSchemaRO';
 import FetchKeyInputScreen from './login';
-import {ConversationState} from '@likeminds.community/chat-rn';
+import {
+  ConversationState,
+  InitUserWithUuid,
+} from '@likeminds.community/chat-rn';
 import SearchInChatroomScreen from './screens/SearchInChatroom';
 import {ScreenName} from './src/enums/screenNameEnums';
+import { LMCoreCallbacks } from '@likeminds.community/chat-rn-core/ChatSX/setupChat';
 
 const Stack = createNativeStackNavigator();
 
@@ -98,9 +102,20 @@ function App(): React.JSX.Element {
   const [userName, setUserName] = useState(
     Credentials?.username?.length > 0 ? Credentials?.username : users?.userName,
   );
-  const [myClient, setMyClient] = useState();
+  const [myClient, setMyClient] = useState<any>();
   const [isTrue, setIsTrue] = useState(true);
   const loginSchemaArray: any = useQuery(LoginSchemaRO);
+
+  useEffect(() => {
+    async function generateClient() {
+      const res: any = initMyClient([
+        ConversationState.MEMBER_LEFT_SECRET_CHATROOM,
+      ]);
+      setMyClient(res);
+    }
+
+    generateClient();
+  }, []);
 
   useEffect(() => {
     const userSchema = async () => {
@@ -134,20 +149,40 @@ function App(): React.JSX.Element {
   }, [users, isTrue]);
 
   useEffect(() => {
-    if (apiKey) {
       const filterStateMessage = [
         ConversationState.MEMBER_LEFT_SECRET_CHATROOM,
       ]; // give type of conversation to be filtered using ConversationState enum
 
       // proivde apiKey below to initMyClient
-      const res: any = initMyClient(apiKey, filterStateMessage); // pass api key as first param and filterStateMessage array as second
+      const res: any = initMyClient(filterStateMessage); // pass api key as first param and filterStateMessage array as second
       setMyClient(res);
-    }
   }, [isTrue, apiKey]);
 
   useEffect(() => {
     setStyles();
   }, []);
+
+  const callbackClass = new LMCoreCallbacks(
+    (accessToken: string, refreshToken: string) => {
+      // when accessToken is expired then flow comes here
+    },
+    async function () {
+      // here client should call the initiateApi and return accessToken and refreshToken
+      const payload: InitUserWithUuid = {
+        userName: userName,
+        uuid: userUniqueID,
+        apiKey: apiKey,
+        isGuest: false,
+      };
+      const initiateUserResponse = await myClient?.initiateUser(payload);
+      const accessToken = initiateUserResponse?.accessToken;
+      const refreshToken = initiateUserResponse?.refreshToken;
+      return {
+        accessToken,
+        refreshToken,
+      };
+    },
+  );
 
   return (
     <>
@@ -161,8 +196,10 @@ function App(): React.JSX.Element {
                 myClient={myClient}
                 userName={userName}
                 userUniqueId={userUniqueID}
+                apiKey={apiKey}
                 profileImageUrl={profileImageUrl}
-                lmChatInterface={lmChatInterface}>
+                lmChatInterface={lmChatInterface}
+                callbackClass={callbackClass}>
                 <NavigationContainer ref={navigationRef} independent={true}>
                   <Stack.Navigator initialRouteName={'Homefeed'}>
                     <Stack.Screen name={'Homefeed'} component={HomeFeed} />
@@ -253,8 +290,10 @@ function App(): React.JSX.Element {
               myClient={myClient}
               userName={userName}
               userUniqueId={userUniqueID}
+              apiKey={apiKey}
               profileImageUrl={profileImageUrl}
-              lmChatInterface={lmChatInterface}>
+              lmChatInterface={lmChatInterface}
+              callbackClass={callbackClass}>
               <NavigationContainer ref={navigationRef} independent={true}>
                 <Stack.Navigator initialRouteName={'Homefeed'}>
                   <Stack.Screen name={'Homefeed'} component={HomeFeed} />

@@ -26,6 +26,7 @@ import {
   DELETE_GROUPFEED_CHATROOM,
   DELETE_DMFEED_CHATROOM,
   STORE_MY_CLIENT,
+  VALIDATE_API_SUCCESS,
 } from "../types/types";
 import { removeDuplicateObjects } from "../../utils/homeFeedUtils";
 import { ChatroomChatRequestState } from "../../enums";
@@ -291,6 +292,10 @@ export function homefeedReducer(state = initialState, action: any) {
       };
     }
     case INIT_API_SUCCESS: {
+      const { community = {} } = action.body;
+      return { ...state, community: community };
+    }
+    case VALIDATE_API_SUCCESS: {
       const { community = {} } = action.body;
       return { ...state, community: community };
     }

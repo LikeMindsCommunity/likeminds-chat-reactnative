@@ -3,11 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useAppDispatch } from "../store";
 import { Credentials } from "../credentials";
-import {
-  INIT_API_SUCCESS,
-  PROFILE_DATA_SUCCESS,
-  UPDATE_FILE_UPLOADING_OBJECT,
-} from "../store/types/types";
+import { UPDATE_FILE_UPLOADING_OBJECT } from "../store/types/types";
 import { setupPlayer } from "../audio";
 import { GIPHY_SDK_API_KEY } from "../awsExports";
 import { Client } from "../client";
@@ -16,14 +12,24 @@ import { LMChatProviderProps } from "./type";
 import { CallBack } from "../callBacks/callBackClass";
 import GIFPicker from "../optionalDependecies/Gif";
 import { Token } from "../tokens";
+import { InitUserWithUuid, ValidateUser } from "@likeminds.community/chat-rn";
+import {
+  getMemberState,
+  initAPI,
+  validateUser,
+} from "../store/actions/homefeed";
 
 export const LMChatProvider = ({
   myClient,
   children,
   userName,
   userUniqueId,
+  apiKey,
+  accessToken,
+  refreshToken,
   profileImageUrl,
   lmChatInterface,
+  imageUrl,
 }: LMChatProviderProps) => {
   const [isInitiated, setIsInitiated] = useState(false);
 
@@ -80,39 +86,47 @@ export const LMChatProvider = ({
     // setting lmChatInterface in CallBack class
     CallBack.setLMChatInterface(lmChatInterface);
 
-    // storing myClient followed by community details
-    const callInitApi = async () => {
-      const payload = {
-        uuid: userUniqueId, // uuid
-        userName: userName, // user name
-        isGuest: false,
-        imageUrl: profileImageUrl,
+    const callValidateApi = async (accessToken, refreshToken) => {
+      const payload: ValidateUser = {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
       };
+      const validateResponse = await dispatch(validateUser(payload, true));
 
-      Credentials.setCredentials(userName, userUniqueId);
-
-      const initiateApiResponse = await myClient?.initiateUser(payload);
-      Token.setToken(initiateApiResponse?.data?.accessToken);
-
-      dispatch({
-        type: INIT_API_SUCCESS,
-        body: { community: initiateApiResponse?.data?.community },
-      });
-
-      const getMemberStateResponse = await myClient?.getMemberState();
-
-      dispatch({
-        type: PROFILE_DATA_SUCCESS,
-        body: {
-          member: getMemberStateResponse?.data?.member,
-          memberRights: getMemberStateResponse?.data?.memberRights,
-        },
-      });
-
+      if (validateResponse !== undefined && validateResponse !== null) {
+        // calling getMemberState API
+        await dispatch(getMemberState());
+      }
       setIsInitiated(true);
     };
-    callInitApi();
-  }, []);
+
+    // storing myClient followed by community details
+    async function callInitiateAPI() {
+      const { accessToken, refreshToken } = await myClient?.getTokens();
+      if (accessToken && refreshToken) {
+        callValidateApi(accessToken, refreshToken);
+        return;
+      }
+      const payload: InitUserWithUuid = {
+        userName: userName,
+        apiKey: apiKey,
+        uuid: userUniqueId,
+        isGuest: false,
+        imageUrl: imageUrl ? imageUrl : "",
+      };
+      const initiateResponse: any = await dispatch(initAPI(payload));
+      if (initiateResponse !== undefined && initiateResponse !== null) {
+        // calling getMemberState API
+        await dispatch(getMemberState());
+        setIsInitiated(true);
+      }
+    }
+    if (accessToken && refreshToken) {
+      callValidateApi(accessToken, refreshToken);
+    } else if (apiKey && userName && userUniqueId) {
+      callInitiateAPI();
+    }
+  }, [accessToken, refreshToken]);
 
   return isInitiated ? (
     <GestureHandlerRootView style={styles.flexStyling}>
