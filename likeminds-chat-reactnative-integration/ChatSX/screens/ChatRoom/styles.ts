@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
     tintColor: STYLES.$COLORS.SECONDARY,
   },
   threeDots: {
-    height: Layout.normalize(20),
+    height: Layout.normalize(17),
     width: Layout.normalize(30),
     resizeMode: "contain",
     tintColor: STYLES.$COLORS.SECONDARY,

@@ -5,7 +5,7 @@ import STYLES from "../../constants/Styles";
 export const styles = StyleSheet.create({
   messageParent: {
     margin: Layout.normalize(20),
-    marginBottom: 0,
+    marginVertical: Layout.normalize(10),
   },
   replyMessage: {
     padding: Layout.normalize(10),
@@ -102,5 +102,33 @@ export const styles = StyleSheet.create({
     fontSize: STYLES.$FONT_SIZES.XS,
     color: "white",
     marginTop: Platform.OS === "ios" ? Layout.normalize(1) : 0,
+  },
+  typeSent: {
+    position: "absolute",
+    bottom: 0,
+    right: Layout.normalize(-10),
+    borderColor: "transparent",
+    borderWidth: Layout.normalize(10),
+    borderBottomColor: STYLES.$COLORS.TERTIARY,
+    borderLeftColor: STYLES.$COLORS.TERTIARY,
+  },
+  typeReceived: {
+    position: "absolute",
+    bottom: 0,
+    left: Layout.normalize(-10),
+    borderColor: "transparent",
+    borderWidth: Layout.normalize(10),
+    borderBottomColor: STYLES.$COLORS.TERTIARY,
+    borderRightColor: STYLES.$COLORS.TERTIARY,
+    marginLeft: Layout.normalize(30),
+  },
+  chatroomTopicAvatar: {
+    width: Layout.normalize(40),
+    height: Layout.normalize(40),
+    borderRadius: STYLES.$AVATAR.BORDER_RADIUS,
+    position: "absolute",
+    bottom: 0,
+    left: Layout.normalize(-45),
+    top: Layout.normalize(-30),
   },
 });

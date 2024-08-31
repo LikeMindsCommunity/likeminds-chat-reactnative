@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: "row",
     padding: STYLES.$PADDINGS.LARGE,
-    alignItems: "center",
+    alignItems: "flex-start",
     backgroundColor: STYLES.$COLORS.TERTIARY,
   },
   avatar: {
@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: Layout.normalize(8),
+    marginBottom: Layout.normalize(3),
   },
   title: {
     fontSize: STYLES.$FONT_SIZES.XL,
