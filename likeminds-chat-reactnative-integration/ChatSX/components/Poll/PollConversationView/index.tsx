@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { POLL_RESULT } from "../../../constants/Screens";
@@ -25,6 +25,8 @@ import { useMessageContext } from "../../../context/MessageContext";
 import { useChatroomContext } from "../../../context/ChatroomContext";
 import { styles } from "../../Messages/styles";
 import STYLES from "../../../constants/Styles";
+import { NavigateToProfileParams } from "../../../callBacks/type";
+import { CallBack } from "../../../callBacks/callBackClass";
 
 const PollConversationView = () => {
   const myClient = Client.myClient;
@@ -36,7 +38,7 @@ const PollConversationView = () => {
     handleOnPress: openKeyboard,
   } = useMessageContext();
   const { navigation } = useChatroomContext();
-  const { isTypeSent } = useMessageContext();
+  const { isTypeSent, isItemIncludedInStateArr } = useMessageContext();
 
   const chatBubbleStyles = STYLES.$CHAT_BUBBLE_STYLE;
 
@@ -68,6 +70,7 @@ const PollConversationView = () => {
   const [isAnonymousPollModalVisible, setIsAnonymousPollModalVisible] =
     useState(false);
   const [pollsArr, setPollsArr] = useState(item?.polls);
+  const lmChatInterface = CallBack.lmChatInterface;
 
   const { user } = useAppSelector((item) => item.homefeed);
 
@@ -461,55 +464,117 @@ const PollConversationView = () => {
   };
 
   return (
-    <View
-      style={[
-        styles.pollMessage,
-        styles.messageParent,
-        isTypeSent
-          ? [
-              styles.sentMessage,
-              sentMessageBackgroundColor
-                ? { backgroundColor: sentMessageBackgroundColor }
-                : null,
-            ]
-          : [
-              styles.receivedMessage,
-              receivedMessageBackgroundColor
-                ? { backgroundColor: receivedMessageBackgroundColor }
-                : null,
-            ],
-        isIncluded ? { backgroundColor: SELECTED_BACKGROUND_COLOR } : null,
-      ]}
-    >
-      <View>
-        <PollConversationUI
-          onNavigate={onNavigate}
-          setSelectedPollOptions={setSelectedPollOptions}
-          addPollOption={addPollOption}
-          submitPoll={submitPoll}
-          setShowSelected={setShowSelected}
-          setIsAddPollOptionModalVisible={setIsAddPollOptionModalVisible}
-          setAddOptionInputField={setAddOptionInputField}
-          openKeyboard={openKeyboard}
-          longPressOpenKeyboard={longPressOpenKeyboard}
-          stringManipulation={stringManipulation}
-          resetShowResult={resetShowResult}
-          {...props}
-        />
-        <AddOptionsModal
-          isAddPollOptionModalVisible={isAddPollOptionModalVisible}
-          setIsAddPollOptionModalVisible={setIsAddPollOptionModalVisible}
-          addOptionInputField={addOptionInputField}
-          setAddOptionInputField={setAddOptionInputField}
-          handelAddOptionSubmit={addPollOption}
-        />
-        <AnonymousPollModal
-          isAnonymousPollModalVisible={isAnonymousPollModalVisible}
-          hideAnonymousPollModal={hideAnonymousPollModal}
-          title={ANONYMOUS_POLL_TITLE}
-          subTitle={ANONYMOUS_POLL_SUB_TITLE}
-        />
+    <View style={styles.messageParent}>
+      <View
+        style={[
+          styles.pollMessage,
+          isTypeSent
+            ? [
+                styles.sentMessage,
+                sentMessageBackgroundColor
+                  ? { backgroundColor: sentMessageBackgroundColor }
+                  : null,
+              ]
+            : [
+                styles.receivedMessage,
+                receivedMessageBackgroundColor
+                  ? { backgroundColor: receivedMessageBackgroundColor }
+                  : null,
+              ],
+          isIncluded ? { backgroundColor: SELECTED_BACKGROUND_COLOR } : null,
+        ]}
+      >
+        <View>
+          <PollConversationUI
+            onNavigate={onNavigate}
+            setSelectedPollOptions={setSelectedPollOptions}
+            addPollOption={addPollOption}
+            submitPoll={submitPoll}
+            setShowSelected={setShowSelected}
+            setIsAddPollOptionModalVisible={setIsAddPollOptionModalVisible}
+            setAddOptionInputField={setAddOptionInputField}
+            openKeyboard={openKeyboard}
+            longPressOpenKeyboard={longPressOpenKeyboard}
+            stringManipulation={stringManipulation}
+            resetShowResult={resetShowResult}
+            {...props}
+          />
+          <AddOptionsModal
+            isAddPollOptionModalVisible={isAddPollOptionModalVisible}
+            setIsAddPollOptionModalVisible={setIsAddPollOptionModalVisible}
+            addOptionInputField={addOptionInputField}
+            setAddOptionInputField={setAddOptionInputField}
+            handelAddOptionSubmit={addPollOption}
+          />
+          <AnonymousPollModal
+            isAnonymousPollModalVisible={isAnonymousPollModalVisible}
+            hideAnonymousPollModal={hideAnonymousPollModal}
+            title={ANONYMOUS_POLL_TITLE}
+            subTitle={ANONYMOUS_POLL_SUB_TITLE}
+          />
+        </View>
       </View>
+      {/* Sharp corner styles of a chat bubble */}
+      {!isItemIncludedInStateArr && !(item?.attachmentCount > 0) ? (
+        <View>
+          {isTypeSent ? (
+            <View
+              style={[
+                styles.typeSent,
+                sentMessageBackgroundColor
+                  ? {
+                      borderBottomColor: sentMessageBackgroundColor,
+                      borderLeftColor: sentMessageBackgroundColor,
+                    }
+                  : null,
+                isIncluded
+                  ? {
+                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                      borderLeftColor: SELECTED_BACKGROUND_COLOR,
+                    }
+                  : null,
+              ]}
+            />
+          ) : (
+            <View
+              style={[
+                styles.typeReceived,
+                receivedMessageBackgroundColor
+                  ? {
+                      borderBottomColor: receivedMessageBackgroundColor,
+                      borderRightColor: receivedMessageBackgroundColor,
+                    }
+                  : null,
+                isIncluded
+                  ? {
+                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                      borderRightColor: SELECTED_BACKGROUND_COLOR,
+                    }
+                  : null,
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  const params: NavigateToProfileParams = {
+                    taggedUserId: null,
+                    member: item?.member,
+                  };
+                  lmChatInterface.navigateToProfile(params);
+                }}
+              >
+                <Image
+                  source={
+                    item?.member?.imageUrl
+                      ? { uri: item?.member?.imageUrl }
+                      : require("../../../assets/images/default_pic.png")
+                  }
+                  style={styles.chatroomTopicAvatar}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      ) : null}
     </View>
   );
 };

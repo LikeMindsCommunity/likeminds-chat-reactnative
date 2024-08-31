@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: Layout.normalize(8),
+    marginBottom: Layout.normalize(2),
   },
   title: {
     fontSize: STYLES.$FONT_SIZES.XL,
@@ -88,23 +88,21 @@ export const styles = StyleSheet.create({
     right: Layout.normalize(16),
   },
   unreadCountContainer: {
-    minWidth: Layout.normalize(25),
-    minHeight: Layout.normalize(25),
+    minWidth: Layout.normalize(20),
+    minHeight: Layout.normalize(20),
     backgroundColor: STYLES.$COLORS.PRIMARY,
     borderRadius: Layout.normalize(15),
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
     padding: Layout.normalize(5),
-    bottom: Layout.normalize(16),
+    bottom: Layout.normalize(20),
     right: Layout.normalize(15),
   },
   unreadCount: {
     color: STYLES.$COLORS.TERTIARY,
-    fontSize: STYLES.$FONT_SIZES.SMALL,
+    fontSize: 10,
     fontFamily: STYLES.$FONT_TYPES.SEMI_BOLD,
-    marginTop:
-      Platform.OS === "ios" ? Layout.normalize(2) : Layout.normalize(-1),
   },
   inviteIcon: {
     height: Layout.normalize(40),

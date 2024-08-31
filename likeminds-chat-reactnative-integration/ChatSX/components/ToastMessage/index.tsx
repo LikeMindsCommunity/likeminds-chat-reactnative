@@ -14,7 +14,7 @@ const ToastMessage = ({ isToast, onDismiss, message }: Props) => {
     if (isToast) {
       setTimeout(() => {
         onDismiss();
-      }, 2000);
+      }, 1000);
     }
   }, [isToast]);
 
