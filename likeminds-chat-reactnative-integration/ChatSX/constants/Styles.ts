@@ -71,9 +71,9 @@ export class STYLES {
     LARGE: 20,
   };
   static $AVATAR = {
-    WIDTH: 50,
-    HEIGHT: 50,
-    BORDER_RADIUS: 25,
+    WIDTH: 60,
+    HEIGHT: 60,
+    BORDER_RADIUS: 35,
   };
   static $ALIGN_ROW = {
     display: "flex",
@@ -98,7 +98,7 @@ export class STYLES {
   static $CAROUSEL_SCREEN_STYLE: CarouselScreenStyles = {};
   static $EXPLORE_CHATROOM_STYLE: ExploreChatroomStyles = {};
   static $HOME_FEED_STYLE: HomeFeedStyles = {};
-  static $SEARCH_IN_CHATROOM: SearchInChatroomStyles = {}
+  static $SEARCH_IN_CHATROOM: SearchInChatroomStyles = {};
   static setTheme({
     hue,
     fontColor,
@@ -139,11 +139,7 @@ export class STYLES {
         : isIOS
         ? "Helvetica"
         : "Roboto",
-      BOLD: fontTypes?.BOLD
-        ? fontTypes?.BOLD
-        : isIOS
-        ? "Helvetica"
-        : "Roboto",
+      BOLD: fontTypes?.BOLD ? fontTypes?.BOLD : isIOS ? "Helvetica" : "Roboto",
       BLACK: fontTypes?.BLACK
         ? fontTypes?.BLACK
         : isIOS
@@ -201,7 +197,9 @@ export class STYLES {
       ...homeFeedStyles,
     };
   }
-  static setSearchInChatroomStyle(searchInChatroomStyles: SearchInChatroomStyles) {
+  static setSearchInChatroomStyle(
+    searchInChatroomStyles: SearchInChatroomStyles
+  ) {
     STYLES.$SEARCH_IN_CHATROOM = {
       ...searchInChatroomStyles,
     };

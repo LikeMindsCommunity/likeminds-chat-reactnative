@@ -142,6 +142,7 @@ export const MessageListContextProvider = ({
       flatlistRef.current.scrollToIndex({
         animated: false,
         index: index,
+        viewPosition: 0.7,
       });
     }
   };
@@ -232,6 +233,7 @@ export const MessageListContextProvider = ({
     flatlistRef.current?.scrollToIndex({
       animated: true,
       index,
+      viewPosition: 0.7,
     });
   };
 

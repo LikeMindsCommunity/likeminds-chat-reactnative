@@ -7,7 +7,6 @@ export class Credentials {
   static setCredentials(username: string, userUniqueId: string): void {
     Credentials._username = username;
     Credentials._userUniqueId = userUniqueId;
-    Client.myClient.setUserSchema(userUniqueId, username);
   }
 
   static get username(): string {

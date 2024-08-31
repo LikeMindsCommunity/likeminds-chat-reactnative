@@ -3,13 +3,9 @@ import { ConversationState, LMChatClient } from "@likeminds.community/chat-rn";
 import { Client } from "./client";
 import AudioPlayer from "./optionalDependecies/AudioPlayer";
 
-export const initMyClient = (
-  apiKey: string,
-  filterStateMessage: ConversationState[]
-) => {
-  const myClient = LMChatClient.setApiKey(apiKey)
-    .setfilterStateConversation(filterStateMessage)
-    .setVersionCode(33)
+export const initMyClient = (filterStateMessage: ConversationState[]) => {
+  const myClient = LMChatClient.setfilterStateConversation(filterStateMessage)
+    .setVersionCode(34)
     .build();
 
   Client.setMyClient(myClient);

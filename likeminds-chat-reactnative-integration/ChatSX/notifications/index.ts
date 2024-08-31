@@ -32,7 +32,6 @@ export const fetchFCMToken = async () => {
 
 export default async function getNotification(remoteMessage: any) {
   const users = await Client.myClient?.getUserSchema();
-  Credentials.setCredentials(users?.userName, users?.userUniqueID);
   const isIOS = Platform.OS === "ios" ? true : false;
   const message = isIOS
     ? generateGifString(remoteMessage?.notification?.body)
@@ -66,10 +65,12 @@ export default async function getNotification(remoteMessage: any) {
     const userName =
       Credentials.username.length > 0 ? Credentials.username : users?.username;
 
+    const user: any = await Client.myClient.getUserFromLocalStorage();
     const payload = {
       uuid: UUID, // uuid
       userName: userName, // user name
       isGuest: false,
+      apiKey: user?.apiKey,
     };
 
     if (isIOS) {
@@ -90,7 +91,7 @@ export default async function getNotification(remoteMessage: any) {
       });
     } else {
       const res = await Client.myClient.initiateUser(payload);
-      if (res?.success === true) {
+      if (res !== undefined && res !== null) {
         const response =
           await Client.myClient?.getUnreadConversationNotification();
         if (response?.success === false) {

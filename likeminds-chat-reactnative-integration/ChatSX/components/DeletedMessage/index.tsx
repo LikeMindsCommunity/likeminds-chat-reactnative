@@ -1,4 +1,4 @@
-import { View, Text, TextStyle } from "react-native";
+import { View, Text, TextStyle, TouchableOpacity } from "react-native";
 import React from "react";
 import { ChatroomType } from "../../enums";
 import { useMessageContext } from "../../context/MessageContext";
@@ -14,6 +14,7 @@ const DeletedMessage = () => {
     conversationCreator,
     currentUserUuid,
     isIncluded,
+    isItemIncludedInStateArr,
   } = useMessageContext();
 
   const { chatroomType } = useChatroomContext();
@@ -27,7 +28,13 @@ const DeletedMessage = () => {
   const SELECTED_BACKGROUND_COLOR = selectedMessageBackgroundColor
     ? selectedMessageBackgroundColor
     : STYLES.$COLORS.SELECTED_BLUE;
+
+  const sentMessageBackgroundColor =
+    chatBubbleStyles?.sentMessageBackgroundColor;
+  const receivedMessageBackgroundColor =
+    chatBubbleStyles?.receivedMessageBackgroundColor;
   // styling props ended
+
   return (
     <View style={styles.messageParent}>
       {chatroomType !== ChatroomType.DMCHATROOM ? (
@@ -99,6 +106,49 @@ const DeletedMessage = () => {
           </Text>
         </View>
       )}
+
+      {/* Sharp corner styles of a chat bubble */}
+      {!isItemIncludedInStateArr ? (
+        <View>
+          {isTypeSent ? (
+            <View
+              style={[
+                styles.typeSent,
+                sentMessageBackgroundColor
+                  ? {
+                      borderBottomColor: sentMessageBackgroundColor,
+                      borderLeftColor: sentMessageBackgroundColor,
+                    }
+                  : null,
+                isIncluded
+                  ? {
+                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                      borderLeftColor: SELECTED_BACKGROUND_COLOR,
+                    }
+                  : null,
+              ]}
+            />
+          ) : (
+            <View
+              style={[
+                styles.typeReceived,
+                receivedMessageBackgroundColor
+                  ? {
+                      borderBottomColor: receivedMessageBackgroundColor,
+                      borderRightColor: receivedMessageBackgroundColor,
+                    }
+                  : null,
+                isIncluded
+                  ? {
+                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                      borderRightColor: SELECTED_BACKGROUND_COLOR,
+                    }
+                  : null,
+              ]}
+            ></View>
+          )}
+        </View>
+      ) : null}
     </View>
   );
 };

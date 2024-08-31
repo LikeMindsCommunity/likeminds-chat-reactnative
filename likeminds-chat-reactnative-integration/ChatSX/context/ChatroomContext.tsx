@@ -2024,20 +2024,24 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           }
         } else {
           const userDMLimit = res?.userDmLimit;
-          Alert.alert(
-            REQUEST_DM_LIMIT,
-            `You can only send ${
-              userDMLimit?.numberInDuration
-            } DM requests per ${
-              userDMLimit?.duration
-            }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp)}`,
-            [
-              {
-                text: CANCEL_BUTTON,
-                style: "default",
-              },
-            ]
-          );
+
+          // to show alert only if API has valid response
+          if (userDMLimit) {
+            Alert.alert(
+              REQUEST_DM_LIMIT,
+              `You can only send ${
+                userDMLimit?.numberInDuration
+              } DM requests per ${
+                userDMLimit?.duration
+              }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp)}`,
+              [
+                {
+                  text: CANCEL_BUTTON,
+                  style: "default",
+                },
+              ]
+            );
+          }
         }
       }
     }

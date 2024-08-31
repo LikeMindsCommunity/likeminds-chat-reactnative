@@ -8,7 +8,7 @@ async function invokeAPI(func: Function, payload: any, name = "") {
     return;
   }
   const response: any = await func;
-  return response?.data;
+  return response?.data ? response?.data : response;
 }
 
 export const CALL_API = "Call API";
