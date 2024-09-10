@@ -35,6 +35,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('likeminds-chat-reactnative-integration'){
+                    sh 'npm uninstall @likeminds.community/chat-rn'
                     sh 'npm install'
                 }
             }
