@@ -7,6 +7,7 @@ pipeline {
     }
     parameters {
         stashedFile 'chat_rn_package'
+        stashedFile 'chat_js_package'
     }
     environment {
         NODE_OPTIONS = "--max-old-space-size=8192"  // Setting the memory limit for Node.js
@@ -25,7 +26,9 @@ pipeline {
             steps{
                 dir('likeminds-chat-reactnative-integration'){
                     unstash 'chat_rn_package'
+                    unstash 'chat_js_package'
                     sh 'mv chat_rn_package $chat_rn_package_FILENAME'
+                    sh 'mv chat_js_package $chat_js_package_FILENAME'
                     sh 'ls'
                 }
             }
