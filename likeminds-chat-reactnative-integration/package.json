@@ -1,9 +1,8 @@
 {
-  "name": "@likeminds.community/chat-rn-core",
-  "version": "1.2.0",
-  "versionCode": "17",
-  "versionName": "1.2.0",
-  "description": "LikeMinds ReactNative Core SDK for chat",
+  "name": "@likeminds.community/chat-rn-core-beta",
+  "version": "0.0.13",
+  "versionCode": "14",
+  "versionName": "0.0.13",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
