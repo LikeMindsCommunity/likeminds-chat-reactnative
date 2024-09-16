@@ -5,13 +5,16 @@ pipeline {
     options {
         buildDiscarder logRotator(daysToKeepStr: '7', numToKeepStr: '1')
     }
+    
     parameters {
         stashedFile 'chat_rn_package'
         stashedFile 'chat_js_package'
     }
+    
     environment {
         NODE_OPTIONS = "--max-old-space-size=8192"  // Setting the memory limit for Node.js
     }
+    
     stages {
 
         stage('check'){
