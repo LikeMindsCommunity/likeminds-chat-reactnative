@@ -1,9 +1,7 @@
 name: Publish Create Tag and Git Release
 
 on:
-    push:
-        branches:
-            - "master"
+  workflow_dispatch: # Allows manual triggering of the action remotely.
 
 permissions: write-all
 
@@ -15,6 +13,7 @@ jobs:
     create_tag:
         name: Create Git Tag
         runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/master'  # Only run for master branch
         steps:
         - name: Checkout code
           uses: actions/checkout@v3
