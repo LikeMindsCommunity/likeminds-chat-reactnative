@@ -13,11 +13,11 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   let val = await getNotification(remoteMessage);
   return val;
  });
- messaging().onMessage(async (remoteMessage) => {
-  console.log(remoteMessage)
-  let val = await getNotification(remoteMessage);
-  return val
- })
+//  messaging().onMessage(async (remoteMessage) => {
+//   console.log('firebase ==',remoteMessage)
+//   let val = await getNotification(remoteMessage);
+//   return val
+//  })
 //  firebase.messaging().onMessage(()=>{console.log("eerer")});
 //  firebase.app().messaging().onMessage(()=>console.log("got itttt"))
 
