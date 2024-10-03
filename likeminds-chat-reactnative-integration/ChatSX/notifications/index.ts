@@ -11,7 +11,7 @@ import {
   generateGifString,
   getNotificationsMessage,
 } from "../commonFuctions";
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import { Client } from "../client";
 import { getRoute } from "./routes";
 import { Credentials } from "../credentials";
@@ -22,7 +22,29 @@ import { ChatroomRO } from "@likeminds.community/chat-rn/dist/localDb/models/Cha
 import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseModels/Attachment";
 import { chatSchema } from "../assets/chatSchema";
 import {MediaAttachment} from "../commonFuctions/model"
+import { getUniqueId } from "react-native-device-info";
+import { LMChatClient } from "@likeminds.community/chat-rn";
 
+interface RegisterDeviceRequest {
+  token: string;
+  deviceId: string;
+  xPlatformCode: string;
+}
+
+export async function validateRegisterDeviceRequest(
+  request: RegisterDeviceRequest,
+  accessToken: string
+) {
+  const params = {
+    token: request.token,
+  };
+  const res = await LMChatClient.dlClient.registerDevice({
+    xDeviceId: request.deviceId,
+    xPlatformCode: request.xPlatformCode,
+    token: request.token
+  })
+  console.log(res)
+}
 
 export async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
@@ -35,6 +57,28 @@ export async function requestUserPermission() {
 export const fetchFCMToken = async () => {
   const fcmToken = await messaging().getToken();
   return fcmToken;
+};
+
+export const pushAPI = async (fcmToken: string, accessToken: string) => {
+  const deviceID = await getUniqueId();
+  try {
+    const payload = {
+      token: fcmToken,
+      deviceId: deviceID,
+      xPlatformCode: Platform.OS === "ios" ? "ios" : "an",
+    };
+    await validateRegisterDeviceRequest(payload, accessToken);
+  } catch (error) {
+    Alert.alert(`${error}`);
+  }
+};
+
+export const token = async () => {
+  const isPermissionEnabled = await requestUserPermission();
+  if (isPermissionEnabled) {
+    let fcmToken = await fetchFCMToken();
+    return fcmToken;
+  }
 };
 
 function generateRouteForChatroom(communityId: string, communityName: string) {
