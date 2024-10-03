@@ -11,7 +11,7 @@ import {
   generateGifString,
   getNotificationsMessage,
 } from "../commonFuctions";
-import { Alert, Platform } from "react-native";
+import { Alert, PermissionsAndroid, Platform } from "react-native";
 import { Client } from "../client";
 import { getRoute } from "./routes";
 import { Credentials } from "../credentials";
@@ -48,6 +48,9 @@ export async function validateRegisterDeviceRequest(
 
 export async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
+  if(Platform.OS == 'android'){
+    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+  }
   const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
