@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, StackActions} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {navigationRef} from './RootNavigation';
 import messaging, { firebase } from "@react-native-firebase/messaging";
@@ -203,21 +203,24 @@ function App(): React.JSX.Element {
   }, []);
   useEffect(() => {
     async function get(){
-      const payload: InitUserWithUuid = {
-        userName: userName,
-        uuid: userUniqueID,
-        apiKey: apiKey,
-        isGuest: false,
-      };
-      const initiateUserResponse = await myClient?.initiateUser(payload);
-      const accessToken = initiateUserResponse?.accessToken;
+      // const payload: InitUserWithUuid = {
+      //   userName: userName,
+      //   uuid: userUniqueID,
+      //   apiKey: apiKey,
+      //   isGuest: false,
+      // };
+      // const initiateUserResponse = await myClient?.initiateUser(payload);
+      // const accessToken = initiateUserResponse?.accessToken;
+
+      const accessToken = Token.accessToken;
+      console.log('accessToken ---->', Token.accessToken)
 
       if (FCMToken) {
         pushAPI(FCMToken, accessToken);
       }
     }
     get();
-  }, [FCMToken]);
+  }, [FCMToken, Token.accessToken]);
 
   // useEffect(() => {
   //   console.log(firebase.messaging().isDeviceRegisteredForRemoteMessages,"regis")
