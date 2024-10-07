@@ -384,7 +384,7 @@ export default async function getNotification(remoteMessage: any) {
   } else {
     await notifee.displayNotification({
       title: remoteMessage?.data?.title,
-      subtitle: remoteMessage?.data?.sub_title,
+      body: remoteMessage?.data?.sub_title,
       android: {
         channelId,
         pressAction: {
