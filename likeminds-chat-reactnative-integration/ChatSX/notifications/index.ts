@@ -23,7 +23,8 @@ import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseMod
 import { chatSchema } from "../assets/chatSchema";
 import {MediaAttachment} from "../commonFuctions/model"
 import { getUniqueId } from "react-native-device-info";
-import { LMChatClient } from "@likeminds.community/chat-rn";
+import { ConversationState, LMChatClient } from "@likeminds.community/chat-rn";
+import { initMyClient } from "../../ChatSX/setup";
 
 interface RegisterDeviceRequest {
   token: string;
@@ -43,7 +44,6 @@ export async function validateRegisterDeviceRequest(
     xPlatformCode: request.xPlatformCode,
     token: request.token
   })
-  console.log(res)
 }
 
 export async function requestUserPermission() {
@@ -133,6 +133,10 @@ function formatTimestampTo24Hour(timestamp: number): string {
 }
 
 export default async function getNotification(remoteMessage: any) {
+  if ( Client?.myClient == undefined || Client?.myClient == null ) {
+    const filterStateMessage = [ConversationState.MEMBER_LEFT_SECRET_CHATROOM];
+    initMyClient(filterStateMessage);
+  }
   const users = await Client.myClient?.getUserSchema();
   const isIOS = Platform.OS === "ios" ? true : false;
   const message = isIOS
@@ -238,11 +242,13 @@ export default async function getNotification(remoteMessage: any) {
         const sdkClientInfoCreator = chatroomCreator?.sdk_client_info;
         const sdkClientInfoLastCreator = lastConversationCreator?.sdk_client_info;
 
+
         let chatroom: Chatroom = {
           id: formattedMessage?.chatroom_id?.toString(),
           state: 0,
           muteStatus: false,
           title: formattedMessage?.chatroom_title,
+          header: formattedMessage?.chatroom_name,
           member: {
             id: chatroomCreator?.id?.toString() as string,
             uuid: chatroomCreator?.uuid,
@@ -277,8 +283,11 @@ export default async function getNotification(remoteMessage: any) {
             },
             isOwner: false,
           },
-          chatroomWithUserId: lastConversationCreator?.id?.toString(),
-          followStatus: true
+          chatroomWithUserId: lastConversationCreator?.id,
+          followStatus: true,
+          updatedAt: formattedMessage?.chatroom_last_conversation_timestamp,
+          createdAt: formattedMessage?.chatroom_last_conversation_timestamp,
+          
         };
 
         const response = await Client?.myClient?.getUnreadChatrooms(chatroom,conversation);
