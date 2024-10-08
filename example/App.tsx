@@ -6,10 +6,6 @@
  */
 
 
-if (__DEV__) {
-  require("./ReactotronConfig");
-}
-
 import React, {useEffect, useState} from 'react';
 import {
   KeyboardAvoidingView,
