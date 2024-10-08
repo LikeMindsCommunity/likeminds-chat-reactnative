@@ -78,6 +78,7 @@ export const pushAPI = async (fcmToken: string, accessToken: string) => {
 
 export const token = async () => {
   const isPermissionEnabled = await requestUserPermission();
+  const res = await messaging().registerDeviceForRemoteMessages();
   if (isPermissionEnabled) {
     let fcmToken = await fetchFCMToken();
     return fcmToken;
@@ -200,6 +201,25 @@ export default async function getNotification(remoteMessage: any) {
       if (res !== undefined && res !== null) {
         let formattedMessage = JSON.parse(remoteMessage?.data?.unread_follow_notification);
 
+        const months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+
+        const time = new Date(Date.now());
+        const hr = time.getHours();
+        const min = time.getMinutes();
+
         const creator = formattedMessage?.chatroom_last_conversation_creator;
         const sdkClientInfo = creator?.sdk_client_info;
 
@@ -233,7 +253,15 @@ export default async function getNotification(remoteMessage: any) {
             formattedMessage?.chatroom_last_conversation_timestamp
           ),
           hasFiles: formattedMessage?.attachments?.length > 0,
-          createdAt: formatTimestampTo24Hour(formattedMessage?.chatroom_last_conversation_timestamp)
+          createdAt: `${hr.toLocaleString("en-US", {
+            minimumIntegerDigits: 2,
+            useGrouping: false,
+          })}:${min.toLocaleString("en-US", {
+            minimumIntegerDigits: 2,
+            useGrouping: false,
+          })}`,
+          date: `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+            } ${months[time.getMonth()]} ${time.getFullYear()}`,
         }
 
 
