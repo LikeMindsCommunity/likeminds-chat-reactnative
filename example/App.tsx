@@ -5,6 +5,7 @@
  * @format
  */
 
+
 import React, {useEffect, useState} from 'react';
 import {
   KeyboardAvoidingView,
@@ -13,9 +14,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, StackActions} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {navigationRef} from './RootNavigation';
+import messaging, { firebase } from "@react-native-firebase/messaging";
+import notifee, { EventType } from "@notifee/react-native";
 import {
   CarouselScreen,
   CreatePollScreen,
@@ -39,6 +42,9 @@ import {
   DmAllMembers,
   initMyClient,
   SearchInChatroom,
+  getNotification,
+  Token,
+  getRoute,
 } from '@likeminds.community/chat-rn-core';
 import ChatroomScreenWrapper from './screens/Chatroom/ChatroomScreenWrapper';
 import {setStyles} from './styles';
@@ -89,6 +95,7 @@ class CustomCallbacks implements LMChatCallbacks, LMChatroomCallbacks {
 const lmChatInterface = new CustomCallbacks();
 
 function App(): React.JSX.Element {
+  const [FCMToken,setFCMToken] = useState("");
   const chatroomId = '';
   const profileImageUrl = '';
   const [users, setUsers] = useState<any>();
@@ -182,6 +189,52 @@ function App(): React.JSX.Element {
       };
     },
   );
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      const val = await getNotification(remoteMessage);
+      return val;
+    });
+
+    notifee.onForegroundEvent(async ({ type, detail }) => {
+      if (detail?.notification?.data?.route != undefined) {
+        const navigation = navigationRef?.current || navigationRef;
+        let currentRoute = navigation?.getCurrentRoute();
+        let routes = await getRoute(detail?.notification?.data?.route);
+
+
+        if (type === EventType.PRESS) {
+          if (!!navigation) {
+            if ((currentRoute?.name as any) === routes?.route) {
+              if (
+                JSON.stringify(routes?.params) !==
+                JSON.stringify(currentRoute?.params)
+              ) {
+                const popAction = StackActions.pop(1);
+                navigation.dispatch(popAction);
+                setTimeout(() => {
+                  navigation.navigate(
+                    routes?.route as never,
+                    routes?.params as never
+                  );
+                }, 1000);
+              }
+            } else {
+              setTimeout(() => {
+                navigation.navigate(
+                  routes?.route as never,
+                  routes?.params as never
+                );
+              },5000)
+            }
+          }
+        }
+      }
+    });
+
+    return unsubscribe
+  },[])
+  
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>

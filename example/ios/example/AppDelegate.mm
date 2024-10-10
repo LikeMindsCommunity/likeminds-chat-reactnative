@@ -12,6 +12,7 @@
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
   [FIRApp configure];
+  [application registerForRemoteNotifications];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
@@ -34,5 +35,11 @@
 {
   return true;
 }
+
+- (void)application:(UIApplication *)application
+ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+ [FIRMessaging messaging].APNSToken = deviceToken;
+}
+
 
 @end
