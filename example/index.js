@@ -14,7 +14,7 @@ import { StackActions } from '@react-navigation/native';
 
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   getNotification(remoteMessage)
- });
+});
 
 notifee.onBackgroundEvent(async ({ type, detail }) => {
   if (detail?.notification?.data?.route != undefined) {
@@ -42,7 +42,30 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
           navigation.navigate(
             routes?.route,
             routes?.params
-          ); //navigate(CHATROOM, {chatroomID: 69285});
+          );
+        }
+      } else {
+        if ((currentRoute?.name) === routes?.route) {
+          if (
+            JSON.stringify(routes?.params) !==
+            JSON.stringify(currentRoute?.params)
+          ) {
+            const popAction = StackActions.pop(1);
+            navigationRef.dispatch(popAction);
+            setTimeout(() => {
+              navigationRef.dispatch(StackActions.push(
+                routes?.route,
+                routes?.params
+              ))
+            },5000)
+          }
+        } else {
+          setTimeout(() => {
+            navigationRef.dispatch(StackActions.push(
+              routes?.route,
+              routes?.params
+            ))
+          },5000)
         }
       }
     }
