@@ -190,6 +190,52 @@ function App(): React.JSX.Element {
     },
   );
 
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      const val = await getNotification(remoteMessage);
+      return val;
+    });
+
+    notifee.onForegroundEvent(async ({ type, detail }) => {
+      if (detail?.notification?.data?.route != undefined) {
+        const navigation = navigationRef?.current || navigationRef;
+        let currentRoute = navigation?.getCurrentRoute();
+        let routes = await getRoute(detail?.notification?.data?.route);
+
+
+        if (type === EventType.PRESS) {
+          if (!!navigation) {
+            if ((currentRoute?.name as any) === routes?.route) {
+              if (
+                JSON.stringify(routes?.params) !==
+                JSON.stringify(currentRoute?.params)
+              ) {
+                const popAction = StackActions.pop(1);
+                navigation.dispatch(popAction);
+                setTimeout(() => {
+                  navigation.navigate(
+                    routes?.route as never,
+                    routes?.params as never
+                  );
+                }, 1000);
+              }
+            } else {
+              setTimeout(() => {
+                navigation.navigate(
+                  routes?.route as never,
+                  routes?.params as never
+                );
+              },5000)
+            }
+          }
+        }
+      }
+    });
+
+    return unsubscribe
+  },[])
+  
+
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       {userName && userUniqueID && apiKey && myClient ? (
