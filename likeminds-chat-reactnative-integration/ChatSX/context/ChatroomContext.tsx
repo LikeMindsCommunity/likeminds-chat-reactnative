@@ -695,7 +695,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       if (navigationFromNotification) {
         if (appState.match(/active|foreground/)) {
           // App has gone to the background
-          await fetchInitAPI();
+          // await fetchInitAPI();
         }
         const chatroomDetails = await fetchChatroomDetails();
         await fetchData(chatroomDetails, false);
