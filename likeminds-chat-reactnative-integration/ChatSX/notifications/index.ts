@@ -315,7 +315,6 @@ export default async function getNotification(remoteMessage: any) {
           followStatus: true,
           updatedAt: formattedMessage?.chatroom_last_conversation_timestamp,
           createdAt: formattedMessage?.chatroom_last_conversation_timestamp,
-          
         };
 
         const response = await Client?.myClient?.getUnreadChatrooms(chatroom,conversation);
@@ -352,6 +351,7 @@ export default async function getNotification(remoteMessage: any) {
             }
           }
   
+          notifee.cancelAllNotifications()
           // Create summary
           notifee.displayNotification({
             title: navigationRoute,
@@ -392,10 +392,8 @@ export default async function getNotification(remoteMessage: any) {
                 groupId: navigationRoute?.toString(16),
                 groupAlertBehavior: AndroidGroupAlertBehavior.SUMMARY,
                 timestamp:
-                  sortedUnreadConversation[i]
-                    ?.lastConversationRO?.createdEpoch ?? Date.now(),
+                  sortedUnreadConversation[i]?.lastConversationRO?.createdEpoch ?? Date.now(),
                 showTimestamp: true,
-                sortKey: i?.toString(),
                 pressAction: {
                   id: "default",
                   launchActivity: "default",
@@ -420,7 +418,8 @@ export default async function getNotification(remoteMessage: any) {
           launchActivity: "default",
         },
         importance: AndroidImportance.HIGH,
-      }
+      },
+      data: { route : remoteMessage?.data?.route}
     })
   }
 }
