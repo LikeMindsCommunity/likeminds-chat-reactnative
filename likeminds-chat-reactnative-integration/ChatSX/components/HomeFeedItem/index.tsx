@@ -515,7 +515,7 @@ const HomeFeedItem: React.FC<Props> = ({
                 {chatroomType !== ChatroomType.DMCHATROOM ? (
                   <Text
                     style={styles.lastMessage}
-                  >{`${lastConversationMember}: `}</Text>
+                  >{`${lastConversationMember == user?.name ? "You" : lastConversationMember}: `}</Text>
                 ) : null}
 
                 <Text

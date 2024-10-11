@@ -18,7 +18,7 @@ import {
   initAPI,
   validateUser,
 } from "../store/actions/homefeed";
-
+import { pushAPI, token } from "../notifications/index"
 export const LMChatProvider = ({
   myClient,
   children,
@@ -95,6 +95,13 @@ export const LMChatProvider = ({
 
       if (validateResponse !== undefined && validateResponse !== null) {
         // calling getMemberState API
+
+        token().then((res) => {
+          if (!!res) {
+            pushAPI(res,accessToken)
+          }
+        })
+
         await dispatch(getMemberState());
       }
       setIsInitiated(true);
@@ -118,6 +125,11 @@ export const LMChatProvider = ({
       if (initiateResponse !== undefined && initiateResponse !== null) {
         // calling getMemberState API
         await dispatch(getMemberState());
+        token().then((res) => {
+          if (!!res) {
+            pushAPI(res,accessToken)
+          }
+        })
         setIsInitiated(true);
       }
     }

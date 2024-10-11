@@ -174,8 +174,8 @@ const ChatroomHeader = ({
                     }}
                   >
                     <Text
+                      numberOfLines={2}
                       ellipsizeMode="tail"
-                      numberOfLines={1}
                       style={{
                         color: chatroomNameHeaderStyle?.color
                           ? chatroomNameHeaderStyle?.color
@@ -186,7 +186,7 @@ const ChatroomHeader = ({
                         fontFamily: chatroomNameHeaderStyle?.fontFamily
                           ? chatroomNameHeaderStyle?.fontFamily
                           : STYLES.$FONT_TYPES.BOLD,
-                        maxWidth: Layout.normalize(250),
+                        maxWidth: Layout.normalize(220)
                       }}
                     >
                       {chatroomName}
@@ -204,6 +204,7 @@ const ChatroomHeader = ({
                         fontFamily: chatroomSubHeaderStyle?.fontFamily
                           ? chatroomSubHeaderStyle?.fontFamily
                           : STYLES.$FONT_TYPES.LIGHT,
+                          marginBottom: 3,
                       }}
                     >
                       {chatroomDetails?.participantCount != undefined
