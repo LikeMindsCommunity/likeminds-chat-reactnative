@@ -771,7 +771,7 @@ export const getNotificationsMessage = (
     const isPdfCountGreaterThanOne = pdfCount > 1;
     return `${isPdfCountGreaterThanOne ? pdfCount : ""} ${DOCUMENT_ICON} ${
       isConversation
-        ? conversation
+        ? "Documents: " + conversation
         : isPdfCountGreaterThanOne
         ? MULTIPLE_DOCUMENT_STRING
         : DOCUMENT_STRING
@@ -780,7 +780,7 @@ export const getNotificationsMessage = (
     const isVideoCountGreaterThanOne = videosCount > 1;
     return `${isVideoCountGreaterThanOne ? videosCount : ""} ${VIDEO_ICON} ${
       isConversation
-        ? conversation
+        ? "Videos: " + conversation
         : isVideoCountGreaterThanOne
         ? MULTIPLE_VIDEO_STRING
         : VIDEO_STRING
@@ -789,15 +789,15 @@ export const getNotificationsMessage = (
     const isImageCountGreaterThanOne = imageCount > 1;
     return `${isImageCountGreaterThanOne ? imageCount : ""} ${PHOTO_ICON} ${
       isConversation
-        ? conversation
+        ? "Photos: " + conversation
         : isImageCountGreaterThanOne
         ? MULTIPLE_PHOTO_STRING
         : PHOTO_STRING
     }`;
   } else if (voiceNoteCount > 0) {
-    return `${VOICE_NOTE_ICON} ${conversation}`;
+    return `${VOICE_NOTE_ICON} Voice Note ${conversation}`;
   } else if (gifCount > 0) {
-    return `${GIF_ICON} ${conversation}`;
+    return `${GIF_ICON} GIF ${conversation}`;
   } else {
     return conversation;
   }
