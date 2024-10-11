@@ -68,6 +68,7 @@ export const styles = StyleSheet.create({
     height: Layout.normalize(150),
     width: "100%",
     resizeMode: "cover",
+    borderRadius: Layout.normalize(6)
   },
   doubleImgParent: {
     display: "flex",
