@@ -1588,7 +1588,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       chatroomID?.toString(),
       ChatroomChatRequestState.ACCEPTED
     );
-    fetchChatroomDetails();
+
+    await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
+      0,
+      Date.now() * 1000)
+    await fetchChatroomDetails();
 
     dispatch({
       type: ADD_STATE_MESSAGE,
@@ -1623,7 +1627,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       chatroomID?.toString(),
       ChatroomChatRequestState.REJECTED
     );
-    fetchChatroomDetails();
+
+    await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
+      0,
+      Date.now() * 1000)
+    await fetchChatroomDetails();
 
     return response;
   };
@@ -1648,7 +1656,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       chatroomID?.toString(),
       ChatroomChatRequestState.ACCEPTED
     );
-    fetchChatroomDetails();
+    await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
+      0,
+      Date.now() * 1000)
+    await fetchChatroomDetails();
     return response;
   };
 
@@ -1658,11 +1669,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       chatroomId: chatroomID,
       status: ChatroomChatRequestState.INITIATED,
     };
-    const response = await myClient?.blockMember(payload);
     dispatch({
       type: SHOW_TOAST,
       body: { isToast: true, msg: "Member blocked" },
     });
+    const response = await myClient?.blockMember(payload);
     dispatch({
       type: ADD_STATE_MESSAGE,
       body: { conversation: response?.data?.conversation },
@@ -1671,7 +1682,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       chatroomID?.toString(),
       ChatroomChatRequestState.REJECTED
     );
-    fetchChatroomDetails();
+    await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
+      0,
+      Date.now() * 1000)
+    await fetchChatroomDetails();
     return response;
   };
 
@@ -1681,11 +1695,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       chatroomId: chatroomID,
       status: ChatroomChatRequestState.ACCEPTED,
     };
-    const response = await myClient?.blockMember(payload);
     dispatch({
       type: SHOW_TOAST,
       body: { isToast: true, msg: "Member unblocked" },
     });
+    const response = await myClient?.blockMember(payload);
     dispatch({
       type: ADD_STATE_MESSAGE,
       body: { conversation: response?.data?.conversation },

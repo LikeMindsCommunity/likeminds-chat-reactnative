@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import React from "react";
+import React, { useMemo } from "react";
 import { ChatroomType } from "../../enums";
 import InputBox from "../InputBox";
 import { styles } from "../../screens/ChatRoom/styles";
@@ -58,6 +58,7 @@ const MessageInput = ({
     previousRoute,
     isSecret,
     refInput,
+    filteredChatroomActions,
 
     setIsEditable,
     joinSecretChatroom,
@@ -71,6 +72,7 @@ const MessageInput = ({
   const messageForMemberCanMessage = hintMessages?.messageForMemberCanMessage;
   const messageForAnnouncementRoom = hintMessages?.messageForAnnouncementRoom;
   const respondingDisabled = hintMessages?.respondingDisabled;
+  const canUnblock = useMemo(() => filteredChatroomActions?.find(action => action.id == 28), [filteredChatroomActions])
   return (
     <View
       style={{
