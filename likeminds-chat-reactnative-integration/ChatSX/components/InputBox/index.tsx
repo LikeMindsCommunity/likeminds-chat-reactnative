@@ -230,6 +230,7 @@ const MessageInputBox = ({
   const MAX_FILE_SIZE = 104857600; // 100MB in bytes
   const MAX_LENGTH = 300;
 
+
   const isIOS = Platform.OS === "ios" ? true : false;
 
   const taggedUserNames: any = [];
@@ -748,10 +749,6 @@ const MessageInputBox = ({
         mediaType: "photo",
         selectionLimit: 0,
       };
-      navigation.navigate(FILE_UPLOAD, {
-        chatroomID: chatroomID,
-        previousMessage: message, // to keep message on uploadScreen InputBox
-      });
       await launchCamera(options, async (response: ImagePickerResponse) => {
         if (response?.didCancel) {
           if (selectedFilesToUpload.length === 0) {
@@ -781,6 +778,10 @@ const MessageInputBox = ({
           }
           await handleImageAndVideoUpload(selectedImages);
         }
+      });
+      navigation.navigate(FILE_UPLOAD, {
+        chatroomID: chatroomID,
+        previousMessage: message, // to keep message on uploadScreen InputBox
       });
     } catch (error) {
       if (selectedFilesToUpload.length === 0) {
@@ -820,7 +821,7 @@ const MessageInputBox = ({
           body: { color: STYLES.$STATUS_BAR_STYLE["light-content"] },
         });
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   const handleModalClose = () => {
@@ -1095,14 +1096,12 @@ const MessageInputBox = ({
         replyObj.id = ID?.toString();
         replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
         replyObj.communityId = community?.id?.toString();
-        replyObj.date = `${
-          time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-        } ${months[time.getMonth()]} ${time.getFullYear()}`;
+        replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+          } ${months[time.getMonth()]} ${time.getFullYear()}`;
         replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
         replyObj.communityId = community?.id?.toString();
-        replyObj.date = `${
-          time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-        } ${months[time.getMonth()]} ${time.getFullYear()}`;
+        replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+          } ${months[time.getMonth()]} ${time.getFullYear()}`;
         replyObj.attachmentCount = attachmentsCount;
         replyObj.attachments = dummyAttachmentsArr;
         replyObj.hasFiles = attachmentsCount > 0 ? true : false;
@@ -1131,9 +1130,8 @@ const MessageInputBox = ({
       obj.id = ID?.toString();
       obj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
       obj.communityId = community?.id?.toString();
-      obj.date = `${
-        time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-      } ${months[time.getMonth()]} ${time.getFullYear()}`;
+      obj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+        } ${months[time.getMonth()]} ${time.getFullYear()}`;
       obj.attachmentCount = attachmentsCount;
       obj.attachments = dummyAttachmentsArr;
       obj.hasFiles = attachmentsCount > 0 ? true : false;
@@ -1340,17 +1338,17 @@ const MessageInputBox = ({
               body: {
                 message: isReply
                   ? {
-                      ...replyObj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    }
+                    ...replyObj,
+                    id: response?.id,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  }
                   : {
-                      ...obj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    },
+                    ...obj,
+                    id: response?.id,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  },
                 ID: response?.id,
               },
             });
@@ -1358,17 +1356,17 @@ const MessageInputBox = ({
             const id = response?.id;
             const message = isReply
               ? {
-                  ...replyObj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                }
+                ...replyObj,
+                id: response?.id,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              }
               : {
-                  ...obj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                };
+                ...obj,
+                id: response?.id,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              };
 
             await myClient?.saveAttachmentUploadConversation(
               id.toString(),
@@ -1432,17 +1430,17 @@ const MessageInputBox = ({
               body: {
                 message: isReply
                   ? {
-                      ...replyObj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    }
+                    ...replyObj,
+                    id: response?.id,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  }
                   : {
-                      ...obj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    },
+                    ...obj,
+                    id: response?.id,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  },
                 ID: response?.id,
               },
             });
@@ -1450,17 +1448,17 @@ const MessageInputBox = ({
             const id = response?.id;
             const message = isReply
               ? {
-                  ...replyObj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                }
+                ...replyObj,
+                id: response?.id,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              }
               : {
-                  ...obj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                };
+                ...obj,
+                id: response?.id,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              };
 
             await myClient?.saveAttachmentUploadConversation(
               id?.toString(),
@@ -1586,7 +1584,6 @@ const MessageInputBox = ({
             clearTimeout(debounceLinkPreviewTimeout);
             const timeoutId = setTimeout(() => {
               for (let i = 0; i < parts.length; i++) {
-                setShowLinkPreview(true);
                 if (LINK_PREVIEW_REGEX.test(parts[i]) && !closedPreview) {
                   setShowLinkPreview(true);
                   setUrl(parts[i]);
@@ -1980,8 +1977,8 @@ const MessageInputBox = ({
       ? 5
       : 5
     : isIOS
-    ? 20
-    : 5;
+      ? 20
+      : 5;
 
   return (
     <View>
@@ -2006,31 +2003,31 @@ const MessageInputBox = ({
           styles.inputContainer,
           !isUploadScreen
             ? {
-                marginBottom: inputBoxStyles?.messageInputMarginBottom
-                  ? inputBoxStyles?.messageInputMarginBottom
-                  : marginValue,
-              }
+              marginBottom: inputBoxStyles?.messageInputMarginBottom
+                ? inputBoxStyles?.messageInputMarginBottom
+                : marginValue,
+            }
             : null,
         ]}
       >
         <View
           style={
             (isReply && !isUploadScreen) ||
-            isUserTagging ||
-            isEditable ||
-            Object.keys(ogTagsState).length !== 0
+              isUserTagging ||
+              isEditable ||
+              Object.keys(ogTagsState).length !== 0
               ? [
-                  styles.replyBoxParent,
-                  {
-                    borderTopWidth:
-                      isReply && !isUploadScreen && !isUserTagging ? 0 : 0,
-                    borderTopLeftRadius:
-                      isReply && !isUploadScreen && !isUserTagging ? 10 : 20,
-                    borderTopRightRadius:
-                      isReply && !isUploadScreen && !isUserTagging ? 10 : 20,
-                    backgroundColor: isUploadScreen ? "black" : "white",
-                  },
-                ]
+                styles.replyBoxParent,
+                {
+                  borderTopWidth:
+                    isReply && !isUploadScreen && !isUserTagging ? 0 : 0,
+                  borderTopLeftRadius:
+                    isReply && !isUploadScreen && !isUserTagging ? 10 : 20,
+                  borderTopRightRadius:
+                    isReply && !isUploadScreen && !isUserTagging ? 10 : 20,
+                  backgroundColor: isUploadScreen ? "black" : "white",
+                },
+              ]
               : null
           }
         >
@@ -2168,8 +2165,8 @@ const MessageInputBox = ({
           )}
 
           {Object.keys(ogTagsState).length !== 0 &&
-          showLinkPreview &&
-          !closedOnce ? (
+            showLinkPreview &&
+            !closedOnce ? (
             <View
               style={[
                 styles.taggableUsersBox,
@@ -2238,9 +2235,9 @@ const MessageInputBox = ({
               },
               (isReply && !isUploadScreen) || isEditable || isUserTagging
                 ? {
-                    borderWidth: 0,
-                    margin: isIOS ? 0 : Layout.normalize(2),
-                  }
+                  borderWidth: 0,
+                  margin: isIOS ? 0 : Layout.normalize(2),
+                }
                 : null,
             ]}
           >
@@ -2289,7 +2286,7 @@ const MessageInputBox = ({
                     source={require("../../assets/lottieJSON/delete.json")}
                     style={{ height: 40, width: 40 }}
                     autoPlay
-                    // loop
+                  // loop
                   />
                 </View>
               </View>
@@ -2399,19 +2396,19 @@ const MessageInputBox = ({
                   styles.inputParent,
                   isUploadScreen
                     ? {
-                        marginHorizontal: Layout.normalize(5),
-                      }
+                      marginHorizontal: Layout.normalize(5),
+                    }
                     : { marginHorizontal: Layout.normalize(15) },
                 ]}
               >
                 {!isUploadScreen &&
-                !(
-                  chatRequestState === ChatroomChatRequestState.INITIATED ||
-                  chatRequestState === null
-                ) &&
-                !isEditable &&
-                !voiceNotes?.recordTime &&
-                !isDeleteAnimation ? (
+                  !(
+                    chatRequestState === ChatroomChatRequestState.INITIATED ||
+                    chatRequestState === null
+                  ) &&
+                  !isEditable &&
+                  !voiceNotes?.recordTime &&
+                  !isDeleteAnimation ? (
                   GIFPicker ? (
                     <TouchableOpacity
                       style={styles.gifView}
@@ -2475,10 +2472,10 @@ const MessageInputBox = ({
             )}
 
             {!isUploadScreen &&
-            !(chatRequestState === 0 || chatRequestState === null) &&
-            !isEditable &&
-            !voiceNotes?.recordTime &&
-            !isDeleteAnimation ? (
+              !(chatRequestState === 0 || chatRequestState === null) &&
+              !isEditable &&
+              !voiceNotes?.recordTime &&
+              !isDeleteAnimation ? (
               <TouchableOpacity
                 style={[
                   styles.emojiButton,
@@ -2513,10 +2510,10 @@ const MessageInputBox = ({
           is first DM message
         } */}
         {!!message ||
-        isVoiceResult ||
-        isUploadScreen ||
-        isRecordingLocked ||
-        (chatroomType === 10 && chatRequestState === null) ? (
+          isVoiceResult ||
+          isUploadScreen ||
+          isRecordingLocked ||
+          (chatroomType === 10 && chatRequestState === null) ? (
           <TouchableOpacity
             onPressOut={async () => {
               if (
@@ -2644,7 +2641,7 @@ const MessageInputBox = ({
       >
         <Pressable style={styles.centeredView} onPress={handleModalClose}>
           <View style={styles.modalViewParent}>
-            <Pressable onPress={() => {}} style={[styles.modalView]}>
+            <Pressable onPress={() => { }} style={[styles.modalView]}>
               <View style={styles.alignModalElements}>
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
