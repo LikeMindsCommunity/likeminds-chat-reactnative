@@ -140,7 +140,11 @@ export const CreatePollContextProvider = ({
         setShow(true); // to show the picker again in time mode
       } else {
         const selectedTime = selectedValue || newDate;
-        setTime(selectedTime);
+        if ((event?.nativeEvent?.timestamp >= Date.now())) {
+          setTime(selectedTime);
+        } else {
+          setTime(newDate)
+        }
         setShow(false);
         setMode(DATE_TEXT);
       }
