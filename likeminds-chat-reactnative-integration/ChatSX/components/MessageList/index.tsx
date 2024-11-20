@@ -42,18 +42,21 @@ interface MessageList {
   onTapToUndo?: () => void;
   scrollToBottom?: () => void;
   showChatroomTopic?: boolean;
+  customWidgetMessageView?: React.ReactNode;
 }
 
 const MessageList = ({
   onTapToUndo,
   scrollToBottom,
   showChatroomTopic,
+  customWidgetMessageView
 }: MessageList) => {
   return (
     <MessageListComponent
       onTapToUndo={onTapToUndo}
       scrollToBottomProp={scrollToBottom}
       showChatroomTopic={showChatroomTopic}
+      customWidgetMessageView={customWidgetMessageView}
     />
   );
 };
@@ -62,12 +65,14 @@ interface MessageListComponent {
   onTapToUndo?: () => void;
   scrollToBottomProp?: () => void;
   showChatroomTopic?: boolean;
+  customWidgetMessageView?: React.ReactNode;
 }
 
 const MessageListComponent = ({
   onTapToUndo,
   scrollToBottomProp,
   showChatroomTopic,
+  customWidgetMessageView,
 }: MessageListComponent) => {
   const {
     conversations,
@@ -401,6 +406,7 @@ const MessageListComponent = ({
                         isStateIncluded={isStateIncluded}
                         index={index}
                         onTapToUndoProp={onTapToUndo}
+                        customWidgetMessageView={customWidgetMessageView}
                       />
                     </Pressable>
                   </Swipeable>
@@ -554,6 +560,7 @@ const MessageListComponent = ({
                         isStateIncluded={isStateIncluded}
                         index={index}
                         onTapToUndoProp={onTapToUndo}
+                        customWidgetMessageView={customWidgetMessageView}
                       />
                     </Pressable>
                   </Swipeable>

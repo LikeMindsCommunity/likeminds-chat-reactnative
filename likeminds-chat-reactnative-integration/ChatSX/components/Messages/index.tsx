@@ -1,5 +1,5 @@
 import { Image, TouchableOpacity, View } from "react-native";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useMemo } from "react";
 import { styles } from "./styles";
 import STYLES from "../../constants/Styles";
 import ReplyConversations from "../ReplyConversations";
@@ -24,6 +24,7 @@ interface Messages {
   isStateIncluded: boolean;
   isIncluded: boolean;
   onTapToUndoProp?: () => void;
+  customWidgetMessageView?: React.ReactNode;
 }
 
 const Messages = ({
@@ -32,6 +33,7 @@ const Messages = ({
   isStateIncluded,
   isIncluded,
   onTapToUndoProp,
+  customWidgetMessageView
 }: Messages) => {
   return (
     <MessageContextProvider
@@ -40,20 +42,21 @@ const Messages = ({
       isStateIncluded={isStateIncluded}
       isIncluded={isIncluded}
     >
-      <MessagesComponent onTapToUndoProp={onTapToUndoProp} />
+      <MessagesComponent onTapToUndoProp={onTapToUndoProp} customWidgetMessageView={customWidgetMessageView} />
     </MessageContextProvider>
   );
 };
 
 interface MessagesComponentProps {
   onTapToUndoProp?: () => void;
+  customWidgetMessageView?: React.ReactNode;
 }
 
 interface CustomReactionList {
   customReactionList?: ReactNode;
 }
 
-const MessagesComponent = ({ onTapToUndoProp }: MessagesComponentProps) => {
+const MessagesComponent = ({ onTapToUndoProp, customWidgetMessageView }: MessagesComponentProps) => {
   const {
     item,
     isIncluded,
@@ -89,6 +92,24 @@ const MessagesComponent = ({ onTapToUndoProp }: MessagesComponentProps) => {
     ? selectedMessageBackgroundColor
     : STYLES.$COLORS.SELECTED_BLUE;
   // styling props ended
+
+  const showCustomMessageViewWidget = useMemo(() => {
+    if (item?.widgets && item?.widgetId) {
+      const widgets = item.widgets;
+      if (widgets) {
+        return true;
+      } else {
+        false;
+      }
+    } else {
+      return false;
+    }
+  }, [item]);
+  if (showCustomMessageViewWidget) {
+    // TODO Custom Widget
+    // Render the complete custom Post View widget
+    return customWidgetMessageView;
+  }
 
   return (
     <View>

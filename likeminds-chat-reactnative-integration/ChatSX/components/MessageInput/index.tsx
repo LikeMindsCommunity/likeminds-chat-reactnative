@@ -30,6 +30,7 @@ interface MessageInput {
   showJoinAlertProp: () => void;
   showRejectAlertProp: () => void;
   hintMessages?: HintMessages;
+  conversationMetaData?: any;
 }
 
 const MessageInput = ({
@@ -37,6 +38,7 @@ const MessageInput = ({
   showJoinAlertProp,
   showRejectAlertProp,
   hintMessages,
+  conversationMetaData,
 }: MessageInput) => {
   const {
     navigation,
@@ -130,6 +132,7 @@ const MessageInput = ({
                 isSecret={isSecret}
                 chatroomType={chatroomType}
                 currentChatroomTopic={currentChatroomTopic}
+                widgets={conversationMetaData ? conversationMetaData : {}}
               />
             ) : //case to block normal users from messaging in an Announcement Room
             user.state !== 1 && chatroomDBDetails?.type === 7 ? (
@@ -282,6 +285,7 @@ const MessageInput = ({
               setIsEditable={(value: boolean) => {
                 setIsEditable(value);
               }}
+              widgets={conversationMetaData ? conversationMetaData : {}}
             />
           ) : (
             <View style={styles.disabledInput}>

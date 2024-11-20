@@ -59,6 +59,7 @@ interface FileUploadProps {
   handleCamera?: () => void;
   handleDoc?: () => void;
   onEdit?: () => void;
+  conversationMetaData?: any;
 }
 
 const FileUpload = ({
@@ -66,6 +67,7 @@ const FileUpload = ({
   handleCamera,
   handleDoc,
   onEdit,
+  conversationMetaData,
 }: FileUploadProps) => {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const route = useRoute();
@@ -445,6 +447,7 @@ const FileUpload = ({
               handleFileUpload={handleFileUpload}
               isGif={isGif}
               chatroomType={chatroomType}
+              widgets={conversationMetaData ? conversationMetaData : {}}
             />
           </CustomisableMethodsContextProvider>
         ) : null}

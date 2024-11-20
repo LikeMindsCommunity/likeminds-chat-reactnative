@@ -170,6 +170,7 @@ const MessageInputBox = ({
   chatroomName,
   currentChatroomTopic,
   isGif,
+  widgets,
 }: InputBoxProps) => {
   const myClient = Client.myClient;
   const inputBoxStyles = STYLES.$INPUT_BOX_STYLE;
@@ -1110,6 +1111,7 @@ const MessageInputBox = ({
         replyObj.images = dummySelectedFileArr;
         replyObj.videos = dummySelectedFileArr;
         replyObj.pdf = dummySelectedFileArr;
+        replyObj.widgets = widgets;
         if (!closedOnce || !closedPreview) {
           replyObj.ogTags = ogTagsState;
         }
@@ -1141,6 +1143,7 @@ const MessageInputBox = ({
       obj.images = dummySelectedFileArr;
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
+      obj.widgets = widgets;
       if (!closedOnce || !closedPreview) {
         obj.ogTags = ogTagsState;
       }
@@ -1291,7 +1294,7 @@ const MessageInputBox = ({
         );
       } else {
         if (!isUploadScreen) {
-          const payload: any = {
+          let payload: any = {
             chatroomId: chatroomID,
             hasFiles: false,
             text: conversationText?.trim(),
@@ -1299,6 +1302,10 @@ const MessageInputBox = ({
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
           };
+
+          if (widgets) {
+            payload = { ...payload, metadata: widgets };
+          }
 
           if (
             Object.keys(ogTagsState).length !== 0 &&
