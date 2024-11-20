@@ -1585,15 +1585,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       type: UPDATE_CHAT_REQUEST_STATE,
       body: { chatRequestState: 1 },
     });
-
     await myClient?.updateChatRequestState(
       chatroomID?.toString(),
       ChatroomChatRequestState.ACCEPTED
     );
-
-    await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
-      0,
-      Date.now() * 1000)
     await fetchChatroomDetails();
 
     dispatch({
