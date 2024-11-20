@@ -22,6 +22,7 @@ import {
 } from "./utils";
 import { LMChatTexInputProps } from "./types";
 import { decode } from "../commonFunctions";
+import RNClipboard from "../../optionalDependecies/RNClipboard";
 
 export const LMChatTextInput: FC<LMChatTexInputProps> = ({
   inputText,
@@ -112,7 +113,7 @@ export const LMChatTextInput: FC<LMChatTexInputProps> = ({
         changedText,
         isFirst
       )
-    );
+    )
   };
 
   const handleTextInputRef = (ref: TextInput) => {
@@ -128,11 +129,25 @@ export const LMChatTextInput: FC<LMChatTexInputProps> = ({
     }
   };
 
+  async function detectPaste(content: string): Promise<boolean> {
+    if (content === '') return false;
+    const copiedContent = await RNClipboard?.getString();
+    if (copiedContent === '') return false;
+    return content === copiedContent;
+  }
+
   return (
     <TextInput
       {...textInputProps}
       ref={handleTextInputRef}
-      onChangeText={onChangeInput}
+      onChangeText={async (text) => {
+        let isPasted = await detectPaste(text);
+        if (isPasted || text === "") {
+          onType(text);
+        } else{
+          onChangeInput(text);
+        }
+      }}
       autoFocus={autoFocus}
       onContentSizeChange={onContentSizeChange}
       onSelectionChange={handleSelectionChange}
