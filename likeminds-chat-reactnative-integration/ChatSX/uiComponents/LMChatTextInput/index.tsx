@@ -130,6 +130,7 @@ export const LMChatTextInput: FC<LMChatTexInputProps> = ({
   };
 
   async function detectPaste(content: string): Promise<boolean> {
+    if (content?.length < 250) return false;
     if (content === '') return false;
     const copiedContent = await RNClipboard?.getString();
     if (copiedContent === '') return false;
