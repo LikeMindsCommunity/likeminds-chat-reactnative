@@ -12,6 +12,7 @@ import STYLES from "../../constants/Styles";
 import {
   APPROVE_BUTTON,
   COMMUNITY_MANAGER_DISABLED_CHAT,
+  DM_BLOCKED_USER,
   DM_REQUEST_SENT_MESSAGE,
   REJECT_BUTTON,
   REQUEST_SENT,
@@ -265,9 +266,13 @@ const MessageInput = ({
             </View>
           ) : showDM === true &&
             (chatRequestState === 0 || chatRequestState === 2) ? (
-            <View style={styles.disabledInput}>
-              <Text style={styles.disabledInputText}>{REQUEST_SENT}</Text>
-            </View>
+              (chatRequestState === 2 && chatroomDBDetails?.chatRequestedBy?.id == user?.id?.toString()) ? 
+              <View style={styles.disabledInput}>
+                <Text style={styles.disabledInputText}>{DM_BLOCKED_USER}</Text>
+              </View> :
+              <View style={styles.disabledInput}>
+                <Text style={styles.disabledInputText}>{REQUEST_SENT}</Text>
+              </View>
           ) : (showDM === true && chatRequestState === 1) ||
             chatRequestState === null ? (
             <InputBox

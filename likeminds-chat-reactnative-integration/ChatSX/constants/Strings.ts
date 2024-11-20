@@ -5,6 +5,7 @@ export const APPROVE_DM_REQUEST = "Approve DM request?";
 export const APPROVE_REQUEST_MESSAGE =
   "Member will be able to send you messages and get notified of the same.";
 
+
 export const REJECT_DM_REQUEST = "Reject DM request?";
 export const REJECT_REQUEST_MESSAGE =
   "Member would be blocked from sending you further messages.\nThe sender will not be notified of this.";
@@ -26,6 +27,8 @@ export const NO_DM_TEXT =
 export const DM_INFO =
   "Direct message is a feature where members can send private messages to other members and community managers.";
 export const NEW_MESSAGE_BTN_TEXT = "NEW MESSAGE";
+export const DM_BLOCKED_USER = 
+  "You can not respond to a blocked connection. Unblock to send a message.";
 
 export const REQUEST_SENT =
   "Messaging would be enabled once your request is approved.";
