@@ -837,6 +837,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       conversationId
     );
     const DB_RESPONSE = val?.data;
+    if ((DB_RESPONSE?.chatroomMeta[chatroomID])?.chatRequestState == 1) {
+      await myClient?.updateChatRequestState(
+        chatroomID?.toString(),
+        ChatroomChatRequestState.ACCEPTED
+      );
+    }
     if (DB_RESPONSE?.conversationsData?.length !== 0) {
       await myClient?.saveConversationData(
         DB_RESPONSE,
@@ -873,10 +879,6 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             0,
             maxTimeStamp,
             conversationID
-          );
-          await myClient?.updateChatRequestState(
-            chatroomID?.toString(),
-            ChatroomChatRequestState.ACCEPTED
           );
           fetchChatroomDetails();
         }
