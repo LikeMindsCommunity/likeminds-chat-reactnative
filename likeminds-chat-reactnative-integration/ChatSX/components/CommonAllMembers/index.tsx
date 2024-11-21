@@ -447,7 +447,7 @@ const CommonAllMembers = ({
 
   // this function calls when user click for DM on members screen. Here ChatroomID is gonna be clicked chatroomID
   const onUserClicked = async (uuid: any) => {
-    const apiRes = await myClient?.checkDMLimit({
+    const apiRes: any = await myClient?.checkDMLimit({
       uuid: uuid,
     });
     const res = apiRes?.data;

@@ -42,7 +42,7 @@ export const chatSchema = {
     reactions: [],
     state: 0,
     ogTags: {},
-    widgets: {},
+    widget: {},
     widgetId: "",
   },
   reply: {
@@ -126,12 +126,12 @@ export const chatSchema = {
       },
       reactions: [],
       state: 0,
-      widgets: {},
+      widget: {},
       widgetId: "",
     },
     state: 0,
     ogTags: {},
-    widgets: {},
+    widget: {},
     widgetId: "",
   },
 };
@@ -214,6 +214,6 @@ export const convertToChatroomTopicSchema = (item) => ({
   deletedByMember: undefined,
   community: [],
   chatroom: [],
-  widgets: item.widget,
+  widget: item.widget,
   widgetId: item.widgetId
 });

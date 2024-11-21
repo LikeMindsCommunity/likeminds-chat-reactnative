@@ -100,9 +100,9 @@ const MessagesComponent = ({
   // styling props ended
 
   const showCustomMessageViewWidget = useMemo(() => {
-    if (item?.widgets && item?.widgetId) {
-      const widgets = item.widgets;
-      if (widgets) {
+    if (item?.widget && item?.widgetId) {
+      const widget = item.widget;
+      if (widget) {
         return true;
       } else {
         false;

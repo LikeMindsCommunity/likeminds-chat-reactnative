@@ -1111,7 +1111,7 @@ const MessageInputBox = ({
         replyObj.images = dummySelectedFileArr;
         replyObj.videos = dummySelectedFileArr;
         replyObj.pdf = dummySelectedFileArr;
-        replyObj.widgets = widgets;
+        replyObj.widget = widgets;
         if (!closedOnce || !closedPreview) {
           replyObj.ogTags = ogTagsState;
         }
@@ -1143,7 +1143,7 @@ const MessageInputBox = ({
       obj.images = dummySelectedFileArr;
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
-      obj.widgets = widgets;
+      obj.widget = widgets;
       if (!closedOnce || !closedPreview) {
         obj.ogTags = ogTagsState;
       }
@@ -1217,7 +1217,7 @@ const MessageInputBox = ({
           text: conversation?.trim(),
         });
 
-        const val = await syncConversationAPI(
+        const val: any = await syncConversationAPI(
           page,
           Math.floor(Date.now() * 1000),
           0
@@ -1263,7 +1263,7 @@ const MessageInputBox = ({
           text: conversation?.trim(),
         });
 
-        const val = await syncConversationAPI(
+        const val: any = await syncConversationAPI(
           page,
           Math.floor(Date.now() * 1000),
           0

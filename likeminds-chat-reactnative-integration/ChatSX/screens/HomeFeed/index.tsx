@@ -163,7 +163,7 @@ const HomeFeed = ({ navigation }: Props) => {
 
   useLayoutEffect(() => {
     async function fetchCheckDMTab() {
-      const response = await myClient.checkDMTab();
+      const response: any = await myClient.checkDMTab();
 
       if (response?.success) {
         setHideDMTab(response?.data?.hideDmTab);

@@ -450,7 +450,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     maxTimeStamp: number,
     conversationId?: string
   ) => {
-    const val = await syncConversationAPI(
+    const val: any = await syncConversationAPI(
       page,
       maxTimeStamp,
       minTimeStamp,
@@ -549,7 +549,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   //this function fetchChatroomDetails when we first move inside Chatroom
   async function fetchChatroomDetails() {
     const payload = { chatroomId: chatroomID };
-    const chatroom = await myClient?.getChatroom(chatroomID?.toString());
+    const chatroom: any = await myClient?.getChatroom(chatroomID?.toString());
     const DB_DATA = chatroom?.data;
     if (DB_DATA?.isChatroomVisited) {
       setShimmerIsLoading(false);
@@ -830,7 +830,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     maxTimeStamp: number,
     conversationId?: string
   ) => {
-    const val = await syncConversationAPI(
+    const val: any = await syncConversationAPI(
       page,
       maxTimeStamp,
       minTimeStamp,
@@ -1983,7 +1983,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     uuid: string,
     conversationId: number
   ) => {
-    const apiRes = await myClient?.checkDMLimit({
+    const apiRes: any = await myClient?.checkDMLimit({
       uuid: uuid,
     });
     const res = apiRes?.data;
