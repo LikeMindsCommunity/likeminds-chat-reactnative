@@ -42,7 +42,7 @@ interface MessageList {
   onTapToUndo?: () => void;
   scrollToBottom?: () => void;
   showChatroomTopic?: boolean;
-  customWidgetMessageView?: React.ReactNode;
+  customWidgetMessageView?: React.ReactElement;
 }
 
 const MessageList = ({
@@ -65,7 +65,7 @@ interface MessageListComponent {
   onTapToUndo?: () => void;
   scrollToBottomProp?: () => void;
   showChatroomTopic?: boolean;
-  customWidgetMessageView?: React.ReactNode;
+  customWidgetMessageView?: React.ReactElement;
 }
 
 const MessageListComponent = ({

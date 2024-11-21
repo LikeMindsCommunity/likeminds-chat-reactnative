@@ -24,7 +24,7 @@ interface Messages {
   isStateIncluded: boolean;
   isIncluded: boolean;
   onTapToUndoProp?: () => void;
-  customWidgetMessageView?: React.ReactNode;
+  customWidgetMessageView?: React.ReactElement;
 }
 
 const Messages = ({
@@ -33,7 +33,7 @@ const Messages = ({
   isStateIncluded,
   isIncluded,
   onTapToUndoProp,
-  customWidgetMessageView
+  customWidgetMessageView,
 }: Messages) => {
   return (
     <MessageContextProvider
@@ -42,21 +42,27 @@ const Messages = ({
       isStateIncluded={isStateIncluded}
       isIncluded={isIncluded}
     >
-      <MessagesComponent onTapToUndoProp={onTapToUndoProp} customWidgetMessageView={customWidgetMessageView} />
+      <MessagesComponent
+        onTapToUndoProp={onTapToUndoProp}
+        customWidgetMessageView={customWidgetMessageView}
+      />
     </MessageContextProvider>
   );
 };
 
 interface MessagesComponentProps {
   onTapToUndoProp?: () => void;
-  customWidgetMessageView?: React.ReactNode;
+  customWidgetMessageView?: React.ReactElement;
 }
 
 interface CustomReactionList {
   customReactionList?: ReactNode;
 }
 
-const MessagesComponent = ({ onTapToUndoProp, customWidgetMessageView }: MessagesComponentProps) => {
+const MessagesComponent = ({
+  onTapToUndoProp,
+  customWidgetMessageView,
+}: MessagesComponentProps) => {
   const {
     item,
     isIncluded,
