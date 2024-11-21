@@ -26,6 +26,10 @@ import { useMessageContext } from "../../context/MessageContext";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import Layout from "../../constants/Layout";
 import { styles } from "../AttachmentConversations/styles";
+import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
+import LinearGradient from "react-native-linear-gradient";
+
+const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
 export const ImageVideoConversationView = () => {
   const { isIncluded, item, handleLongPress } = useMessageContext();
@@ -725,7 +729,7 @@ export const ImageVideoConversationView = () => {
 
       {item?.isInProgress === SUCCESS ? (
         <View style={styles.uploadingIndicator}>
-          <ActivityIndicator size="large" color={STYLES.$COLORS.SECONDARY} />
+          <ShimmerPlaceHolder height={'100%'} width={Layout.normalize(250)} />
         </View>
       ) : item?.isInProgress === FAILED ? (
         <View style={styles.uploadingIndicator}>
