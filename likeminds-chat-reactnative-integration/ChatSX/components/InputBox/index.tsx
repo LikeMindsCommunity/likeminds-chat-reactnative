@@ -2445,18 +2445,16 @@ const MessageInputBox = ({
                         : STYLES.$BACKGROUND_COLORS.DARK,
                     },
                   ]}
-                  style={
-                    [
-                      styles.input,
-                      inputBoxStyles?.inputTextStyle,
-                      {
-                        height: Math.max(25, inputHeight),
-                        color: isUploadScreen
-                          ? STYLES.$BACKGROUND_COLORS.LIGHT
-                          : STYLES.$BACKGROUND_COLORS.DARK,
-                      },
-                    ] as TextStyle
-                  }
+                  style={[
+                    styles.input,
+                    { ...inputBoxStyles?.inputTextStyle },
+                    {
+                      height: Math.max(25, inputHeight),
+                      color: isUploadScreen
+                        ? STYLES.$BACKGROUND_COLORS.LIGHT
+                        : STYLES.$BACKGROUND_COLORS.DARK,
+                    },
+                  ]}
                   onContentSizeChange={(event) => {
                     setInputHeight(event.nativeEvent.contentSize.height);
                   }}

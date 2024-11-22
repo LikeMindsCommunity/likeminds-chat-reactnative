@@ -6,7 +6,7 @@ import {
 } from '@likeminds.community/chat-rn-core';
 
 const FileUploadScreen = () => {
-  return <FileUpload />;
+  return <FileUpload conversationMetaData={{asdf: 'yayy'}} />;
 };
 
 export default FileUploadScreen;

@@ -225,12 +225,12 @@ export interface InputBoxStyles {
   placeholderText?: string;
   inputTextStyle?: {
     flexGrow?: number;
-    fontSize?: string;
+    fontSize?: number;
     fontFamily?: string;
     maxHeight?: number;
     padding?: number;
     marginBottom?: number;
-    overflow?: string;
+    overflow?: 'visible' | 'hidden' | 'scroll' | undefined;
   };
   sendIconStyles?: {
     width?: number;

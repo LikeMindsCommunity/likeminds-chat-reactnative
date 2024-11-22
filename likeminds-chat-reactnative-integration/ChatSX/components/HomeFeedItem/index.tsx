@@ -450,13 +450,15 @@ const HomeFeedItem: React.FC<Props> = ({
                 titleStyle?.color && {
                   color: titleStyle?.color,
                 },
-                titleStyle?.fontSize && {
-                  fontSize: titleStyle?.fontSize,
-                },
+                titleStyle?.fontSize
+                  ? {
+                      fontSize: titleStyle?.fontSize,
+                    }
+                  : null,
                 titleStyle?.fontFamily && {
                   fontFamily: titleStyle?.fontFamily,
                 },
-              ] as TextStyle
+              ] as TextStyle[]
             }
             numberOfLines={1}
           >
@@ -476,13 +478,15 @@ const HomeFeedItem: React.FC<Props> = ({
                   lastConversationTime?.color && {
                     color: lastConversationTime?.color,
                   },
-                  lastConversationTime?.fontSize && {
-                    fontSize: lastConversationTime?.fontSize,
-                  },
+                  lastConversationTime?.fontSize
+                    ? {
+                        fontSize: lastConversationTime?.fontSize,
+                      }
+                    : null,
                   lastConversationTime?.fontFamily && {
                     fontFamily: lastConversationTime?.fontFamily,
                   },
-                ] as TextStyle
+                ] as TextStyle[]
               }
             >
               {time}
@@ -513,9 +517,11 @@ const HomeFeedItem: React.FC<Props> = ({
                 ]}
               >
                 {chatroomType !== ChatroomType.DMCHATROOM ? (
-                  <Text
-                    style={styles.lastMessage}
-                  >{`${lastConversationMember == user?.name ? "You" : lastConversationMember}: `}</Text>
+                  <Text style={styles.lastMessage}>{`${
+                    lastConversationMember == user?.name
+                      ? "You"
+                      : lastConversationMember
+                  }: `}</Text>
                 ) : null}
 
                 <Text
@@ -526,13 +532,15 @@ const HomeFeedItem: React.FC<Props> = ({
                       lastConversationStyle?.color && {
                         color: lastConversationStyle?.color,
                       },
-                      lastConversationStyle?.fontSize && {
-                        fontSize: lastConversationStyle?.fontSize,
-                      },
+                      lastConversationStyle?.fontSize
+                        ? {
+                            fontSize: lastConversationStyle?.fontSize,
+                          }
+                        : null,
                       lastConversationStyle?.fontFamily && {
                         fontFamily: lastConversationStyle?.fontFamily,
                       },
-                    ] as TextStyle
+                    ] as TextStyle[]
                   }
                 >
                   {lastConversation.hasFiles > 0
@@ -615,9 +623,11 @@ const HomeFeedItem: React.FC<Props> = ({
                   unreadCountStyle?.color && {
                     color: unreadCountStyle?.color,
                   },
-                  unreadCountStyle?.fontSize && {
-                    fontSize: unreadCountStyle?.fontSize,
-                  },
+                  unreadCountStyle?.fontSize
+                    ? {
+                        fontSize: unreadCountStyle?.fontSize,
+                      }
+                    : null,
                   unreadCountStyle?.fontFamily && {
                     fontFamily: unreadCountStyle?.fontFamily,
                   },
@@ -627,7 +637,7 @@ const HomeFeedItem: React.FC<Props> = ({
                   unreadCountStyle?.backgroundColor && {
                     backgroundColor: unreadCountStyle?.backgroundColor,
                   },
-                ] as TextStyle
+                ] as TextStyle[]
               }
             >
               99+
@@ -642,9 +652,11 @@ const HomeFeedItem: React.FC<Props> = ({
                   unreadCountStyle?.color && {
                     color: unreadCountStyle?.color,
                   },
-                  unreadCountStyle?.fontSize && {
-                    fontSize: unreadCountStyle?.fontSize,
-                  },
+                  unreadCountStyle?.fontSize
+                    ? {
+                        fontSize: unreadCountStyle?.fontSize,
+                      }
+                    : null,
                   unreadCountStyle?.fontFamily && {
                     fontFamily: unreadCountStyle?.fontFamily,
                   },
@@ -654,7 +666,7 @@ const HomeFeedItem: React.FC<Props> = ({
                   unreadCountStyle?.backgroundColor && {
                     backgroundColor: unreadCountStyle?.backgroundColor,
                   },
-                ] as TextStyle
+                ] as TextStyle[]
               }
             >
               {unreadCount}

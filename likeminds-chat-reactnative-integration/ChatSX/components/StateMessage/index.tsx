@@ -70,7 +70,7 @@ const StateMessage = ({ onTapToUndoProp }: StateMessage) => {
                   fontFamily: STYLES.$FONT_TYPES.LIGHT,
                 },
                 stateMessagesTextStyles ? { ...stateMessagesTextStyles } : null,
-              ] as TextStyle
+              ] as TextStyle[]
             }
           >
             {`${item?.answer} `}

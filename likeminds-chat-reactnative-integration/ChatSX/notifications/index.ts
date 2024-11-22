@@ -260,7 +260,7 @@ export default async function getNotification(remoteMessage: any) {
         date: `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
           } ${months[time.getMonth()]} ${time.getFullYear()}`,
         widgetId: '',
-        widgets:{}
+        widget:{}
       }
 
 

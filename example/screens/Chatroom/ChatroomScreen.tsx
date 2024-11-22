@@ -177,6 +177,7 @@ export function ChatroomScreen() {
         showJoinAlertProp={customShowJoinAlert}
         showRejectAlertProp={customShowRejectAlert}
         hintMessages={hintMessages}
+        conversationMetaData={{"asdf": "yayy"}}
       />
     </ChatRoom>
   );

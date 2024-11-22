@@ -256,25 +256,23 @@ export const decode = ({
       <Text>
         {arr.map((val, index) => (
           <Text
-            style={
-              [
-                {
-                  color: topicDescription?.color
-                    ? topicDescription?.color
-                    : STYLES.$COLORS.FONT_PRIMARY,
-                },
-                {
-                  fontFamily: topicDescription?.fontFamily
-                    ? topicDescription?.fontFamily
-                    : STYLES.$FONT_TYPES.LIGHT,
-                },
-                {
-                  fontSize: topicDescription?.fontSize
-                    ? topicDescription?.fontSize
-                    : null,
-                },
-              ] as TextStyle
-            }
+            style={[
+              {
+                color: topicDescription?.color
+                  ? topicDescription?.color
+                  : STYLES.$COLORS.FONT_PRIMARY,
+              },
+              {
+                fontFamily: topicDescription?.fontFamily
+                  ? topicDescription?.fontFamily
+                  : STYLES.$FONT_TYPES.LIGHT,
+              },
+              topicDescription?.fontSize
+                ? {
+                    fontSize: topicDescription?.fontSize,
+                  }
+                : {},
+            ]}
             key={val.key + index}
           >
             {val.route ? (
@@ -348,7 +346,6 @@ export const decodeTaggingRoute = ({
 
   return decodedText;
 };
-
 
 // this method is used to decode notifications
 export const decodeForNotifications = (text: string | undefined) => {
@@ -816,20 +813,20 @@ export const formatSearchDate = (date: Date): string => {
   inputDate.setHours(0, 0, 0, 0);
 
   if (inputDate.getTime() === today.getTime()) {
-    return 'Today';
+    return "Today";
   }
 
   if (inputDate.getTime() === yesterday.getTime()) {
-    return 'Yesterday';
+    return "Yesterday";
   }
 
   if (inputDate < today) {
-    const day = inputDate.getDate().toString().padStart(2, '0');
-    const month = (inputDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = inputDate.getDate().toString().padStart(2, "0");
+    const month = (inputDate.getMonth() + 1).toString().padStart(2, "0");
     const year = inputDate.getFullYear();
 
     return `${day}/${month}/${year}`;
   }
 
-  return '';
+  return "";
 };

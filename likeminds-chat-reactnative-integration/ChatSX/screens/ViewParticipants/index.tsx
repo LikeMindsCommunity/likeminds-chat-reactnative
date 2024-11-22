@@ -326,39 +326,39 @@ const ViewParticipants = ({ navigation, route }: any) => {
               />
               <View style={styles.infoContainer}>
                 <Text
-                  style={
-                    [
-                      styles.title,
-                      userNameStyles?.color && {
-                        color: userNameStyles?.color,
-                      },
-                      userNameStyles?.fontSize && {
-                        fontSize: userNameStyles?.fontSize,
-                      },
-                      userNameStyles?.fontFamily && {
-                        fontFamily: userNameStyles?.fontFamily,
-                      },
-                    ] as TextStyle
-                  }
+                  style={[
+                    styles.title,
+                    userNameStyles?.color && {
+                      color: userNameStyles?.color,
+                    },
+                    userNameStyles?.fontSize
+                      ? {
+                          fontSize: userNameStyles?.fontSize,
+                        }
+                      : null,
+                    userNameStyles?.fontFamily && {
+                      fontFamily: userNameStyles?.fontFamily,
+                    },
+                  ]}
                   numberOfLines={1}
                 >
                   {item?.name}
                   {item?.customTitle ? (
                     <Text
-                      style={
-                        [
-                          styles.messageCustomTitle,
-                          userTitleStyles?.color && {
-                            color: userTitleStyles?.color,
-                          },
-                          userTitleStyles?.fontSize && {
-                            fontSize: userTitleStyles?.fontSize,
-                          },
-                          userTitleStyles?.fontFamily && {
-                            fontFamily: userTitleStyles?.fontFamily,
-                          },
-                        ] as TextStyle
-                      }
+                      style={[
+                        styles.messageCustomTitle,
+                        userTitleStyles?.color && {
+                          color: userTitleStyles?.color,
+                        },
+                        userTitleStyles?.fontSize
+                          ? {
+                              fontSize: userTitleStyles?.fontSize,
+                            }
+                          : null,
+                        userTitleStyles?.fontFamily && {
+                          fontFamily: userTitleStyles?.fontFamily,
+                        },
+                      ]}
                     >{` • ${item?.customTitle}`}</Text>
                   ) : null}
                 </Text>
