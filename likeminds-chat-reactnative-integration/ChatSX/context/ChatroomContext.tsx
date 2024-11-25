@@ -106,6 +106,7 @@ import { fetchResourceFromURI, formatTime } from "../commonFuctions";
 import { Image as CompressedImage } from "react-native-compressor";
 import { Client } from "../client";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
+import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseModels/Attachment";
 
 interface UploadResource {
   selectedImages: any;
@@ -1753,6 +1754,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     isRetry,
   }: UploadResource) => {
     LogBox.ignoreLogs(["new NativeEventEmitter"]);
+    let attachments: Attachment[] = [];
     for (let i = 0; i < selectedImages?.length; i++) {
       const item = selectedImages[i];
       const attachmentType = isRetry ? item?.type : item?.type?.split("/")[0];
@@ -1771,8 +1773,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           : docAttachmentType === PDF_TEXT
           ? item.name
           : null;
-      const path = `files/collabcard/${chatroomID}/conversation/${conversationID}/${name}`;
-      const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${conversationID}/${thumbnailURL}`;
+
+        const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${name}-${conversationID}`;
+        const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
+        // const path = `files/collabcard/${chatroomID}/conversation/${conversationID}/${name}`;
+        // const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${conversationID}/${thumbnailURL}`;
 
       let uriFinal: any;
 
@@ -1833,9 +1838,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             fileType = VOICE_NOTE_TEXT;
           }
 
-          const payload = {
-            conversationId: conversationID,
-            filesCount: selectedImages?.length,
+          const payload: Attachment = {
+            // conversationId: conversationID,
+            id: conversationID,
+            // filesCount: selectedImages?.length,
             index: i + 1,
             meta:
               fileType === VIDEO_TEXT
@@ -1864,9 +1870,17 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             url: awsResponse,
             thumbnailUrl:
               fileType === VIDEO_TEXT ? getVideoThumbnailData?.Location : null,
+            awsFolderPath: path,
+            localFilePath: uriFinal,
+            thumbnailAWSFolderPath: thumbnailUrlPath,
+            thumbnailLocalFilePath: thumbnailUrlImg,
+            fileUrl: awsResponse,
+            createdAt: conversationID,
+            updatedAt: conversationID,
           };
 
-          const uploadRes = await myClient?.putMultimedia(payload as any);
+          attachments.push(payload);
+          // const uploadRes = await myClient?.putMultimedia(payload as any);
         }
       } catch (error) {
         dispatch({
@@ -1908,6 +1922,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     await myClient?.removeAttactmentUploadConversationByKey(
       conversationID?.toString()
     );
+    return attachments;
   };
 
   // method to handle file upload
@@ -1917,6 +1932,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     isVoiceNote?: boolean,
     voiceNotesToUpload?: any
   ) => {
+    console.log("context one")
     if (isVoiceNote) {
       const res = await uploadResource({
         selectedImages: voiceNotesToUpload,
