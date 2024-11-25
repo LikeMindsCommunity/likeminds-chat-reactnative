@@ -48,7 +48,7 @@ const DeletedMessage = () => {
                 : null,
             ]}
           >
-            <Text style={[styles.deletedMsg] as TextStyle}>
+            <Text style={[styles.deletedMsg] as TextStyle[]}>
               You deleted this message
             </Text>
           </View>
@@ -62,7 +62,7 @@ const DeletedMessage = () => {
                 : null,
             ]}
           >
-            <Text style={[styles.deletedMsg] as TextStyle}>
+            <Text style={[styles.deletedMsg] as TextStyle[]}>
               This message has been deleted by {conversationDeletorName}
             </Text>
           </View>
@@ -76,7 +76,7 @@ const DeletedMessage = () => {
                 : null,
             ]}
           >
-            <Text style={[styles.deletedMsg] as TextStyle}>
+            <Text style={[styles.deletedMsg] as TextStyle[]}>
               This message has been deleted by Community Manager
             </Text>
           </View>
@@ -89,7 +89,7 @@ const DeletedMessage = () => {
             isIncluded ? { backgroundColor: SELECTED_BACKGROUND_COLOR } : null,
           ]}
         >
-          <Text style={[styles.deletedMsg] as TextStyle}>
+          <Text style={[styles.deletedMsg] as TextStyle[]}>
             You deleted this message
           </Text>
         </View>
@@ -101,7 +101,7 @@ const DeletedMessage = () => {
             isIncluded ? { backgroundColor: SELECTED_BACKGROUND_COLOR } : null,
           ]}
         >
-          <Text style={[styles.deletedMsg] as TextStyle}>
+          <Text style={[styles.deletedMsg] as TextStyle[]}>
             This message has been deleted by {conversationDeletorName}
           </Text>
         </View>

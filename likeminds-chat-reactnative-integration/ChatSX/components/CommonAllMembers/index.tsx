@@ -578,7 +578,7 @@ const CommonAllMembers = ({
                       userNameStyles?.fontFamily && {
                         fontFamily: userNameStyles?.fontFamily,
                       },
-                    ] as TextStyle
+                    ] as TextStyle[]
                   }
                   numberOfLines={1}
                 >
@@ -597,7 +597,7 @@ const CommonAllMembers = ({
                           userTitleStyles?.fontFamily && {
                             fontFamily: userTitleStyles?.fontFamily,
                           },
-                        ] as TextStyle
+                        ] as TextStyle[]
                       }
                     >{` • ${item?.customTitle}`}</Text>
                   ) : null}

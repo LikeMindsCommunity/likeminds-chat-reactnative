@@ -2448,7 +2448,7 @@ const MessageInputBox = ({
                           ? STYLES.$BACKGROUND_COLORS.LIGHT
                           : STYLES.$BACKGROUND_COLORS.DARK,
                       },
-                    ] as TextStyle
+                    ] as TextStyle[]
                   }
                   onContentSizeChange={(event) => {
                     setInputHeight(event.nativeEvent.contentSize.height);

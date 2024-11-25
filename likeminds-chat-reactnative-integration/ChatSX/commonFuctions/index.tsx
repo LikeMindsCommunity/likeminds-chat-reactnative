@@ -273,7 +273,7 @@ export const decode = ({
                     ? topicDescription?.fontSize
                     : null,
                 },
-              ] as TextStyle
+              ] as TextStyle[]
             }
             key={val.key + index}
           >

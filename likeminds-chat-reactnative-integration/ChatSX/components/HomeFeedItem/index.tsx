@@ -456,7 +456,7 @@ const HomeFeedItem: React.FC<Props> = ({
                 titleStyle?.fontFamily && {
                   fontFamily: titleStyle?.fontFamily,
                 },
-              ] as TextStyle
+              ] as TextStyle[]
             }
             numberOfLines={1}
           >
@@ -482,7 +482,7 @@ const HomeFeedItem: React.FC<Props> = ({
                   lastConversationTime?.fontFamily && {
                     fontFamily: lastConversationTime?.fontFamily,
                   },
-                ] as TextStyle
+                ] as TextStyle[]
               }
             >
               {time}
@@ -532,7 +532,7 @@ const HomeFeedItem: React.FC<Props> = ({
                       lastConversationStyle?.fontFamily && {
                         fontFamily: lastConversationStyle?.fontFamily,
                       },
-                    ] as TextStyle
+                    ] as TextStyle[]
                   }
                 >
                   {lastConversation.hasFiles > 0
@@ -627,7 +627,7 @@ const HomeFeedItem: React.FC<Props> = ({
                   unreadCountStyle?.backgroundColor && {
                     backgroundColor: unreadCountStyle?.backgroundColor,
                   },
-                ] as TextStyle
+                ] as TextStyle[]
               }
             >
               99+
@@ -654,7 +654,7 @@ const HomeFeedItem: React.FC<Props> = ({
                   unreadCountStyle?.backgroundColor && {
                     backgroundColor: unreadCountStyle?.backgroundColor,
                   },
-                ] as TextStyle
+                ] as TextStyle[]
               }
             >
               {unreadCount}
