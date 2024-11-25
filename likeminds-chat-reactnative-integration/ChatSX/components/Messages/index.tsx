@@ -17,6 +17,7 @@ import SimpleMessage from "../SimpleMessage";
 import { NavigateToProfileParams } from "../../callBacks/type";
 import { CallBack } from "../../callBacks/callBackClass";
 import { useCustomComponentsContext } from "../../context/CustomComponentContextProvider";
+import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
 
 interface Messages {
   item: any;
@@ -24,7 +25,7 @@ interface Messages {
   isStateIncluded: boolean;
   isIncluded: boolean;
   onTapToUndoProp?: () => void;
-  customWidgetMessageView?: React.ReactElement;
+  customWidgetMessageView?: (message: Conversation) => React.ReactElement;
 }
 
 const Messages = ({
@@ -52,7 +53,7 @@ const Messages = ({
 
 interface MessagesComponentProps {
   onTapToUndoProp?: () => void;
-  customWidgetMessageView?: React.ReactElement;
+  customWidgetMessageView?: (message: Conversation) => React.ReactElement;
 }
 
 interface CustomReactionList {
@@ -114,7 +115,7 @@ const MessagesComponent = ({
   if (showCustomMessageViewWidget) {
     // TODO Custom Widget
     // Render the complete custom Post View widget
-    return customWidgetMessageView;
+    return customWidgetMessageView ? customWidgetMessageView(item) : null;
   }
 
   return (

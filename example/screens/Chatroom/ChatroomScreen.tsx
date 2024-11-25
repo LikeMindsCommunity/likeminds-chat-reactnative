@@ -7,12 +7,14 @@ import {
   useChatroomContext,
   useMessageListContext,
   useExploreFeedContext,
-  ChatroomTopic
+  ChatroomTopic,
 } from '@likeminds.community/chat-rn-core';
 import {ReactionList} from '../../customisableComponents/ReactionList';
 import ChatroomTabNavigator from '../../src/ChatroomTabNavigator';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Text, View} from 'react-native';
+import { Conversation } from '@likeminds.community/chat-rn/dist/shared/responseModels/Conversation';
 
 interface HintMessages {
   messageForRightsDisabled?: string;
@@ -136,6 +138,16 @@ export function ChatroomScreen() {
 
   const navigation = useNavigation<StackNavigationProp<any>>();
 
+  const customWidgetMessageView = (message: Conversation) => {
+    // console.log('message ==', message);
+    return (
+      <View>
+        <Text>{message.answer}</Text>
+        <Text>{'Yayy!'}</Text>
+      </View>
+    );
+  };
+
   return (
     <ChatRoom
       showViewParticipants={showViewParticipants}
@@ -159,8 +171,11 @@ export function ChatroomScreen() {
       blockMember={customBlockMember}
       unblockMember={customUnBlockMember}>
       {/* ChatroomHeader */}
-      <ChatroomHeader showThreeDotsOnHeader={true} showThreeDotsOnSelectedHeader={true} />
-      
+      <ChatroomHeader
+        showThreeDotsOnHeader={true}
+        showThreeDotsOnSelectedHeader={true}
+      />
+
       {/* Chtroom Topic */}
       <ChatroomTopic />
 
@@ -169,6 +184,7 @@ export function ChatroomScreen() {
         onTapToUndo={customOnTapToUndo}
         scrollToBottom={customScrollToBottom}
         showChatroomTopic={showChatroomTopic}
+        customWidgetMessageView={customWidgetMessageView}
       />
 
       {/* Input Box Flow */}
@@ -177,7 +193,7 @@ export function ChatroomScreen() {
         showJoinAlertProp={customShowJoinAlert}
         showRejectAlertProp={customShowRejectAlert}
         hintMessages={hintMessages}
-        conversationMetaData={{"asdf": "yayy"}}
+        conversationMetaData={{asdf: 'yayy'}}
       />
     </ChatRoom>
   );

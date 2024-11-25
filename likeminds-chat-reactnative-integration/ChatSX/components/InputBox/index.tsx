@@ -919,6 +919,7 @@ const MessageInputBox = ({
   // this method is trigerred whenever user presses the send button
   const onSend = async (
     conversation: string,
+    widgets: any,
     voiceNote?: any,
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
@@ -1111,10 +1112,16 @@ const MessageInputBox = ({
         replyObj.images = dummySelectedFileArr;
         replyObj.videos = dummySelectedFileArr;
         replyObj.pdf = dummySelectedFileArr;
-        replyObj.widget = widgets;
-        if (!closedOnce || !closedPreview) {
-          replyObj.ogTags = ogTagsState;
-        }
+        replyObj.widgetId = replyMessage.widgetId ? ID?.toString() : "";
+        replyObj.widget = replyMessage.widgetId
+          ? {
+              metadata: replyMessage?.widget,
+              parentEntityId: "",
+              parentEntityType: "",
+              createdAt: ID,
+              updatedAt: ID,
+            }
+          : {};
       }
       const obj = chatSchema.normal;
       obj.member.name = user?.name;
@@ -1143,7 +1150,14 @@ const MessageInputBox = ({
       obj.images = dummySelectedFileArr;
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
-      obj.widget = widgets;
+      obj.widget = {
+        metadata: widgets,
+        parentEntityId: "",
+        parentEntityType: "",
+        createdAt: ID,
+        updatedAt: ID,
+      };
+      obj.widgetId = ID?.toString();
       if (!closedOnce || !closedPreview) {
         obj.ogTags = ogTagsState;
       }
@@ -1308,7 +1322,7 @@ const MessageInputBox = ({
           }
 
           if (
-            Object.keys(ogTagsState).length !== 0 &&
+            Object.keys(ogTagsState || {}).length !== 0 &&
             url &&
             (!closedOnce || !closedPreview)
           ) {
@@ -1322,7 +1336,10 @@ const MessageInputBox = ({
           );
 
           if (response) {
-            await myClient?.replaceSavedConversation(response?.conversation);
+            await myClient?.replaceSavedConversation(
+              response?.conversation,
+              response?.widgets
+            );
           }
 
           //Handling conversation failed case
@@ -1399,7 +1416,7 @@ const MessageInputBox = ({
             body: { status: !fileSent },
           });
           navigation.goBack();
-          const payload: any = {
+          let payload: any = {
             chatroomId: chatroomID,
             hasFiles: false,
             text: conversationText?.trim(),
@@ -1408,8 +1425,12 @@ const MessageInputBox = ({
             repliedConversationId: replyMessage?.id,
           };
 
+          if (widgets) {
+            payload = { ...payload, metadata: widgets };
+          }
+
           if (
-            Object.keys(ogTagsState).length !== 0 &&
+            Object.keys(ogTagsState || {}).length !== 0 &&
             url &&
             (!closedOnce || !closedPreview)
           ) {
@@ -1422,7 +1443,10 @@ const MessageInputBox = ({
             onConversationsCreate(payload) as any
           );
 
-          await myClient?.replaceSavedConversation(response?.conversation);
+          await myClient?.replaceSavedConversation(
+            response?.conversation,
+            response?.widgets
+          );
 
           if (response === undefined) {
             dispatch({
@@ -2025,7 +2049,7 @@ const MessageInputBox = ({
             (isReply && !isUploadScreen) ||
             isUserTagging ||
             isEditable ||
-            Object.keys(ogTagsState).length !== 0
+            Object.keys(ogTagsState || {}).length !== 0
               ? [
                   styles.replyBoxParent,
                   {
@@ -2174,7 +2198,7 @@ const MessageInputBox = ({
             </View>
           )}
 
-          {Object.keys(ogTagsState).length !== 0 &&
+          {Object.keys(ogTagsState || {}).length !== 0 &&
           showLinkPreview &&
           !closedOnce ? (
             <View
@@ -2545,12 +2569,12 @@ const MessageInputBox = ({
                   ];
                   if (isVoiceNoteRecording) {
                     await stopRecord();
-                    onSend(message, voiceNote, true);
+                    onSend(message, widgets, voiceNote, true);
                   } else if (isVoiceNotePlaying) {
                     await stopPlay();
-                    onSend(message, voiceNote, true);
+                    onSend(message, widgets, voiceNote, true);
                   } else {
-                    onSend(message);
+                    onSend(message, widgets);
                   }
                 }
               }

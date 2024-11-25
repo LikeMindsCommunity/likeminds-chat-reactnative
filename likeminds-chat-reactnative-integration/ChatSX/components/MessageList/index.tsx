@@ -35,6 +35,7 @@ import ChatroomTopic from "../ChatroomTopic";
 import Layout from "../../constants/Layout";
 import { VOICE_NOTE_TEXT } from "../../constants/Strings";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
+import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
@@ -42,7 +43,7 @@ interface MessageList {
   onTapToUndo?: () => void;
   scrollToBottom?: () => void;
   showChatroomTopic?: boolean;
-  customWidgetMessageView?: React.ReactElement;
+  customWidgetMessageView?: (message: Conversation) => React.ReactElement;
 }
 
 const MessageList = ({
@@ -65,7 +66,7 @@ interface MessageListComponent {
   onTapToUndo?: () => void;
   scrollToBottomProp?: () => void;
   showChatroomTopic?: boolean;
-  customWidgetMessageView?: React.ReactElement;
+  customWidgetMessageView?: (message: Conversation) => React.ReactElement;
 }
 
 const MessageListComponent = ({

@@ -1101,7 +1101,7 @@ export const InputBoxContextProvider = ({
           const response: any = await dispatch(onConversationsCreate(payload));
 
           if (response) {
-            await myClient?.replaceSavedConversation(response?.conversation);
+            await myClient?.replaceSavedConversation(response?.conversation, response?.widgets);
           }
 
           //Handling conversation failed case
@@ -1198,7 +1198,7 @@ export const InputBoxContextProvider = ({
 
           const response: any = await dispatch(onConversationsCreate(payload));
 
-          await myClient?.replaceSavedConversation(response?.conversation);
+          await myClient?.replaceSavedConversation(response?.conversation, response?.widgets);
 
           if (response === undefined) {
             dispatch({
