@@ -194,7 +194,7 @@ const FileUpload = ({
         const compressedImg = await fetchResourceFromURI(compressedImgURI);
         uriFinal = compressedImg;
       } else {
-        const img = await fetchResourceFromURI(item.uri ? item.uri : item.url);
+        const img = (await fetchResourceFromURI(item.uri ? item.uri : item.url));
         uriFinal = img;
       }
 
@@ -281,10 +281,10 @@ const FileUpload = ({
                 : null,
             height: gifHeight ? gifHeight : null,
             width: gifWidth ? gifWidth : null,
-            localFilePath: uriFinal,
+            localFilePath: item.uri,
             awsFolderPath: path,
             thumbnailAWSFolderPath: thumbnailUrlPath,
-            thumbnailLocalFilePath: thumbnailUrlImg,
+            thumbnailLocalFilePath: thumbnailURL,
             fileUrl: awsResponse,
             createdAt: conversationID,
             updatedAt: conversationID,

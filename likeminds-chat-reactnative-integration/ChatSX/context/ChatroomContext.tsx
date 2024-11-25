@@ -1871,9 +1871,9 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             thumbnailUrl:
               fileType === VIDEO_TEXT ? getVideoThumbnailData?.Location : null,
             awsFolderPath: path,
-            localFilePath: uriFinal,
+            localFilePath: item.uri,
             thumbnailAWSFolderPath: thumbnailUrlPath,
-            thumbnailLocalFilePath: thumbnailUrlImg,
+            thumbnailLocalFilePath: fileType === VIDEO_TEXT ? thumbnailURL : null,
             fileUrl: awsResponse,
             createdAt: conversationID,
             updatedAt: conversationID,
