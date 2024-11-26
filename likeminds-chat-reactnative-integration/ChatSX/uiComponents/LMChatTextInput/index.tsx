@@ -129,7 +129,9 @@ export const LMChatTextInput: FC<LMChatTexInputProps> = ({
     }
   };
 
+  // Detect if content is pasted by comparing clipboard with current text in textbox
   async function detectPaste(content: string): Promise<boolean> {
+    // By pass regex algorithm is pasted content is greater than 500 words only 
     if (content?.length < 500) return false;
     if (content === '') return false;
     const copiedContent = await RNClipboard?.getString();
@@ -142,6 +144,7 @@ export const LMChatTextInput: FC<LMChatTexInputProps> = ({
       {...textInputProps}
       ref={handleTextInputRef}
       onChangeText={async (text) => {
+        // bypass regex alogrithm if content is pasted into textbox
         let isPasted = await detectPaste(text);
         if (isPasted || text === "") {
           onType(text);

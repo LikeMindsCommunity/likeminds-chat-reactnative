@@ -340,6 +340,7 @@ const ChatroomHeader = ({
         const isFirstMessageDeleted = selectedMessages[0]?.deletedBy;
         let isSelectedMessageEditable = false;
         const selectedMessagesLength = selectedMessages?.length;
+        // check if selected message is user's own message to disable self report
         let isOwnMessage = selectedMessages.some(message => {
           return message?.member?.uuid == user?.uuid;
         })
