@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import React, { useMemo } from "react";
-import { ChatroomType } from "../../enums";
+import { ChatroomChatRequestState, ChatroomType } from "../../enums";
 import InputBox from "../InputBox";
 import { styles } from "../../screens/ChatRoom/styles";
 import {
@@ -224,7 +224,7 @@ const MessageInput = ({
       ) : chatroomType === ChatroomType.DMCHATROOM &&
         memberRights?.length > 0 ? (
         <View>
-          {chatRequestState === 0 &&
+          {chatRequestState === ChatroomChatRequestState.INITIATED &&
           (chatroomDBDetails?.chatRequestedBy
             ? chatroomDBDetails?.chatRequestedBy?.id !== user?.id?.toString()
             : null) ? (
@@ -265,15 +265,15 @@ const MessageInput = ({
               </Text>
             </View>
           ) : showDM === true &&
-            (chatRequestState === 0 || chatRequestState === 2) ? (
-              (chatRequestState === 2 && chatroomDBDetails?.chatRequestedBy?.id == user?.id?.toString()) ? 
+            (chatRequestState === ChatroomChatRequestState.INITIATED || chatRequestState === ChatroomChatRequestState.REJECTED) ? (
+              (chatRequestState === ChatroomChatRequestState.REJECTED && chatroomDBDetails?.chatRequestedBy?.id == user?.id?.toString()) ? 
               <View style={styles.disabledInput}>
                 <Text style={styles.disabledInputText}>{DM_BLOCKED_USER}</Text>
               </View> :
               <View style={styles.disabledInput}>
                 <Text style={styles.disabledInputText}>{REQUEST_SENT}</Text>
               </View>
-          ) : (showDM === true && chatRequestState === 1) ||
+          ) : (showDM === true && chatRequestState === ChatroomChatRequestState.ACCEPTED) ||
             chatRequestState === null ? (
             <InputBox
               replyChatID={replyChatID}
