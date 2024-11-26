@@ -28,6 +28,7 @@ import Layout from "../../constants/Layout";
 import { styles } from "../AttachmentConversations/styles";
 import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 import LinearGradient from "react-native-linear-gradient";
+import { sortAttachmentsBasedOnIndex } from "../../utils/chatroomUtils";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
@@ -62,8 +63,7 @@ export const ImageVideoConversationView = () => {
 
   // handle on press on attachment
   const handleOnPress = (event: any, url: string, index: number) => {
-    let sortedItem = JSON.parse(JSON.stringify(item));
-    sortedItem.attachments.sort((a, b) => a.index - b.index);
+    let sortedItem = sortAttachmentsBasedOnIndex(item);
     const { pageX, pageY } = event.nativeEvent;
     dispatch({
       type: SET_POSITION,
@@ -299,8 +299,7 @@ export const ImageVideoConversationView = () => {
           delayLongPress={delayLongPress}
           onPress={(event) => {
             const { pageX, pageY } = event.nativeEvent;
-            let sortedItem = JSON.parse(JSON.stringify(item));
-            sortedItem.attachments.sort((a, b) => a.index - b.index);
+            let sortedItem = sortAttachmentsBasedOnIndex(item);
             dispatch({
               type: SET_POSITION,
               body: { pageX: pageX, pageY: pageY },
@@ -545,8 +544,7 @@ export const ImageVideoConversationView = () => {
           onLongPress={handleLongPress}
           delayLongPress={delayLongPress}
           onPress={(event) => {
-            let sortedItem = JSON.parse(JSON.stringify(item));
-            sortedItem.attachments.sort((a, b) => a.index - b.index);
+            let sortedItem = sortAttachmentsBasedOnIndex(item);
             const { pageX, pageY } = event.nativeEvent;
             dispatch({
               type: SET_POSITION,
