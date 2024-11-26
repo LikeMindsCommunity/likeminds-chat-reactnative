@@ -30,7 +30,6 @@ const StateMessage = ({ onTapToUndoProp }: StateMessage) => {
 
   const { onTapToUndo, chatroomType, chatroomName, chatroomDBDetails, chatroomDetails, filteredChatroomActions } = useChatroomContext();
   
-  const canUnblock = useMemo(() => filteredChatroomActions?.find(action => action.id == 28), [filteredChatroomActions])
   
   const chatBubbleStyles = STYLES.$CHAT_BUBBLE_STYLE;
 
