@@ -113,8 +113,6 @@ const MessagesComponent = ({
     }
   }, [item]);
   if (showCustomMessageViewWidget) {
-    // TODO Custom Widget
-    // Render the complete custom Post View widget
     return customWidgetMessageView ? customWidgetMessageView(item) : null;
   }
 

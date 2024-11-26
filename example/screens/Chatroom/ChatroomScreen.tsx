@@ -138,16 +138,6 @@ export function ChatroomScreen() {
 
   const navigation = useNavigation<StackNavigationProp<any>>();
 
-  const customWidgetMessageView = (message: Conversation) => {
-    // console.log('message ==', message);
-    return (
-      <View>
-        <Text>{message.answer}</Text>
-        <Text>{'Yayy!'}</Text>
-      </View>
-    );
-  };
-
   return (
     <ChatRoom
       showViewParticipants={showViewParticipants}
@@ -184,7 +174,6 @@ export function ChatroomScreen() {
         onTapToUndo={customOnTapToUndo}
         scrollToBottom={customScrollToBottom}
         showChatroomTopic={showChatroomTopic}
-        customWidgetMessageView={customWidgetMessageView}
       />
 
       {/* Input Box Flow */}
@@ -193,7 +182,6 @@ export function ChatroomScreen() {
         showJoinAlertProp={customShowJoinAlert}
         showRejectAlertProp={customShowRejectAlert}
         hintMessages={hintMessages}
-        conversationMetaData={{asdf: 'yayy'}}
       />
     </ChatRoom>
   );

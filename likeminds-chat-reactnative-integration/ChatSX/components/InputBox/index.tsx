@@ -170,7 +170,7 @@ const MessageInputBox = ({
   chatroomName,
   currentChatroomTopic,
   isGif,
-  widgets,
+  metaData,
 }: InputBoxProps) => {
   const myClient = Client.myClient;
   const inputBoxStyles = STYLES.$INPUT_BOX_STYLE;
@@ -919,7 +919,7 @@ const MessageInputBox = ({
   // this method is trigerred whenever user presses the send button
   const onSend = async (
     conversation: string,
-    widgets: any,
+    metaData: Record<string, any>,
     voiceNote?: any,
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
@@ -1151,7 +1151,7 @@ const MessageInputBox = ({
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
       obj.widget = {
-        metadata: widgets,
+        metadata: metaData,
         parentEntityId: "",
         parentEntityType: "",
         createdAt: ID,
@@ -1231,7 +1231,7 @@ const MessageInputBox = ({
           text: conversation?.trim(),
         });
 
-        const val: any = await syncConversationAPI(
+        const val = await syncConversationAPI(
           page,
           Math.floor(Date.now() * 1000),
           0
@@ -1277,7 +1277,7 @@ const MessageInputBox = ({
           text: conversation?.trim(),
         });
 
-        const val: any = await syncConversationAPI(
+        const val = await syncConversationAPI(
           page,
           Math.floor(Date.now() * 1000),
           0
@@ -1317,8 +1317,8 @@ const MessageInputBox = ({
             repliedConversationId: replyMessage?.id,
           };
 
-          if (widgets) {
-            payload = { ...payload, metadata: widgets };
+          if (metaData) {
+            payload = { ...payload, metadata: metaData };
           }
 
           if (
@@ -1425,8 +1425,8 @@ const MessageInputBox = ({
             repliedConversationId: replyMessage?.id,
           };
 
-          if (widgets) {
-            payload = { ...payload, metadata: widgets };
+          if (metaData) {
+            payload = { ...payload, metadata: metaData };
           }
 
           if (
@@ -2569,12 +2569,12 @@ const MessageInputBox = ({
                   ];
                   if (isVoiceNoteRecording) {
                     await stopRecord();
-                    onSend(message, widgets, voiceNote, true);
+                    onSend(message, metaData, voiceNote, true);
                   } else if (isVoiceNotePlaying) {
                     await stopPlay();
-                    onSend(message, widgets, voiceNote, true);
+                    onSend(message, metaData, voiceNote, true);
                   } else {
-                    onSend(message, widgets);
+                    onSend(message, metaData);
                   }
                 }
               }

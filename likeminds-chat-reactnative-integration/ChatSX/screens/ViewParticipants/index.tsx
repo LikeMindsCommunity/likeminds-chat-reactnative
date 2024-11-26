@@ -147,7 +147,7 @@ const ViewParticipants = ({ navigation, route }: any) => {
   };
 
   const fetchParticipants = async () => {
-    const apiRes: any = await myClient?.getParticipants({
+    const apiRes = await myClient?.getParticipants({
       chatroomId: chatroomID,
       isSecret: isSecret,
       page: 1,
@@ -169,7 +169,7 @@ const ViewParticipants = ({ navigation, route }: any) => {
     setCount(0);
 
     if (!!res && res?.participants.length === 10) {
-      const apiResponse: any = await myClient?.getParticipants({
+      const apiResponse = await myClient?.getParticipants({
         chatroomId: chatroomID,
         isSecret: isSecret,
         page: 2,
@@ -236,7 +236,7 @@ const ViewParticipants = ({ navigation, route }: any) => {
 
   const loadData = async (newPage: number) => {
     setIsLoading(true);
-    const res: any = await updateData(newPage);
+    const res = await updateData(newPage);
     if (res) {
       setParticipants([...participants, ...res?.participants]);
       setIsLoading(false);

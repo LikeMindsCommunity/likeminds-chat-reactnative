@@ -77,7 +77,7 @@ const ReportScreen = ({ navigation, route }: Props) => {
   useEffect(() => {
     const getTags = async () => {
       try {
-        const res: any = await myClient?.getReportTags({
+        const res = await myClient?.getReportTags({
           type: isDM === true ? 1 : 0,
         });
         setReasons(res?.data?.reportTags);

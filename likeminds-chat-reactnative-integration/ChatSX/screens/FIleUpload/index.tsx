@@ -59,7 +59,7 @@ interface FileUploadProps {
   handleCamera?: () => void;
   handleDoc?: () => void;
   onEdit?: () => void;
-  conversationMetaData?: any;
+  conversationMetaData?: Record<string, any>;
 }
 
 const FileUpload = ({
@@ -447,7 +447,7 @@ const FileUpload = ({
               handleFileUpload={handleFileUpload}
               isGif={isGif}
               chatroomType={chatroomType}
-              widgets={conversationMetaData ? conversationMetaData : {}}
+              metaData={conversationMetaData ? conversationMetaData : {}}
             />
           </CustomisableMethodsContextProvider>
         ) : null}
