@@ -6,7 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import STYLES from "../../constants/Styles";
 import {
   LONG_PRESSED,
@@ -26,6 +26,11 @@ import { useMessageContext } from "../../context/MessageContext";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import Layout from "../../constants/Layout";
 import { styles } from "../AttachmentConversations/styles";
+import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
+import LinearGradient from "react-native-linear-gradient";
+import { sortAttachmentsBasedOnIndex } from "../../utils/chatroomUtils";
+
+const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
 export const ImageVideoConversationView = () => {
   const { isIncluded, item, handleLongPress } = useMessageContext();
@@ -35,10 +40,12 @@ export const ImageVideoConversationView = () => {
   const imageVideoBorderRadius =
     chatBubbleStyles?.imageVideoAttachmentsBorderRadius;
 
-  const firstAttachment = item?.attachments[0];
-  const secondAttachment = item?.attachments[1];
-  const thirdAttachment = item?.attachments[2];
-  const fourthAttachment = item?.attachments[3];
+  let firstAttachment, secondAttachment, thirdAttachment, fourthAttachment;
+  firstAttachment = item?.attachments?.find( attachment => attachment?.index == 0 || attachment?.index == 1);
+  secondAttachment = item?.attachments?.find( attachment => attachment?.index == 1 || attachment?.index == 2);
+  thirdAttachment = item?.attachments?.find( attachment => attachment?.index == 2 || attachment?.index == 3);
+  fourthAttachment = item?.attachments?.find( attachment => attachment?.index == 3 || attachment?.index == 4);
+
   const dispatch = useAppDispatch();
   const { selectedMessages, stateArr, isLongPress }: any = useAppSelector(
     (state) => state.chatroom
@@ -56,6 +63,7 @@ export const ImageVideoConversationView = () => {
 
   // handle on press on attachment
   const handleOnPress = (event: any, url: string, index: number) => {
+    let sortedItem = sortAttachmentsBasedOnIndex(item);
     const { pageX, pageY } = event.nativeEvent;
     dispatch({
       type: SET_POSITION,
@@ -89,7 +97,7 @@ export const ImageVideoConversationView = () => {
       }
     } else {
       navigation.navigate(CAROUSEL_SCREEN, {
-        dataObject: item,
+        dataObject: sortedItem,
         index,
       });
       dispatch({
@@ -183,6 +191,7 @@ export const ImageVideoConversationView = () => {
     }
   }
 
+
   return (
     <View>
       {item?.attachmentCount === 1 ? (
@@ -190,7 +199,7 @@ export const ImageVideoConversationView = () => {
           onLongPress={handleLongPress}
           delayLongPress={delayLongPress}
           onPress={(event) => {
-            handleOnPress(event, firstAttachment?.url, 0);
+            handleOnPress(event, firstAttachment?.url, firstAttachment?.index - 1);
           }}
         >
           <Image
@@ -224,7 +233,7 @@ export const ImageVideoConversationView = () => {
             onLongPress={handleLongPress}
             delayLongPress={delayLongPress}
             onPress={(event) => {
-              handleOnPress(event, firstAttachment?.url, 0);
+              handleOnPress(event, firstAttachment?.url, firstAttachment?.index - 1);
             }}
           >
             <Image
@@ -256,7 +265,7 @@ export const ImageVideoConversationView = () => {
             onLongPress={handleLongPress}
             delayLongPress={delayLongPress}
             onPress={(event) => {
-              handleOnPress(event, secondAttachment?.url, 1);
+              handleOnPress(event, secondAttachment?.url, secondAttachment?.index - 1);
             }}
           >
             <Image
@@ -290,6 +299,7 @@ export const ImageVideoConversationView = () => {
           delayLongPress={delayLongPress}
           onPress={(event) => {
             const { pageX, pageY } = event.nativeEvent;
+            let sortedItem = sortAttachmentsBasedOnIndex(item);
             dispatch({
               type: SET_POSITION,
               body: { pageX: pageX, pageY: pageY },
@@ -323,7 +333,7 @@ export const ImageVideoConversationView = () => {
               }
             } else {
               navigation.navigate(CAROUSEL_SCREEN, {
-                dataObject: item,
+                dataObject: sortedItem,
                 index: 0,
               });
               dispatch({
@@ -401,7 +411,7 @@ export const ImageVideoConversationView = () => {
               onLongPress={handleLongPress}
               delayLongPress={delayLongPress}
               onPress={(event) => {
-                handleOnPress(event, firstAttachment?.url, 0);
+                handleOnPress(event, firstAttachment?.url, firstAttachment?.index - 1);
               }}
             >
               <Image
@@ -433,7 +443,7 @@ export const ImageVideoConversationView = () => {
               onLongPress={handleLongPress}
               delayLongPress={delayLongPress}
               onPress={(event) => {
-                handleOnPress(event, secondAttachment?.url, 1);
+                handleOnPress(event, secondAttachment?.url, secondAttachment?.index - 1);
               }}
             >
               <Image
@@ -467,7 +477,7 @@ export const ImageVideoConversationView = () => {
               onLongPress={handleLongPress}
               delayLongPress={delayLongPress}
               onPress={(event) => {
-                handleOnPress(event, thirdAttachment?.url, 2);
+                handleOnPress(event, thirdAttachment?.url, thirdAttachment?.index - 1);
               }}
             >
               <Image
@@ -499,7 +509,7 @@ export const ImageVideoConversationView = () => {
               onLongPress={handleLongPress}
               delayLongPress={delayLongPress}
               onPress={(event) => {
-                handleOnPress(event, fourthAttachment?.url, 3);
+                handleOnPress(event, fourthAttachment?.url, fourthAttachment?.index - 1);
               }}
             >
               <Image
@@ -534,6 +544,7 @@ export const ImageVideoConversationView = () => {
           onLongPress={handleLongPress}
           delayLongPress={delayLongPress}
           onPress={(event) => {
+            let sortedItem = sortAttachmentsBasedOnIndex(item);
             const { pageX, pageY } = event.nativeEvent;
             dispatch({
               type: SET_POSITION,
@@ -568,7 +579,7 @@ export const ImageVideoConversationView = () => {
               }
             } else {
               navigation.navigate(CAROUSEL_SCREEN, {
-                dataObject: item,
+                dataObject: sortedItem,
                 index: 0,
               });
               dispatch({
@@ -716,7 +727,7 @@ export const ImageVideoConversationView = () => {
 
       {item?.isInProgress === SUCCESS ? (
         <View style={styles.uploadingIndicator}>
-          <ActivityIndicator size="large" color={STYLES.$COLORS.SECONDARY} />
+          <ShimmerPlaceHolder height={'100%'} width={Layout.normalize(250)} />
         </View>
       ) : item?.isInProgress === FAILED ? (
         <View style={styles.uploadingIndicator}>

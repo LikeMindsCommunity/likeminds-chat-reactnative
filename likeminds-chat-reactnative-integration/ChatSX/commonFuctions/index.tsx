@@ -66,8 +66,8 @@ function detectLinks(
   textStyles?: any,
   linkTextColor?: string
 ) {
-  const regex =
-    /((?:https?:\/\/)?(?:www\.)?(?:\w+\.)+\w+(?:\/\S*)?|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/i;
+  const regex = 
+    /((?:https?:\/\/www\.|https?:\/\/|www\.)\w+\.\w{2,}(?:\/\S*)?|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/i;
 
   const parts = message.split(regex);
   if (parts?.length > 0) {

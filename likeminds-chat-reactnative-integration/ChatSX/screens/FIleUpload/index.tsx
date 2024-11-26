@@ -136,7 +136,7 @@ const FileUpload = ({
     );
 
     return () => backHandlerAndroid.remove();
-  }, []);
+  }, [selectedFileToView, selectedFilesToUpload]);
 
   AWS.config.update({
     region: REGION, // Replace with your AWS region, e.g., 'us-east-1'

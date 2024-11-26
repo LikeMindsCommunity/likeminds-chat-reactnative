@@ -83,3 +83,9 @@ export const getCurrentConversation = async (
   newConversation = newConversation.reverse();
   return newConversation;
 };
+
+export function sortAttachmentsBasedOnIndex(item) {
+  let sortedItems = JSON.parse(JSON.stringify(item));
+  sortedItems?.attachments?.sort((a, b) => a?.index - b?.index);
+  return sortedItems;
+}

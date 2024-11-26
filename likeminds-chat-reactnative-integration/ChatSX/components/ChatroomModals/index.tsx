@@ -11,7 +11,7 @@ import BlockDMRequestModal from "../../customModals/BlockDMRequest";
 
 const ChatroomModals = () => {
   return (
-    <View>
+    <View style={{position: 'absolute', zIndex: 10}}>
       {/* Chatroom Action Modal */}
       <ChatroomActionModal />
 

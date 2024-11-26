@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import React from "react";
-import { ChatroomType } from "../../enums";
+import React, { useMemo } from "react";
+import { ChatroomChatRequestState, ChatroomType } from "../../enums";
 import InputBox from "../InputBox";
 import { styles } from "../../screens/ChatRoom/styles";
 import {
@@ -12,6 +12,7 @@ import STYLES from "../../constants/Styles";
 import {
   APPROVE_BUTTON,
   COMMUNITY_MANAGER_DISABLED_CHAT,
+  DM_BLOCKED_USER,
   DM_REQUEST_SENT_MESSAGE,
   REJECT_BUTTON,
   REQUEST_SENT,
@@ -60,6 +61,7 @@ const MessageInput = ({
     previousRoute,
     isSecret,
     refInput,
+    filteredChatroomActions,
 
     setIsEditable,
     joinSecretChatroom,
@@ -73,6 +75,7 @@ const MessageInput = ({
   const messageForMemberCanMessage = hintMessages?.messageForMemberCanMessage;
   const messageForAnnouncementRoom = hintMessages?.messageForAnnouncementRoom;
   const respondingDisabled = hintMessages?.respondingDisabled;
+  const canUnblock = useMemo(() => filteredChatroomActions?.find(action => action.id == 28), [filteredChatroomActions])
   return (
     <View
       style={{
@@ -224,7 +227,7 @@ const MessageInput = ({
       ) : chatroomType === ChatroomType.DMCHATROOM &&
         memberRights?.length > 0 ? (
         <View>
-          {chatRequestState === 0 &&
+          {chatRequestState === ChatroomChatRequestState.INITIATED &&
           (chatroomDBDetails?.chatRequestedBy
             ? chatroomDBDetails?.chatRequestedBy?.id !== user?.id?.toString()
             : null) ? (
@@ -265,11 +268,15 @@ const MessageInput = ({
               </Text>
             </View>
           ) : showDM === true &&
-            (chatRequestState === 0 || chatRequestState === 2) ? (
-            <View style={styles.disabledInput}>
-              <Text style={styles.disabledInputText}>{REQUEST_SENT}</Text>
-            </View>
-          ) : (showDM === true && chatRequestState === 1) ||
+            (chatRequestState === ChatroomChatRequestState.INITIATED || chatRequestState === ChatroomChatRequestState.REJECTED) ? (
+              (chatRequestState === ChatroomChatRequestState.REJECTED && chatroomDBDetails?.chatRequestedBy?.id == user?.id?.toString()) ? 
+              <View style={styles.disabledInput}>
+                <Text style={styles.disabledInputText}>{DM_BLOCKED_USER}</Text>
+              </View> :
+              <View style={styles.disabledInput}>
+                <Text style={styles.disabledInputText}>{REQUEST_SENT}</Text>
+              </View>
+          ) : (showDM === true && chatRequestState === ChatroomChatRequestState.ACCEPTED) ||
             chatRequestState === null ? (
             <InputBox
               replyChatID={replyChatID}

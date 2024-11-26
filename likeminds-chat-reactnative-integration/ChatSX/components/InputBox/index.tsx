@@ -749,10 +749,6 @@ const MessageInputBox = ({
         mediaType: "photo",
         selectionLimit: 0,
       };
-      navigation.navigate(FILE_UPLOAD, {
-        chatroomID: chatroomID,
-        previousMessage: message, // to keep message on uploadScreen InputBox
-      });
       await launchCamera(options, async (response: ImagePickerResponse) => {
         if (response?.didCancel) {
           if (selectedFilesToUpload.length === 0) {
@@ -782,6 +778,10 @@ const MessageInputBox = ({
           }
           await handleImageAndVideoUpload(selectedImages);
         }
+      });
+      navigation.navigate(FILE_UPLOAD, {
+        chatroomID: chatroomID,
+        previousMessage: message, // to keep message on uploadScreen InputBox
       });
     } catch (error) {
       if (selectedFilesToUpload.length === 0) {
@@ -919,7 +919,7 @@ const MessageInputBox = ({
   // this method is trigerred whenever user presses the send button
   const onSend = async (
     conversation: string,
-    metaData: Record<string, any>,
+    metaData?: Record<string, any>,
     voiceNote?: any,
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
@@ -1150,14 +1150,16 @@ const MessageInputBox = ({
       obj.images = dummySelectedFileArr;
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
-      obj.widget = {
-        metadata: metaData,
-        parentEntityId: "",
-        parentEntityType: "",
-        createdAt: ID,
-        updatedAt: ID,
-      };
-      obj.widgetId = ID?.toString();
+      obj.widget = metaData
+        ? {
+            metadata: metaData,
+            parentEntityId: "",
+            parentEntityType: "",
+            createdAt: ID,
+            updatedAt: ID,
+          }
+        : {};
+      obj.widgetId = metaData ? ID?.toString() : "";
       if (!closedOnce || !closedPreview) {
         obj.ogTags = ogTagsState;
       }
@@ -1617,7 +1619,6 @@ const MessageInputBox = ({
             clearTimeout(debounceLinkPreviewTimeout);
             const timeoutId = setTimeout(() => {
               for (let i = 0; i < parts.length; i++) {
-                setShowLinkPreview(true);
                 if (LINK_PREVIEW_REGEX.test(parts[i]) && !closedPreview) {
                   setShowLinkPreview(true);
                   setUrl(parts[i]);

@@ -41,6 +41,7 @@ import { NavigateToGroupDetailsParams } from "../../../ChatSX/callBacks/type";
 import { CallBack } from "../../../ChatSX/callBacks/callBackClass";
 import Layout from "../../../ChatSX/constants/Layout";
 import { SEARCH_IN_CHATROOM } from "../../constants/Screens";
+import { useNavigation } from "@react-navigation/native";
 
 interface ChatroomHeaderProps {
   showChatroomIcon?: boolean;
@@ -72,6 +73,7 @@ const ChatroomHeader = ({
     chatroomDetails,
     chatroomDBDetails,
     isLongPress,
+    isReact,
     selectedMessages,
     currentChatroomTopic,
     chatroomType,
@@ -88,6 +90,7 @@ const ChatroomHeader = ({
     setReplyChatID,
     setModalVisible,
     setReportModalVisible,
+    setIsReact,
     backAction,
   }: ChatroomContextValues = useChatroomContext();
 
@@ -294,6 +297,7 @@ const ChatroomHeader = ({
         <View style={styles.headingContainer}>
           <TouchableOpacity
             onPress={() => {
+              setIsReact(false);
               dispatch({ type: SELECTED_MESSAGES, body: [] });
               dispatch({ type: LONG_PRESSED, body: false });
               setInitialHeader();
@@ -336,6 +340,11 @@ const ChatroomHeader = ({
         const isFirstMessageDeleted = selectedMessages[0]?.deletedBy;
         let isSelectedMessageEditable = false;
         const selectedMessagesLength = selectedMessages?.length;
+        // check if selected message is user's own message to disable self report
+        let isOwnMessage = selectedMessages.some(message => {
+          return message?.member?.uuid == user?.uuid;
+        })
+
 
         //Logic to set isSelectedMessageEditable true/false, based on that we will show edit icon.
         if (selectedMessagesLength === 1) {
@@ -411,6 +420,7 @@ const ChatroomHeader = ({
                   onPress={() => {
                     if (len > 0) {
                       setReplyChatID(selectedMessages[0]?.id);
+                      setIsReact(false);
                       dispatch({ type: SET_IS_REPLY, body: { isReply: true } });
                       dispatch({
                         type: SET_REPLY_MESSAGE,
@@ -459,6 +469,7 @@ const ChatroomHeader = ({
                 {len === 1 && !isFirstMessageDeleted && isCopy ? (
                   <TouchableOpacity
                     onPress={() => {
+                      setIsReact(false);
                       const output = copySelectedMessages(
                         selectedMessages,
                         chatroomID
@@ -494,6 +505,7 @@ const ChatroomHeader = ({
                 ) : len > 1 && isCopy ? (
                   <TouchableOpacity
                     onPress={() => {
+                      setIsReact(false);
                       const output = copySelectedMessages(
                         selectedMessages,
                         chatroomID
@@ -524,6 +536,7 @@ const ChatroomHeader = ({
               : true) ? ( // this condition checks in case of DM, chatRequestState != 0 && chatRequestState != null then only show edit Icon
               <TouchableOpacity
                 onPress={() => {
+                  setIsReact(false);
                   setIsEditable(true);
                   dispatch({
                     type: SET_EDIT_MESSAGE,
@@ -550,6 +563,7 @@ const ChatroomHeader = ({
             {isDelete && (
               <TouchableOpacity
                 onPress={async () => {
+                  setIsReact(false);
                   const res = await myClient
                     .deleteConversations({
                       conversationIds: selectedMessagesIDArr,
@@ -633,11 +647,12 @@ const ChatroomHeader = ({
                 />
               </TouchableOpacity>
             )}
-            {len === 1 &&
+            {len === 1 && !isOwnMessage &&
               !isFirstMessageDeleted &&
               showThreeDotsOnSelectedHeader && (
                 <TouchableOpacity
                   onPress={() => {
+                    setIsReact(false);
                     setReportModalVisible(true);
                   }}
                 >
