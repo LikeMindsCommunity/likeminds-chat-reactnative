@@ -2,6 +2,14 @@ import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseM
 import { UserInfo } from "../db/models";
 import { GetConversationsType } from "../enums";
 import { Client } from "../client";
+import { Chatroom } from "@likeminds.community/chat-rn/dist/shared/responseModels/Chatroom";
+import { Member } from "@likeminds.community/chat-rn/dist/shared/responseModels/Member";
+
+enum Roles {
+  Chatbot = 'chatbot',
+    Member = 'member',
+    Admin = 'admin',
+}
 
 // This method is to create a temporary state message for updation of chatroom topic
 export const createTemporaryStateMessage = (
@@ -83,3 +91,16 @@ export const getCurrentConversation = async (
   newConversation = newConversation.reverse();
   return newConversation;
 };
+
+export const isOtherUserAIChatbot = (chatroom: Chatroom, user: Member ) => {
+  let otherMember: Member | undefined;
+  if (user?.uuid == chatroom?.member?.sdkClientInfo?.uuid) {
+    otherMember = chatroom?.chatroomWithUser
+  } else {
+    otherMember = chatroom?.member;
+  }
+  if ((otherMember?.roles as unknown as Roles[]).includes(Roles.Chatbot)) {
+    return true;
+  }
+  return false;
+}
