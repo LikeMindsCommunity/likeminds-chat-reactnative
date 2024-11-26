@@ -27,9 +27,9 @@ interface HintMessages {
 }
 
 interface MessageInput {
-  joinSecretChatroomProp: () => void;
-  showJoinAlertProp: () => void;
-  showRejectAlertProp: () => void;
+  joinSecretChatroomProp?: () => void;
+  showJoinAlertProp?: () => void;
+  showRejectAlertProp?: () => void;
   hintMessages?: HintMessages;
   conversationMetaData?: Record<string, any>;
 }
