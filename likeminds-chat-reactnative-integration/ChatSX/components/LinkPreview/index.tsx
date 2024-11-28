@@ -19,6 +19,7 @@ import { CallBack } from "../../callBacks/callBackClass";
 import MessageHeader from "../MessageHeader";
 import MessageFooter from "../MessageFooter";
 import { useCustomComponentsContext } from "../../context/CustomComponentContextProvider";
+import MoreLess from "../MoreLess";
 
 const LinkPreview = () => {
   const { user } = useAppSelector((state) => state.homefeed);
@@ -57,6 +58,7 @@ const LinkPreview = () => {
   const SELECTED_BACKGROUND_COLOR = selectedMessageBackgroundColor
     ? selectedMessageBackgroundColor
     : STYLES.$COLORS.SELECTED_BLUE;
+  const showMoreTextStyle = STYLES.$CHAT_BUBBLE_STYLE.showMoreTextStyle;
   // styling props ended
 
   return (
@@ -107,15 +109,16 @@ const LinkPreview = () => {
           />
           <View>
             <View style={styles.messageText as any}>
-              {decode({
-                text: item?.answer,
-                enableClick: true,
-                chatroomName: chatroomName,
-                communityId: user?.sdkClientInfo?.community,
-                textStyles: textStyles,
-                linkTextColor: linkTextColor,
-                taggingTextColor: taggingTextColor,
-              })}
+              <MoreLess
+                text={item?.answer}
+                enableClick={true}
+                chatroomName={chatroomName}
+                communityId={user?.sdkClientInfo?.community}
+                textStyles={textStyles}
+                linkTextColor={linkTextColor}
+                taggingTextColor={taggingTextColor}
+                showMoreTextStyle={showMoreTextStyle}
+              />
             </View>
             {customMessageFooter ? customMessageFooter : <MessageFooter />}
           </View>

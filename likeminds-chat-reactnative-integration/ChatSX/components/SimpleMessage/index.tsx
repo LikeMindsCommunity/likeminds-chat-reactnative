@@ -1,5 +1,12 @@
-import { View, Text, Pressable, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  Pressable,
+  Image,
+  TouchableOpacity,
+  TextLayoutLine,
+} from "react-native";
+import React, { useState } from "react";
 import { useMessageContext } from "../../context/MessageContext";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import STYLES from "../../constants/Styles";
@@ -12,12 +19,14 @@ import StateMessage from "../StateMessage";
 import { useCustomComponentsContext } from "../../context/CustomComponentContextProvider";
 import { NavigateToProfileParams } from "../../callBacks/type";
 import { CallBack } from "../../callBacks/callBackClass";
+import MoreLess from "../MoreLess";
 
 interface SimpleMessageProps {
   onTapToUndoProp?: () => void;
 }
 
 const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
+  const [showMore, setShowMore] = useState(false);
   const { user } = useAppSelector((state) => state.homefeed);
   const {
     item,
@@ -48,6 +57,7 @@ const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
   const textStyles = chatBubbleStyles?.textStyles;
   const linkTextColor = chatBubbleStyles?.linkTextColor;
   const taggingTextColor = chatBubbleStyles?.taggingTextColor;
+  const showMoreTextStyle = chatBubbleStyles.showMoreTextStyle;
 
   const SELECTED_BACKGROUND_COLOR = selectedMessageBackgroundColor
     ? selectedMessageBackgroundColor
@@ -55,6 +65,8 @@ const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
   // styling props ended
 
   const lmChatInterface = CallBack.lmChatInterface;
+
+  const MAX_LINES = 3;
 
   return (
     <View style={styles.messageParent}>
@@ -103,17 +115,16 @@ const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
             ) : (
               <MessageHeader />
             )}
-            <Text>
-              {decode({
-                text: item?.answer,
-                enableClick: true,
-                chatroomName: chatroomName,
-                communityId: user?.sdkClientInfo?.community,
-                textStyles: textStyles,
-                linkTextColor: linkTextColor,
-                taggingTextColor: taggingTextColor,
-              })}
-            </Text>
+            <MoreLess
+              text={item?.answer}
+              enableClick={true}
+              chatroomName={chatroomName}
+              communityId={user?.sdkClientInfo?.community}
+              textStyles={textStyles}
+              linkTextColor={linkTextColor}
+              taggingTextColor={taggingTextColor}
+              showMoreTextStyle={showMoreTextStyle}
+            />
             {customMessageFooter ? customMessageFooter : <MessageFooter />}
           </View>
           {(reactionArr.length > 0 || item?.answer?.split("").length > 100) &&

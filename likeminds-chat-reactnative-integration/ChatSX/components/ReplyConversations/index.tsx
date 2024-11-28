@@ -42,6 +42,7 @@ import MessageFooter from "../MessageFooter";
 import { useCustomComponentsContext } from "../../context/CustomComponentContextProvider";
 import { NavigateToProfileParams } from "../../callBacks/type";
 import { CallBack } from "../../callBacks/callBackClass";
+import MoreLess from "../MoreLess";
 
 interface ReplyConversations {
   item: any;
@@ -204,6 +205,7 @@ const ReplyConversations = () => {
   const SELECTED_BACKGROUND_COLOR = selectedMessageBackgroundColor
     ? selectedMessageBackgroundColor
     : STYLES.$COLORS.SELECTED_BLUE;
+  const showMoreTextStyle = STYLES.$CHAT_BUBBLE_STYLE.showMoreTextStyle;
   // styling props ended
 
   const lmChatInterface = CallBack.lmChatInterface;
@@ -357,15 +359,16 @@ const ReplyConversations = () => {
                   ] as TextStyle[]
                 }
               >
-                {decode({
-                  text: item?.answer,
-                  enableClick: true,
-                  chatroomName: chatroomName,
-                  communityId: user?.sdkClientInfo?.community,
-                  textStyles: textStyles,
-                  linkTextColor: linkTextColor,
-                  taggingTextColor: taggingTextColor,
-                })}
+                <MoreLess
+                  text={item?.answer}
+                  enableClick={true}
+                  chatroomName={chatroomName}
+                  communityId={user?.sdkClientInfo?.community}
+                  textStyles={textStyles}
+                  linkTextColor={linkTextColor}
+                  taggingTextColor={taggingTextColor}
+                  showMoreTextStyle={showMoreTextStyle}
+                />
               </View>
               {customMessageFooter ? customMessageFooter : <MessageFooter />}
             </View>

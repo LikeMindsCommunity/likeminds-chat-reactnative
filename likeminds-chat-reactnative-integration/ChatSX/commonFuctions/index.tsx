@@ -28,6 +28,10 @@ const REGEX_USER_SPLITTING = /(<<.+?\|route:\/\/[^>]+>>)/gu;
 export const REGEX_USER_TAGGING =
   /<<(?<name>[^<>|]+)\|route:\/\/(?<route>[^?]+(\?.+)?)>>/g;
 
+const COPY_REGEX_USER_SPLITTING = /(<<.+?\|route:\/\/[^>]+>>)/gu;
+const COPY_REGEX_USER_TAGGING =
+  /<<(?<name>[^<>|]+)\|route:\/\/(?<route>[^?]+(\?.+)?)>>/g;
+
 export const SHOW_LIST_REGEX = /[?&]show_list=([^&]+)/;
 
 export const EXTRACT_PATH_FROM_ROUTE_QUERY = /\/([^/].*)/;
@@ -66,7 +70,7 @@ function detectLinks(
   textStyles?: any,
   linkTextColor?: string
 ) {
-  const regex = 
+  const regex =
     /((?:https?:\/\/www\.|https?:\/\/|www\.)\w+\.\w{2,}(?:\/\S*)?|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/i;
 
   const parts = message.split(regex);
@@ -384,23 +388,24 @@ export function decodeStr(text: string | undefined) {
   if (!text) {
     return;
   }
+
   const arr: any[] = [];
-  const parts = text.split(REGEX_USER_SPLITTING);
+  const parts = text.split(COPY_REGEX_USER_SPLITTING);
 
   if (parts) {
     for (const matchResult of parts) {
-      const keyValue = matchResult.match(REGEX_USER_TAGGING);
-      let memberName;
-      if (keyValue) {
-        memberName = keyValue[1];
+      const match = COPY_REGEX_USER_TAGGING.exec(matchResult);
+      if (match && match.groups) {
+        const memberName = match.groups.name;
         arr.push({ key: memberName, route: true });
-      } else if (matchResult) {
+      } else {
         arr.push({ key: matchResult, route: null });
       }
     }
-    let str: string = "";
+
+    let str = "";
     arr.forEach((val) => {
-      str = str + val.key;
+      str += val.key;
     });
     return str;
   } else {
