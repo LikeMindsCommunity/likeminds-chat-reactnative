@@ -15,7 +15,7 @@ import {
   TextStyle,
   ViewStyle,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { styles } from "./styles";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { onConversationsCreate } from "../../store/actions/chatroom";
@@ -52,6 +52,7 @@ import {
   launchCamera,
   ImagePickerResponse,
   Asset,
+  MediaType,
 } from "react-native-image-picker";
 import DocumentPicker from "react-native-document-picker";
 import { CREATE_POLL_SCREEN, FILE_UPLOAD } from "../../constants/Screens";
@@ -145,6 +146,8 @@ import LottieView from "../../optionalDependecies/LottieView";
 import { SyncConversationRequest } from "@likeminds.community/chat-rn";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
+import { useChatroomContext } from "../../context/ChatroomContext";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 // to intialise audio recorder player
 const audioRecorderPlayerAttachment = AudioRecorder
@@ -220,7 +223,7 @@ const MessageInputBox = ({
   const [isRecordingPermission, setIsRecordingPermission] = useState(false);
   const [isVoiceNoteIconPress, setIsVoiceNoteIconPress] = useState(false);
   const { chatroomDBDetails }: any = useAppSelector((state) => state.chatroom);
-
+  const { memberRights } = useChatroomContext();
   const [ogTagsState, setOgTagsState] = useState<any>({});
   const [closedOnce, setClosedOnce] = useState(false);
   const [showLinkPreview, setShowLinkPreview] = useState(true);
@@ -270,6 +273,13 @@ const MessageInputBox = ({
   let isGroupTag = false;
 
   const dispatch = useAppDispatch();
+  const isUserCM = useMemo(() => {
+    return user?.state == 1;
+  }, [user, memberRights]);
+  const canUserCreatePoll = useMemo(() => {
+    return memberRights?.find(item => item?.id == 2) ? true : false;
+  }, [user, memberRights])
+
   const conversationArrayLength = conversations.length;
 
   AWS.config.update({
@@ -620,13 +630,16 @@ const MessageInputBox = ({
 
   //select Images and videoes From Gallery
   const selectGallery = async () => {
+    let limit = (chatroomType == 10 && !isOtherUserAIChatbot(chatroomDBDetails, user)) ? 1 : 0;
+    let mediaType: MediaType = (chatroomType == 10 && !isOtherUserAIChatbot(chatroomDBDetails, user)) ? "photo" : "mixed";
     const options: LaunchActivityProps = {
-      mediaType: "mixed",
-      selectionLimit: 0,
+      mediaType,
+      selectionLimit: limit,
     };
     navigation.navigate(FILE_UPLOAD, {
       chatroomID: chatroomID,
       previousMessage: message, // to keep message on uploadScreen InputBox
+      limit
     });
     await launchImageLibrary(options, async (response: ImagePickerResponse) => {
       if (response?.didCancel) {
@@ -1288,11 +1301,9 @@ const MessageInputBox = ({
         );
       } else {
         if (!isUploadScreen) {
-          console.log("!upload screen")
           let attachments;
           if (attachmentsCount > 0) {
             // start uploading
-            console.log("uploadgin inside else if")
             dispatch({
               type: SET_FILE_UPLOADING_MESSAGES,
               body: {
@@ -1389,7 +1400,6 @@ const MessageInputBox = ({
           } else if (response && attachmentsCount > 0) {
           }
         } else {
-          console.log("inside else")
           dispatch({
             type: FILE_SENT,
             body: { status: !fileSent },
@@ -1435,9 +1445,7 @@ const MessageInputBox = ({
             ID.toString(),
             JSON.stringify(message)
           );
-          console.log("upload in else")
           const attachments = await handleFileUpload(ID, false);
-          console.log(attachments)
           const payload: any = {
             chatroomId: chatroomID,
             hasFiles: false,
@@ -2249,7 +2257,7 @@ const MessageInputBox = ({
                 : null,
             ]}
           >
-            {!!isUploadScreen && !isDoc && !isGif ? (
+            {!!isUploadScreen && !isDoc && !isGif && !(chatroomType == 10 && !isOtherUserAIChatbot(chatroomDBDetails, user)) ? (
               <TouchableOpacity
                 style={styles.addMoreButton}
                 onPress={() => {
@@ -2261,7 +2269,7 @@ const MessageInputBox = ({
                   iconStyle={styles.emoji}
                 />
               </TouchableOpacity>
-            ) : !!isUploadScreen && !!isDoc && !isGif ? (
+            ) : !!isUploadScreen && !!isDoc && !isGif && !(chatroomType == 10 && isOtherUserAIChatbot(chatroomDBDetails, user)) ? (
               <TouchableOpacity
                 style={styles.addMoreButton}
                 onPress={() => {
@@ -2651,6 +2659,7 @@ const MessageInputBox = ({
           <View style={styles.modalViewParent}>
             <Pressable onPress={() => { }} style={[styles.modalView]}>
               <View style={styles.alignModalElements}>
+                {/* camera */}
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
@@ -2675,6 +2684,7 @@ const MessageInputBox = ({
                     {CAMERA_TEXT}
                   </LMChatTextView>
                 </View>
+                {/* image/video */}
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
@@ -2699,6 +2709,8 @@ const MessageInputBox = ({
                     {PHOTOS_AND_VIDEOS_TEXT}
                   </LMChatTextView>
                 </View>
+                {/* doc */}
+                { ( (chatroomType == 10 && !isOtherUserAIChatbot(chatroomDBDetails, user)) || (chatroomType == 0 || chatroomType == 7) ) ?
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
@@ -2722,8 +2734,9 @@ const MessageInputBox = ({
                   <LMChatTextView textStyle={styles.iconText}>
                     {DOCUMENTS_TEXT}
                   </LMChatTextView>
-                </View>
-                {chatroomType !== 10 ? (
+                </View> : null}
+                {/* poll */}
+                { (chatroomType == 0 || chatroomType == 7) && canUserCreatePoll ? (
                   <View style={styles.iconContainer}>
                     <TouchableOpacity
                       onPress={() => {
