@@ -80,7 +80,7 @@ const FileUpload = ({
   const myClient = Client.myClient;
   const video = useRef<any>(null);
 
-  const { chatroomID, previousMessage = "" }: any = route?.params;
+  const { chatroomID, previousMessage = "", limit }: any = route?.params;
   const {
     selectedFilesToUpload = [],
     selectedFileToView = {},
@@ -154,7 +154,7 @@ const FileUpload = ({
   }: UploadResource) => {
     LogBox.ignoreLogs(["new NativeEventEmitter"]);
     const s3 = new S3();
-    let attachments: Attachment[] = [];
+    let attachments = [];
     for (let i = 0; i < selectedImages?.length; i++) {
       const item = selectedImages[i];
       const attachmentType = isRetry ? item?.type : item?.type?.split("/")[0];
@@ -251,7 +251,7 @@ const FileUpload = ({
             fileType = GIF_TEXT;
           }
 
-          const payload: Attachment = {
+          const payload = {
             id: conversationID,
             // filesCount: selectedImages?.length,
             index: i + 1,
@@ -275,19 +275,19 @@ const FileUpload = ({
                 : selectedFilesToUpload[i]?.fileName,
             type: fileType,
             url: awsResponse,
-            thumbnailUrl:
+            thumbnail_url:
               fileType === VIDEO_TEXT || fileType === GIF_TEXT
                 ? getVideoThumbnailData?.Location
                 : null,
             height: gifHeight ? gifHeight : null,
             width: gifWidth ? gifWidth : null,
-            localFilePath: item.uri,
-            awsFolderPath: path,
-            thumbnailAWSFolderPath: thumbnailUrlPath,
-            thumbnailLocalFilePath: thumbnailURL,
-            fileUrl: awsResponse,
-            createdAt: conversationID,
-            updatedAt: conversationID,
+            local_file_path: item.uri,
+            aws_folder_path: path,
+            thumbnail_aws_folder_path: thumbnailUrlPath,
+            thumbnail_local_file_path: thumbnailURL,
+            file_url: awsResponse,
+            created_at: conversationID,
+            updated_at: conversationID,
           };
 
           // const uploadRes = await myClient?.putMultimedia(payload as any);
