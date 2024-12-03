@@ -1150,16 +1150,18 @@ const MessageInputBox = ({
       obj.images = dummySelectedFileArr;
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
-      obj.widget = metaData
-        ? {
-            metadata: metaData,
-            parentEntityId: "",
-            parentEntityType: "",
-            createdAt: ID,
-            updatedAt: ID,
-          }
-        : {};
-      obj.widgetId = metaData ? ID?.toString() : "";
+      obj.widget =
+        Object.keys(metaData ?? {}).length > 0
+          ? {
+              metadata: metaData,
+              parentEntityId: "",
+              parentEntityType: "",
+              createdAt: ID,
+              updatedAt: ID,
+            }
+          : {};
+      obj.widgetId =
+        Object.keys(metaData ?? {}).length > 0 ? ID?.toString() : "";
       if (!closedOnce || !closedPreview) {
         obj.ogTags = ogTagsState;
       }
@@ -1606,6 +1608,8 @@ const MessageInputBox = ({
     const ogTags = decodeUrlResponse?.data?.ogTags;
     if (ogTags !== undefined) {
       setOgTagsState(ogTags);
+    } else if (ogTags === undefined) {
+      setOgTagsState({});
     }
   }
 
