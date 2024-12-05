@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useMemo } from "react";
 import { useMessageContext } from "../../context/MessageContext";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import STYLES from "../../constants/Styles";
@@ -12,6 +12,7 @@ import StateMessage from "../StateMessage";
 import { useCustomComponentsContext } from "../../context/CustomComponentContextProvider";
 import { NavigateToProfileParams } from "../../callBacks/type";
 import { CallBack } from "../../callBacks/callBackClass";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 interface SimpleMessageProps {
   onTapToUndoProp?: () => void;
@@ -31,7 +32,12 @@ const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
     handleOnPress,
   } = useMessageContext();
 
-  const { chatroomName } = useChatroomContext();
+  const { chatroomName, user: userFromContext, chatroomDBDetails } = useChatroomContext();
+
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, userFromContext);
+  }, [user, chatroomDBDetails])
+
   const { customMessageHeader, customMessageFooter, customStateMessage } =
     useCustomComponentsContext();
 
@@ -112,6 +118,7 @@ const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
                 textStyles: textStyles,
                 linkTextColor: linkTextColor,
                 taggingTextColor: taggingTextColor,
+                boldText: isOtherUserChatbot
               })}
             </Text>
             {customMessageFooter ? customMessageFooter : <MessageFooter />}
