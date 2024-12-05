@@ -179,11 +179,6 @@ function App(): React.JSX.Element {
   );
 
 
-  // useEffect(() => {
-  //   setApiKey("2a540606-6e83-4fcc-946e-ea479bb3c6a8");
-  //   setUserName("myDevice");
-  //   setUserUniqueID("myDevice")
-  // }, [])
 
 
   return (
