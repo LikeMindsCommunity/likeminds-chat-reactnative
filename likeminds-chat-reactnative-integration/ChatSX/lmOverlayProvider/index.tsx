@@ -1,9 +1,34 @@
 import React, { useEffect } from "react";
-import { LMOverlayProviderProps } from "./types";
-import { LMChatProvider } from "../lmChatProvider";
+import { LMChatBotOverlayProviderProps, LMOverlayProviderProps } from "./types";
+import { LMChatBotProvider, LMChatProvider } from "../lmChatProvider";
 import { StyleSheet, View } from "react-native";
 import { ContextProvider } from "../contextStore";
 import { LMSDKCallbacksImplementations } from "../setupChat";
+
+export const LMChatBotOverlayProvider = ({
+  myClient,
+  lmChatInterface,
+  children,
+  callbackClass
+}: LMChatBotOverlayProviderProps) => {
+
+  useEffect(() => {
+    myClient?.setLMSDKCallbacks(
+      new LMSDKCallbacksImplementations(callbackClass, myClient)
+    );
+  }, [callbackClass, myClient]);
+
+  return (
+    <ContextProvider>
+      <LMChatBotProvider
+        myClient={myClient}
+        lmChatInterface={lmChatInterface}
+      >
+        <View style={styles.flexStyling}>{children}</View>
+      </LMChatBotProvider>
+    </ContextProvider>
+  );
+}
 
 export const LMOverlayProvider = ({
   myClient,
