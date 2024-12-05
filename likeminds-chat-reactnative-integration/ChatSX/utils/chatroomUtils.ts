@@ -93,13 +93,16 @@ export const getCurrentConversation = async (
 };
 
 export const isOtherUserAIChatbot = (chatroom: Chatroom, user: Member ) => {
+  if (chatroom == null || chatroom == undefined || user == null || user == undefined) {
+    return false;
+  }
   let otherMember: Member | undefined;
   if (user?.uuid == chatroom?.member?.sdkClientInfo?.uuid) {
     otherMember = chatroom?.chatroomWithUser
   } else {
     otherMember = chatroom?.member;
   }
-  if ((otherMember?.roles as unknown as Roles[]).includes(Roles.Chatbot)) {
+  if ((otherMember?.roles as unknown as Roles[])?.includes(Roles.Chatbot)) {
     return true;
   }
   return false;
