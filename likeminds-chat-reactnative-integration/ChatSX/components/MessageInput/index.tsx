@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import React from "react";
+import React, { useMemo } from "react";
 import { ChatroomType } from "../../enums";
 import InputBox from "../InputBox";
 import { styles } from "../../screens/ChatRoom/styles";
@@ -17,6 +17,8 @@ import {
   REQUEST_SENT,
 } from "../../constants/Strings";
 import { CustomisableMethodsContextProvider } from "../../context/CustomisableMethodsContext";
+import { LMChatTextView } from "../../uiComponents";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils"
 
 interface HintMessages {
   messageForRightsDisabled?: string;
@@ -71,6 +73,9 @@ const MessageInput = ({
   const messageForMemberCanMessage = hintMessages?.messageForMemberCanMessage;
   const messageForAnnouncementRoom = hintMessages?.messageForAnnouncementRoom;
   const respondingDisabled = hintMessages?.respondingDisabled;
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user)
+  }, [user, chatroomDBDetails]);
   return (
     <View
       style={{
@@ -290,6 +295,15 @@ const MessageInput = ({
           )}
         </View>
       ) : null}
+      {isOtherUserChatbot ? <View style={{justifyContent:'center', alignItems: 'center'}}>
+        <LMChatTextView textStyle={{
+          fontSize: 13,
+          color: "#999999",
+          bottom: 5
+        }}>
+          AI may make mistakes.
+        </LMChatTextView>
+      </View> : <></>}
     </View>
   );
 };
