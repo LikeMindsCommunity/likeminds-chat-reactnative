@@ -10,6 +10,7 @@ import React, {
   ReactNode,
   forwardRef,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -35,6 +36,7 @@ import ChatroomTopic from "../ChatroomTopic";
 import Layout from "../../constants/Layout";
 import { VOICE_NOTE_TEXT } from "../../constants/Strings";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
@@ -78,7 +80,15 @@ const MessageListComponent = ({
     searchedConversation,
     handleLongPress,
     handleClick,
+    shimmerVisibleForChatbot,
+    user,
+    chatroomDBDetails,
   }: ChatroomContextValues = useChatroomContext();
+
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user);
+  }, [user, chatroomDBDetails])
+
 
   const {
     flatlistRef,
@@ -333,7 +343,7 @@ const MessageListComponent = ({
               return (
                 <View>
                   {index < conversations?.length &&
-                  conversations[index]?.date !==
+                    conversations[index]?.date !==
                     conversations[index + 1]?.date && !hideDate ? (
                     <View style={[styles.statusMessage]}>
                       <Text
@@ -389,9 +399,9 @@ const MessageListComponent = ({
                           ? selectedBackgroundColor
                             ? { backgroundColor: SELECTED_BACKGROUND_COLOR }
                             : {
-                                backgroundColor:
-                                  STYLES.$COLORS.SELECTED_CHAT_BUBBLE,
-                              }
+                              backgroundColor:
+                                STYLES.$COLORS.SELECTED_CHAT_BUBBLE,
+                            }
                           : null
                       }
                     >
@@ -413,6 +423,40 @@ const MessageListComponent = ({
             keyboardShouldPersistTaps={"handled"}
             inverted
           />
+          {isOtherUserChatbot && shimmerVisibleForChatbot ?
+            <>
+              <View
+                style={{
+                  width: 250,
+                  paddingLeft: 8,
+                  paddingVertical: 15,
+                  borderTopRightRadius: 12,
+                  borderTopLeftRadius: 12,
+                  borderBottomRightRadius: 12,
+                  flexDirection: 'row',
+                  alignItems: 'center'
+                }}
+              >
+                <View
+                  style={{ width: 45, height: 45, borderRadius: 100, marginRight: 10, backgroundColor: '#D0D0D0' }}
+                />
+                <View>
+                  <ShimmerPlaceHolder
+                    style={{ width: 150, height: 10, borderRadius: 5 }}
+                  />
+                  <ShimmerPlaceHolder
+                    style={{
+                      width: 120,
+                      height: 10,
+                      marginTop: 10,
+                      borderRadius: 5,
+                    }}
+                  />
+                </View>
+              </View>
+            </>
+            : <></>
+          }
           {isScrollingUp && (
             <TouchableOpacity
               style={[
@@ -486,7 +530,7 @@ const MessageListComponent = ({
               return (
                 <View>
                   {index < conversations?.length &&
-                  conversations[index]?.date !==
+                    conversations[index]?.date !==
                     conversations[index + 1]?.date && !hideDate ? (
                     <View style={[styles.statusMessage]}>
                       <Text
@@ -542,9 +586,9 @@ const MessageListComponent = ({
                           ? selectedBackgroundColor
                             ? { backgroundColor: SELECTED_BACKGROUND_COLOR }
                             : {
-                                backgroundColor:
-                                  STYLES.$COLORS.SELECTED_CHAT_BUBBLE,
-                              }
+                              backgroundColor:
+                                STYLES.$COLORS.SELECTED_CHAT_BUBBLE,
+                            }
                           : null
                       }
                     >
