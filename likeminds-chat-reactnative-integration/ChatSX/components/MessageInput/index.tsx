@@ -27,6 +27,7 @@ interface HintMessages {
 }
 
 interface MessageInput {
+  children: React.ReactNode;
   joinSecretChatroomProp?: () => void;
   showJoinAlertProp?: () => void;
   showRejectAlertProp?: () => void;
@@ -35,6 +36,7 @@ interface MessageInput {
 }
 
 const MessageInput = ({
+  children,
   joinSecretChatroomProp,
   showJoinAlertProp,
   showRejectAlertProp,
@@ -75,7 +77,10 @@ const MessageInput = ({
   const messageForMemberCanMessage = hintMessages?.messageForMemberCanMessage;
   const messageForAnnouncementRoom = hintMessages?.messageForAnnouncementRoom;
   const respondingDisabled = hintMessages?.respondingDisabled;
-  const canUnblock = useMemo(() => filteredChatroomActions?.find(action => action.id == 28), [filteredChatroomActions])
+  const canUnblock = useMemo(
+    () => filteredChatroomActions?.find((action) => action.id == 28),
+    [filteredChatroomActions]
+  );
   return (
     <View
       style={{
@@ -119,24 +124,7 @@ const MessageInput = ({
             !(user.state !== 1 && chatroomDBDetails?.type === 7) &&
               chatroomFollowStatus &&
               memberRights[3]?.isSelected === true ? (
-              <InputBox
-                chatroomName={chatroomName}
-                chatroomWithUser={chatroomWithUser}
-                replyChatID={replyChatID}
-                chatroomID={chatroomID}
-                navigation={navigation}
-                isUploadScreen={false}
-                myRef={refInput}
-                handleFileUpload={handleFileUpload}
-                isEditable={isEditable}
-                setIsEditable={(value: boolean) => {
-                  setIsEditable(value);
-                }}
-                isSecret={isSecret}
-                chatroomType={chatroomType}
-                currentChatroomTopic={currentChatroomTopic}
-                metaData={conversationMetaData ? conversationMetaData : {}}
-              />
+              <>{children}</>
             ) : //case to block normal users from messaging in an Announcement Room
             user.state !== 1 && chatroomDBDetails?.type === 7 ? (
               <View style={styles.disabledInput}>
@@ -268,32 +256,22 @@ const MessageInput = ({
               </Text>
             </View>
           ) : showDM === true &&
-            (chatRequestState === ChatroomChatRequestState.INITIATED || chatRequestState === ChatroomChatRequestState.REJECTED) ? (
-              (chatRequestState === ChatroomChatRequestState.REJECTED && chatroomDBDetails?.chatRequestedBy?.id == user?.id?.toString()) ? 
+            (chatRequestState === ChatroomChatRequestState.INITIATED ||
+              chatRequestState === ChatroomChatRequestState.REJECTED) ? (
+            chatRequestState === ChatroomChatRequestState.REJECTED &&
+            chatroomDBDetails?.chatRequestedBy?.id == user?.id?.toString() ? (
               <View style={styles.disabledInput}>
                 <Text style={styles.disabledInputText}>{DM_BLOCKED_USER}</Text>
-              </View> :
+              </View>
+            ) : (
               <View style={styles.disabledInput}>
                 <Text style={styles.disabledInputText}>{REQUEST_SENT}</Text>
               </View>
-          ) : (showDM === true && chatRequestState === ChatroomChatRequestState.ACCEPTED) ||
+            )
+          ) : (showDM === true &&
+              chatRequestState === ChatroomChatRequestState.ACCEPTED) ||
             chatRequestState === null ? (
-            <InputBox
-              replyChatID={replyChatID}
-              chatroomID={chatroomID}
-              chatRequestState={chatRequestState}
-              chatroomType={chatroomType}
-              navigation={navigation}
-              isUploadScreen={false}
-              isPrivateMember={chatroomDBDetails?.isPrivateMember}
-              myRef={refInput}
-              handleFileUpload={handleFileUpload}
-              isEditable={isEditable}
-              setIsEditable={(value: boolean) => {
-                setIsEditable(value);
-              }}
-              metaData={conversationMetaData ? conversationMetaData : {}}
-            />
+            <>{children}</>
           ) : (
             <View style={styles.disabledInput}>
               <Text style={styles.disabledInputText}>Loading...</Text>
