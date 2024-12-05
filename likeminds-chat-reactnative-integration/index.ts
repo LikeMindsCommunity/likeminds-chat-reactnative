@@ -50,6 +50,7 @@ import {
   SearchInChatroomContextProvider,
 } from "./ChatSX/context";
 import ChatroomTopic from "./ChatSX/components/ChatroomTopic";
+import LMChatAIBotInitiaitionScreen from "./ChatSX/screens/AIChatbotInit"
 
 export {
   ChatRoom,
@@ -100,4 +101,5 @@ export {
   CreatePollContextProvider,
   SearchInChatroomContextProvider,
   ChatroomTopic,
+  LMChatAIBotInitiaitionScreen
 };
