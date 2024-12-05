@@ -7,7 +7,7 @@ import {
   Keyboard,
   StatusBar,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Client } from "../../client";
 import {
   ChatroomContextValues,
@@ -41,6 +41,7 @@ import { NavigateToGroupDetailsParams } from "../../../ChatSX/callBacks/type";
 import { CallBack } from "../../../ChatSX/callBacks/callBackClass";
 import Layout from "../../../ChatSX/constants/Layout";
 import { SEARCH_IN_CHATROOM } from "../../constants/Screens";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 interface ChatroomHeaderProps {
   showChatroomIcon?: boolean;
@@ -97,6 +98,9 @@ const ChatroomHeader = ({
   const chatroomSubHeaderStyle = chatroomHeaderStyles?.chatroomSubHeaderStyle;
   const chatroomSelectedHeaderIcons =
     chatroomHeaderStyles?.chatroomSelectedHeaderIcons;
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user);
+  }, [chatroomDBDetails, user])
 
   const dispatch = useAppDispatch();
 
@@ -254,7 +258,7 @@ const ChatroomHeader = ({
               </TouchableOpacity>
             ) : null}
 
-            {chatroomDetails ? (
+            {chatroomDetails && !isOtherUserChatbot ? (
               <TouchableOpacity
                 onPress={() => {
                   setModalVisible(!modalVisible);
