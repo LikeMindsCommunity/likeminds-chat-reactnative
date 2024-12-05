@@ -223,7 +223,9 @@ const MessageInputBox = ({
   const [isRecordingPermission, setIsRecordingPermission] = useState(false);
   const [isVoiceNoteIconPress, setIsVoiceNoteIconPress] = useState(false);
   const { chatroomDBDetails }: any = useAppSelector((state) => state.chatroom);
-  const { memberRights } = useChatroomContext();
+
+  const { memberRights, setMessageSentByUserId, setShimmerVisibleForChatbot } = useChatroomContext();
+
   const [ogTagsState, setOgTagsState] = useState<any>({});
   const [closedOnce, setClosedOnce] = useState(false);
   const [showLinkPreview, setShowLinkPreview] = useState(true);
@@ -630,8 +632,8 @@ const MessageInputBox = ({
 
   //select Images and videoes From Gallery
   const selectGallery = async () => {
-    let limit = (chatroomType == 10 && !isOtherUserAIChatbot(chatroomDBDetails, user)) ? 1 : 0;
-    let mediaType: MediaType = (chatroomType == 10 && !isOtherUserAIChatbot(chatroomDBDetails, user)) ? "photo" : "mixed";
+    let limit = (chatroomType == 10 && isOtherUserAIChatbot(chatroomDBDetails, user)) ? 1 : 0;
+    let mediaType: MediaType = (chatroomType == 10 && isOtherUserAIChatbot(chatroomDBDetails, user)) ? "photo" : "mixed";
     const options: LaunchActivityProps = {
       mediaType,
       selectionLimit: limit,
@@ -934,6 +936,7 @@ const MessageInputBox = ({
     voiceNote?: any,
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
+    setShimmerVisibleForChatbot(true);
     setClosedPreview(true);
     setShowLinkPreview(false);
     setMessage("");
@@ -1362,7 +1365,8 @@ const MessageInputBox = ({
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
-            attachments
+            attachments,
+            triggerBot: isOtherUserAIChatbot(chatroomDBDetails, user) ? true : false
           };
 
           if (
@@ -1380,6 +1384,7 @@ const MessageInputBox = ({
           );
 
           if (response) {
+            setMessageSentByUserId(response?.conversation?.id ?? "");
             await myClient?.replaceSavedConversation(response?.conversation);
           }
 
@@ -1397,7 +1402,6 @@ const MessageInputBox = ({
               type: EMPTY_BLOCK_DELETION,
               body: {},
             });
-          } else if (response && attachmentsCount > 0) {
           }
         } else {
           dispatch({
@@ -1453,7 +1457,8 @@ const MessageInputBox = ({
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
-            attachments
+            attachments,
+            triggerBot: isOtherUserAIChatbot(chatroomDBDetails, user) ? true : false
           };
 
           if (
@@ -1470,6 +1475,10 @@ const MessageInputBox = ({
             onConversationsCreate(payload) as any
           );
 
+          if (response) {
+            setMessageSentByUserId(response?.conversation?.id ?? "");
+          }
+
           await myClient?.replaceSavedConversation(response?.conversation);
 
           if (response === undefined) {
@@ -1480,7 +1489,6 @@ const MessageInputBox = ({
                 msg: "Message not sent. Please check your internet connection",
               },
             });
-          } else if (response) {
           }
           dispatch({
             type: STATUS_BAR_STYLE,
@@ -2257,7 +2265,7 @@ const MessageInputBox = ({
                 : null,
             ]}
           >
-            {!!isUploadScreen && !isDoc && !isGif && !(chatroomType == 10 && !isOtherUserAIChatbot(chatroomDBDetails, user)) ? (
+            {!!isUploadScreen && !isDoc && !isGif && !(chatroomType == 10 && isOtherUserAIChatbot(chatroomDBDetails, user)) ? (
               <TouchableOpacity
                 style={styles.addMoreButton}
                 onPress={() => {
@@ -2425,7 +2433,7 @@ const MessageInputBox = ({
                   !isEditable &&
                   !voiceNotes?.recordTime &&
                   !isDeleteAnimation ? (
-                  GIFPicker ? (
+                  GIFPicker && !isOtherUserAIChatbot(chatroomDBDetails, user) ? (
                     <TouchableOpacity
                       style={styles.gifView}
                       onPress={() => GiphyDialog.show()}
