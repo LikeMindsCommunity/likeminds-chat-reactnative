@@ -167,6 +167,8 @@ export interface ChatroomContextValues {
   filteredChatroomActions: any[];
   modalVisible: boolean;
   refInput: any;
+  shimmerVisibleForChatbot: boolean;
+  messageSentByUserId: string;
 
   // Functions
   setIsEditable: Dispatch<SetStateAction<boolean>>;
@@ -224,6 +226,8 @@ export interface ChatroomContextValues {
     voiceNotesToUpload?: any
   ) => void;
   onReplyPrivatelyClick: (uuid: string, conversationID: number) => void;
+  setShimmerVisibleForChatbot: Dispatch<SetStateAction<boolean>>;
+  setMessageSentByUserId: Dispatch<SetStateAction<string>>;
   backAction: any;
 }
 
@@ -270,6 +274,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   const [replyChatID, setReplyChatID] = useState<number>();
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [shimmerVisibleForChatbot, setShimmerVisibleForChatbot] = useState(false);
+  const [messageSentByUserId, setMessageSentByUserId] = useState("");
   const [isToast, setIsToast] = useState(false);
   const [msg, setMsg] = useState("");
   const [reportModalVisible, setReportModalVisible] = useState(false);
@@ -845,6 +851,9 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         DB_RESPONSE?.conversationsData,
         community?.id
       );
+      if (messageSentByUserId != conversationId) {
+        setShimmerVisibleForChatbot(false);
+      }
     }
     if (page === 1) {
       const payload = GetConversationsRequestBuilder.builder()
@@ -883,7 +892,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         }
       }
     });
-  }, [chatroomID]);
+  }, [chatroomID, messageSentByUserId]);
 
   // this useffect updates routes, previousRoute variables when we come to chatroom.
   useEffect(() => {
@@ -1776,8 +1785,6 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
         const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${name}-${conversationID}`;
         const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
-        // const path = `files/collabcard/${chatroomID}/conversation/${conversationID}/${name}`;
-        // const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${conversationID}/${thumbnailURL}`;
 
       let uriFinal: any;
 
@@ -1932,7 +1939,6 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     isVoiceNote?: boolean,
     voiceNotesToUpload?: any
   ) => {
-    console.log("context one")
     if (isVoiceNote) {
       const res = await uploadResource({
         selectedImages: voiceNotesToUpload,
@@ -2118,6 +2124,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     filteredChatroomActions,
     modalVisible,
     refInput,
+    shimmerVisibleForChatbot,
+    messageSentByUserId,
 
     setIsEditable,
     setIsReact,
@@ -2159,6 +2167,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     handleFileUpload,
     onReplyPrivatelyClick,
     backAction,
+    setShimmerVisibleForChatbot,
+    setMessageSentByUserId
   };
 
   return (
