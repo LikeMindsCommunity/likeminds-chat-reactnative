@@ -146,6 +146,7 @@ interface DecodeProps {
   textStyles?: any;
   taggingTextColor?: string;
   linkTextColor?: string;
+  boldText?: boolean;
 }
 
 // naruto: naruto|route://member_profile/88226?member_id=__id__&community_id=__community__>>
@@ -165,10 +166,16 @@ export const decode = ({
   textStyles,
   taggingTextColor,
   linkTextColor,
+  boldText
 }: DecodeProps) => {
   if (!text) {
     return;
   }
+
+  if (boldText) {
+    return parseBoldText(text);
+  }
+
   const arr: any[] = [];
   const parts = text?.split(REGEX_USER_SPLITTING);
 
@@ -296,6 +303,23 @@ export const decode = ({
   } else {
     return text;
   }
+};
+
+const parseBoldText = (input) => {
+  // Regex to match text enclosed between ** (e.g., **bold text**)
+  const parts = input.split(/(\*\*.*?\*\*)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const boldText = part.slice(2, -2); // Remove the ** markers
+      return (
+        <Text key={index} style={{ fontWeight: 'bold', color: STYLES.$COLORS.FONT_PRIMARY }}>
+          {boldText}
+        </Text>
+      );
+    }
+    return <Text key={index} style={{ color: STYLES.$COLORS.FONT_PRIMARY}}>{part}</Text>;
+  });
 };
 
 // this function return a string which have decoded tagging route name in it
