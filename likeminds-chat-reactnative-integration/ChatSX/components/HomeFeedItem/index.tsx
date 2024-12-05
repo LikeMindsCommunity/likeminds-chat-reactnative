@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   View,
   Text,
@@ -42,6 +42,7 @@ import { Client } from "../../client";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 interface Props {
   avatar: string;
@@ -58,6 +59,7 @@ interface Props {
   inviteReceiver?: any;
   chatroomType: number;
   muteStatus: boolean;
+  item?: any;
 }
 
 const HomeFeedItem: React.FC<Props> = ({
@@ -75,6 +77,7 @@ const HomeFeedItem: React.FC<Props> = ({
   inviteReceiver,
   chatroomType,
   muteStatus,
+  item
 }) => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.homefeed);
@@ -86,6 +89,9 @@ const HomeFeedItem: React.FC<Props> = ({
   const titleStyle = homeFeedStyles.title;
   const lastConversationStyle = homeFeedStyles.lastConversation;
   const avatarStyles = homeFeedStyles.avatar;
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(item, user);
+  }, [user, item])
 
   const showJoinAlert = () =>
     Alert.alert(
@@ -547,6 +553,7 @@ const HomeFeedItem: React.FC<Props> = ({
                         enableClick: false,
                         chatroomName: title,
                         communityId: user?.sdkClientInfo?.community,
+                        boldText: isOtherUserChatbot
                       })}
                 </Text>
               </Text>
