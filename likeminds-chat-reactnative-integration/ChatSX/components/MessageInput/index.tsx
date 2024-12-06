@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import React, { useMemo } from "react";
+import { View, Text, TouchableOpacity, Image, Keyboard, Platform } from "react-native";
+import React, { useLayoutEffect, useMemo, useState } from "react";
 import { ChatroomType } from "../../enums";
 import InputBox from "../InputBox";
 import { styles } from "../../screens/ChatRoom/styles";
@@ -19,6 +19,7 @@ import {
 import { CustomisableMethodsContextProvider } from "../../context/CustomisableMethodsContext";
 import { LMChatTextView } from "../../uiComponents";
 import { isOtherUserAIChatbot } from "../../utils/chatroomUtils"
+import Layout from "../../constants/Layout";
 
 interface HintMessages {
   messageForRightsDisabled?: string;
@@ -76,10 +77,28 @@ const MessageInput = ({
   const isOtherUserChatbot = useMemo(() => {
     return isOtherUserAIChatbot(chatroomDBDetails, user)
   }, [user, chatroomDBDetails]);
+
+  const [isKeyBoardFocused, setIsKeyBoardFocused] = useState(false);
+
+  useLayoutEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyBoardFocused(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setIsKeyBoardFocused(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
     <View
       style={{
         marginTop: "auto",
+        marginBottom: Platform.OS == 'ios' && isOtherUserChatbot ? Layout.normalize(12) : 0
       }}
     >
       {/* if chatroomType !== 10 (Not DM) then show group bottom changes, else if chatroomType === 10 (DM) then show DM bottom changes */}
@@ -299,7 +318,7 @@ const MessageInput = ({
         <LMChatTextView textStyle={{
           fontSize: 13,
           color: "#999999",
-          bottom: 5
+          bottom: isKeyBoardFocused ? 0 : 5
         }}>
           AI may make mistakes.
         </LMChatTextView>
