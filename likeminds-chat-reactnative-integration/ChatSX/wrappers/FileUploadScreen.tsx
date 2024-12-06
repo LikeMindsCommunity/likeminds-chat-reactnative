@@ -9,6 +9,7 @@ import styles from "../screens/FIleUpload/styles";
 import { PDF_TEXT } from "../constants/Strings";
 import { useFileUploadContext } from "../context/FileUploadContext";
 import { useChatroomContext } from "../context/ChatroomContext";
+import FileUploadBottomScrollView from "../components/FileUploadBottomScrollView";
 
 const FileUploadScreen = () => {
   const { chatroomType } = useChatroomContext();
@@ -31,6 +32,7 @@ const FileUploadScreen = () => {
           <MessageInputBox />
         </InputBoxContextProvider>
       </FileUploadMessageInput>
+      <FileUploadBottomScrollView />
     </View>
   );
 };
