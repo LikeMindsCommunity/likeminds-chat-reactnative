@@ -23,6 +23,7 @@ import {
   GET_CHATROOM_ACTIONS_SUCCESS,
   GET_CHATROOM_DB_SUCCESS,
   GET_CONVERSATIONS_SUCCESS,
+  HIDE_SHIMMER,
   LONG_PRESSED,
   REACTION_SENT,
   REJECT_INVITE_SUCCESS,
@@ -74,7 +75,7 @@ import {
 } from "@likeminds.community/chat-rn";
 import { Credentials } from "../credentials";
 import { initAPI } from "../store/actions/homefeed";
-import { createTemporaryStateMessage } from "../utils/chatroomUtils";
+import { createTemporaryStateMessage, splitFileName } from "../utils/chatroomUtils";
 import { LMChatAnalytics } from "../analytics/LMChatAnalytics";
 import { getChatroomType, getConversationType } from "../utils/analyticsUtils";
 import {
@@ -270,11 +271,13 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   const refInput = useRef<any>();
 
   const db = myClient?.firebaseInstance();
+  const dipatch = useAppDispatch();
 
   const [replyChatID, setReplyChatID] = useState<number>();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [shimmerVisibleForChatbot, setShimmerVisibleForChatbot] = useState(false);
+
   const [messageSentByUserId, setMessageSentByUserId] = useState("");
   const [isToast, setIsToast] = useState(false);
   const [msg, setMsg] = useState("");
@@ -853,6 +856,9 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       );
       if (messageSentByUserId != conversationId) {
         setShimmerVisibleForChatbot(false);
+        dispatch({
+          type: HIDE_SHIMMER
+        })
       }
     }
     if (page === 1) {
@@ -897,7 +903,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   // this useffect updates routes, previousRoute variables when we come to chatroom.
   useEffect(() => {
     if (isFocused) {
-      routes = navigation.getState()?.routes;
+      routes = (navigation.getState())?.routes;
       previousRoute = routes[routes?.length - 2];
     }
   }, [isFocused, chatroomID]);
@@ -926,7 +932,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   // This is to check eligibity of user that whether he/she can set chatroom topic or not
   useEffect(() => {
-    const selectedMessagesLength = selectedMessages.length;
+    const selectedMessagesLength = selectedMessages?.length;
     const selectedMessage = selectedMessages[0];
 
     if (
@@ -1783,7 +1789,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           ? item.name
           : null;
 
-        const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${name}-${conversationID}`;
+        const fileInfo = splitFileName(name);
+        const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${fileInfo?.name}-${conversationID}.${fileInfo.extension}`;
         const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
 
       let uriFinal: any;
@@ -2008,7 +2015,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     const apiRes = await myClient?.checkDMLimit({
       uuid: uuid,
     });
-    const res = apiRes?.data;
+    const res: any = apiRes?.data;
     if (apiRes?.success === false) {
       dispatch({
         type: SHOW_TOAST,
@@ -2045,7 +2052,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             }
           }
         } else {
-          const userDMLimit = res?.userDmLimit;
+          const userDMLimit: any = res?.userDmLimit;
 
           // to show alert only if API has valid response
           if (userDMLimit) {

@@ -107,3 +107,22 @@ export const isOtherUserAIChatbot = (chatroom: Chatroom, user: Member ) => {
   }
   return false;
 }
+
+export function splitFileName(filename: string) {
+  // Check if the filename contains a dot
+  if (!filename.includes('.')) {
+    return {
+      name: filename,
+      extension: ''
+    };
+  }
+
+  const lastDotIndex = filename.lastIndexOf('.');
+  const name = filename.substring(0, lastDotIndex);
+  const extension = filename.substring(lastDotIndex + 1);
+
+  return {
+    name: name,
+    extension: extension
+  };
+}

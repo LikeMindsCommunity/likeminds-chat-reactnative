@@ -45,7 +45,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import VideoPlayer from "react-native-media-console";
-import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseModels/Attachment";
+import { splitFileName } from "../../utils/chatroomUtils";
 interface UploadResource {
   selectedImages: any;
   conversationID: any;
@@ -175,16 +175,10 @@ const FileUpload = ({
           : docAttachmentType === PDF_TEXT
           ? item.name
           : null;
-
-          const data = `
-          files/collabcard/${chatroomID}/conversation/${user?.uuid}/${name}-${conversationID}
-          `
-          console.log(data)
-      console.log(thumbnailURL)
-      const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${name}-${conversationID}`;
+      
+      const fileInfo = splitFileName(name);
+      const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${fileInfo?.name}-${conversationID}.${fileInfo.extension}`;
       const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
-      // const path = `files/collabcard/${chatroomID}/conversation/${conversationID}/${name}`;
-      // const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${conversationID}/${thumbnailURL}`;
       let uriFinal: any;
 
       if (attachmentType === IMAGE_TEXT) {
@@ -283,7 +277,7 @@ const FileUpload = ({
             width: gifWidth ? gifWidth : null,
             local_file_path: item.uri,
             aws_folder_path: path,
-            thumbnail_aws_folder_path: thumbnailUrlPath,
+            thumbnail_aws_folder_path: thumbnailURL ? thumbnailUrlPath : "",
             thumbnail_local_file_path: thumbnailURL,
             file_url: awsResponse,
             created_at: conversationID,
@@ -346,7 +340,6 @@ const FileUpload = ({
   };
 
   const handleFileUpload = async (conversationID: any, isRetry: any) => {
-    console.log("fileupload one")
     const res = await uploadResource({
       selectedImages: selectedFilesToUpload,
       conversationID: conversationID,
