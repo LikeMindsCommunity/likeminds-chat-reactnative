@@ -197,9 +197,18 @@ function App(): React.JSX.Element {
                     lmChatInterface={lmChatInterface}
                     callbackClass={callbackClass}>
                     <Stack.Navigator>
-                      <Stack.Screen name='name' component={HomeScreen} options={{ headerShown: false }} />
-                      <Stack.Screen name="ChatBotInitiateScreen" component={LMChatAIBotInitiaitionScreen} options={{ headerShown: false }} />
+                      <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
+                      <Stack.Screen name={ScreenName.ChatBotInitiateScreen} component={LMChatAIBotInitiaitionScreen} options={{ headerShown: false }} />
                       <Stack.Screen name="Chatroom" component={ChatroomScreenWrapper} options={{
+                        gestureEnabled: Platform.OS === 'ios' ? false : true,
+                      }} />
+                      <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper} />
+                      <Stack.Screen name={ScreenName.SearchInChatroom} component={SearchInChatroom} options={{
+                        headerShown: false,
+                        gestureEnabled: Platform.OS === 'ios' ? false : true,
+                      }} />
+                      <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{
+                        headerShown: false,
                         gestureEnabled: Platform.OS === 'ios' ? false : true,
                       }} />
                     </Stack.Navigator>
@@ -214,9 +223,9 @@ function App(): React.JSX.Element {
                     <Stack.Screen name='name' component={HomeScreen} options={{ headerShown: false }} />
                     <Stack.Screen name={ScreenName.ChatBotInitiateScreen} component={LMChatAIBotInitiaitionScreen} options={{ headerShown: false }} />
                     <Stack.Screen name={ScreenName.Chatroom} component={ChatroomScreenWrapper} />
-                    <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper}/>
-                    <Stack.Screen name={ScreenName.SearchInChatroom} component={SearchInChatroom} options={{headerShown: false}} />
-                    <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{headerShown: false}} />
+                    <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper} />
+                    <Stack.Screen name={ScreenName.SearchInChatroom} component={SearchInChatroom} options={{ headerShown: false }} />
+                    <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{ headerShown: false }} />
                   </Stack.Navigator>
                 </LMChatBotOverlayProvider>
               )}
@@ -224,7 +233,7 @@ function App(): React.JSX.Element {
             <FetchKeyInputScreen isTrue={isTrue} setTrue={setIsTrue} />
         }
       </NavigationContainer>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView >
   );
 }
 
