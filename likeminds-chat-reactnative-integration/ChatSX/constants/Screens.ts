@@ -15,3 +15,4 @@ export const POLL_RESULT = 'PollResult';
 export const CREATE_POLL_SCREEN = 'CreatePollScreen';
 export const IMAGE_CROP_SCREEN = 'ImageCropScreen';
 export const SEARCH_IN_CHATROOM = "SearchInChatroom";
+export const ChatBotInitiateScreen = "ChatBotInitiateScreen";

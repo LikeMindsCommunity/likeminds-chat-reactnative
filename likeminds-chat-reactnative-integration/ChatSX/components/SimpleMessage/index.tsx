@@ -124,7 +124,7 @@ const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
             {customMessageFooter ? customMessageFooter : <MessageFooter />}
           </View>
           {(reactionArr.length > 0 || item?.answer?.split("").length > 100) &&
-          !isTypeSent ? (
+          !isTypeSent && !isOtherUserChatbot ? (
             <Pressable
               onLongPress={handleLongPress}
               delayLongPress={200}

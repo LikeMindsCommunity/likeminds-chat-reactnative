@@ -410,7 +410,7 @@ const ChatroomHeader = ({
             {len === 1 &&
               !isFirstMessageDeleted &&
               memberCanMessage &&
-              chatroomFollowStatus && (
+              chatroomFollowStatus && !isOtherUserChatbot && (
                 <TouchableOpacity
                   onPress={() => {
                     if (len > 0) {
@@ -522,7 +522,7 @@ const ChatroomHeader = ({
               </>
             ) : null}
 
-            {isSelectedMessageEditable &&
+            {isSelectedMessageEditable && !isOtherUserChatbot &&
             (chatroomType === ChatroomType.DMCHATROOM
               ? !!chatRequestState
               : true) ? ( // this condition checks in case of DM, chatRequestState != 0 && chatRequestState != null then only show edit Icon
@@ -551,7 +551,7 @@ const ChatroomHeader = ({
                 />
               </TouchableOpacity>
             ) : null}
-            {isDelete && (
+            {isDelete && !isOtherUserChatbot && (
               <TouchableOpacity
                 onPress={async () => {
                   const res = await myClient
@@ -637,7 +637,7 @@ const ChatroomHeader = ({
                 />
               </TouchableOpacity>
             )}
-            {len === 1 &&
+            {len === 1 && !isOtherUserChatbot &&
               !isFirstMessageDeleted &&
               showThreeDotsOnSelectedHeader && (
                 <TouchableOpacity
