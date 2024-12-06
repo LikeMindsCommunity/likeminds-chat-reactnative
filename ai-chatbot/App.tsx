@@ -53,6 +53,7 @@ import {
   ADD_PARTICIPANTS,
   DM_ALL_MEMBERS,
   EXPLORE_FEED,
+  IMAGE_CROP_SCREEN,
   IMAGE_SCREEN,
   REPORT,
   VIEW_PARTICIPANTS,
@@ -211,8 +212,11 @@ function App(): React.JSX.Element {
                   callbackClass={callbackClass}>
                   <Stack.Navigator>
                     <Stack.Screen name='name' component={HomeScreen} options={{ headerShown: false }} />
-                    <Stack.Screen name="ChatBotInitiateScreen" component={LMChatAIBotInitiaitionScreen} options={{ headerShown: false }} />
-                    <Stack.Screen name="Chatroom" component={ChatroomScreenWrapper} />
+                    <Stack.Screen name={ScreenName.ChatBotInitiateScreen} component={LMChatAIBotInitiaitionScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name={ScreenName.Chatroom} component={ChatroomScreenWrapper} />
+                    <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper}/>
+                    <Stack.Screen name={ScreenName.SearchInChatroom} component={SearchInChatroom} options={{headerShown: false}} />
+                    <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{headerShown: false}} />
                   </Stack.Navigator>
                 </LMChatBotOverlayProvider>
               )}
