@@ -175,7 +175,7 @@ const MessageListComponent = ({
     */
   }
 
-  const { stateArr }: any = useAppSelector((state) => state.chatroom);
+  const { stateArr, shimmerVisible }: any = useAppSelector((state) => state.chatroom);
   const { uploadingFilesMessages }: any = useAppSelector(
     (state) => state.upload
   );
@@ -423,7 +423,7 @@ const MessageListComponent = ({
             keyboardShouldPersistTaps={"handled"}
             inverted
           />
-          {isOtherUserChatbot && shimmerVisibleForChatbot ?
+          {isOtherUserChatbot && (shimmerVisibleForChatbot || shimmerVisible ) ?
             <>
               <View
                 style={{

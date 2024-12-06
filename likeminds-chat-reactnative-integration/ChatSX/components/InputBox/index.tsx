@@ -44,6 +44,8 @@ import {
   SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
   CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
   SET_CHATROOM_TOPIC,
+  SHOW_SHIMMER,
+  SET_MESSAGE_ID,
 } from "../../store/types/types";
 import { ReplyBox } from "../ReplyConversations";
 import { chatSchema } from "../../assets/chatSchema";
@@ -937,6 +939,9 @@ const MessageInputBox = ({
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
     setShimmerVisibleForChatbot(true);
+    dispatch({
+      type: SHOW_SHIMMER
+    })
     setClosedPreview(true);
     setShowLinkPreview(false);
     setMessage("");
@@ -1360,7 +1365,7 @@ const MessageInputBox = ({
           }
           const payload: any = {
             chatroomId: chatroomID,
-            hasFiles: false,
+            hasFiles: attachments?.length > 0 ? true : false,
             text: conversationText?.trim(),
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
@@ -1385,6 +1390,12 @@ const MessageInputBox = ({
 
           if (response) {
             setMessageSentByUserId(response?.conversation?.id ?? "");
+            dispatch({
+              type: SET_MESSAGE_ID,
+              body: {
+                id: response?.conversation?.id
+              }
+            })
             await myClient?.replaceSavedConversation(response?.conversation);
           }
 
@@ -1452,7 +1463,7 @@ const MessageInputBox = ({
           const attachments = await handleFileUpload(ID, false);
           const payload: any = {
             chatroomId: chatroomID,
-            hasFiles: false,
+            hasFiles: attachments?.length > 0 ? true : false,
             text: conversationText?.trim(),
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
@@ -1477,7 +1488,14 @@ const MessageInputBox = ({
 
           if (response) {
             setMessageSentByUserId(response?.conversation?.id ?? "");
+            dispatch({
+              type: SET_MESSAGE_ID,
+              body: {
+                id: response?.conversation?.id
+              }
+            })
           }
+          
 
           await myClient?.replaceSavedConversation(response?.conversation);
 

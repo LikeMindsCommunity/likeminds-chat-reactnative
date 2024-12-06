@@ -38,6 +38,9 @@ import {
   CLEAR_SELECTED_MESSAGES,
   CLEAR_CHATROOM_TOPIC,
   SET_TEMP_STATE_MESSAGE,
+  SET_MESSAGE_ID,
+  SHOW_SHIMMER,
+  HIDE_SHIMMER,
 } from "../types/types";
 
 export interface ChatroomReducerState {
@@ -60,6 +63,8 @@ export interface ChatroomReducerState {
   chatroomCreator: string;
   currentChatroomTopic: any;
   temporaryStateMessage: any;
+  shimmerVisible: boolean;
+  messageId: string;
 }
 
 export const initialState: ChatroomReducerState = {
@@ -82,6 +87,8 @@ export const initialState: ChatroomReducerState = {
   chatroomCreator: "",
   currentChatroomTopic: {},
   temporaryStateMessage: {},
+  shimmerVisible: false,
+  messageId: ""
 };
 
 export function chatroomReducer(state = initialState, action: any) {
@@ -201,7 +208,6 @@ export function chatroomReducer(state = initialState, action: any) {
     case ON_CONVERSATIONS_CREATE_SUCCESS: {
       const data = action.body;
       const { conversation = [] } = data;
-
       if (conversation?.hasFiles || !!conversation?.replyConversation || conversation == undefined || Array.isArray(conversation) && conversation.length == 0) {
         return { ...state };
       }
@@ -343,6 +349,16 @@ export function chatroomReducer(state = initialState, action: any) {
     case FILE_SENT: {
       const { status = "" } = action.body;
       return { ...state, fileSent: status };
+    }
+    case SET_MESSAGE_ID: {
+      const { id } = action.body;
+      return { ...state, messageId: id };
+    }
+    case SHOW_SHIMMER: {
+      return { ...state, shimmerVisible: true}
+    }
+    case HIDE_SHIMMER: {
+      return { ...state, shimmerVisible: false}
     }
     default:
       return state;
