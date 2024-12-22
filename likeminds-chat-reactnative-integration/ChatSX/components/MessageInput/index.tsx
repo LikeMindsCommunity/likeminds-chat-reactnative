@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, Keyboard, Platform } from "react-native";
+import { View, Text, TouchableOpacity, Image, Keyboard, Platform, SafeAreaView } from "react-native";
 import React, { useLayoutEffect, useMemo, useState } from "react";
 import { ChatroomType } from "../../enums";
 import InputBox from "../InputBox";
@@ -98,7 +98,6 @@ const MessageInput = ({
     <View
       style={{
         marginTop: "auto",
-        marginBottom: Platform.OS == 'ios' && isOtherUserChatbot ? Layout.normalize(12) : 0
       }}
     >
       {/* if chatroomType !== 10 (Not DM) then show group bottom changes, else if chatroomType === 10 (DM) then show DM bottom changes */}
@@ -314,15 +313,14 @@ const MessageInput = ({
           )}
         </View>
       ) : null}
-      {isOtherUserChatbot ? <View style={{justifyContent:'center', alignItems: 'center'}}>
+      {isOtherUserChatbot ? <SafeAreaView style={{justifyContent:'center', alignItems: 'center'}}>
         <LMChatTextView textStyle={{
           fontSize: 13,
           color: "#999999",
-          bottom: isKeyBoardFocused ? 0 : 5
         }}>
           AI may make mistakes.
         </LMChatTextView>
-      </View> : <></>}
+      </SafeAreaView> : <></>}
     </View>
   );
 };

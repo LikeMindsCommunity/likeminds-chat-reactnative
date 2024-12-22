@@ -46,6 +46,7 @@ import {
   SET_CHATROOM_TOPIC,
   SHOW_SHIMMER,
   SET_MESSAGE_ID,
+  ADD_SHIMMER_MESSAGE,
 } from "../../store/types/types";
 import { ReplyBox } from "../ReplyConversations";
 import { chatSchema } from "../../assets/chatSchema";
@@ -277,9 +278,9 @@ const MessageInputBox = ({
   let isGroupTag = false;
 
   const dispatch = useAppDispatch();
-  const isUserCM = useMemo(() => {
-    return user?.state == 1;
-  }, [user, memberRights]);
+  const isUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user);
+  }, [user, chatroomDBDetails]);
   const canUserCreatePoll = useMemo(() => {
     return memberRights?.find(item => item?.id == 2) ? true : false;
   }, [user, memberRights])
@@ -634,8 +635,8 @@ const MessageInputBox = ({
 
   //select Images and videoes From Gallery
   const selectGallery = async () => {
-    let limit = (chatroomType == 10 && isOtherUserAIChatbot(chatroomDBDetails, user)) ? 1 : 0;
-    let mediaType: MediaType = (chatroomType == 10 && isOtherUserAIChatbot(chatroomDBDetails, user)) ? "photo" : "mixed";
+    let limit = (chatroomType == 10 && isUserChatbot) ? 1 : 0;
+    let mediaType: MediaType = (chatroomType == 10 && isUserChatbot) ? "photo" : "mixed";
     const options: LaunchActivityProps = {
       mediaType,
       selectionLimit: limit,
@@ -939,9 +940,11 @@ const MessageInputBox = ({
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
     setShimmerVisibleForChatbot(true);
-    dispatch({
-      type: SHOW_SHIMMER
-    })
+    if(isUserChatbot) {
+      dispatch({
+        type: SHOW_SHIMMER
+      })
+    }
     setClosedPreview(true);
     setShowLinkPreview(false);
     setMessage("");
@@ -1309,6 +1312,11 @@ const MessageInputBox = ({
         );
       } else {
         if (!isUploadScreen) {
+          if(isUserChatbot) {
+            dispatch({
+              type: ADD_SHIMMER_MESSAGE,
+            })
+          }
           let attachments;
           if (attachmentsCount > 0) {
             // start uploading
@@ -1371,7 +1379,7 @@ const MessageInputBox = ({
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
             attachments,
-            triggerBot: isOtherUserAIChatbot(chatroomDBDetails, user) ? true : false
+            triggerBot: isUserChatbot ? true : false
           };
 
           if (
@@ -1415,6 +1423,11 @@ const MessageInputBox = ({
             });
           }
         } else {
+          if(isUserChatbot) {
+            dispatch({
+              type: ADD_SHIMMER_MESSAGE,
+            })
+          }
           dispatch({
             type: FILE_SENT,
             body: { status: !fileSent },
@@ -1469,7 +1482,7 @@ const MessageInputBox = ({
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
             attachments,
-            triggerBot: isOtherUserAIChatbot(chatroomDBDetails, user) ? true : false
+            triggerBot: isUserChatbot ? true : false
           };
 
           if (
@@ -2047,7 +2060,7 @@ const MessageInputBox = ({
             ? {
               marginBottom: inputBoxStyles?.messageInputMarginBottom
                 ? inputBoxStyles?.messageInputMarginBottom
-                : marginValue,
+                : 5,
             }
             : null,
         ]}
@@ -2283,7 +2296,7 @@ const MessageInputBox = ({
                 : null,
             ]}
           >
-            {!!isUploadScreen && !isDoc && !isGif && !(chatroomType == 10 && isOtherUserAIChatbot(chatroomDBDetails, user)) ? (
+            {!!isUploadScreen && !isDoc && !isGif && !(chatroomType == 10 && isUserChatbot) ? (
               <TouchableOpacity
                 style={styles.addMoreButton}
                 onPress={() => {
@@ -2295,7 +2308,7 @@ const MessageInputBox = ({
                   iconStyle={styles.emoji}
                 />
               </TouchableOpacity>
-            ) : !!isUploadScreen && !!isDoc && !isGif && !(chatroomType == 10 && isOtherUserAIChatbot(chatroomDBDetails, user)) ? (
+            ) : !!isUploadScreen && !!isDoc && !isGif && !(chatroomType == 10 && isUserChatbot) ? (
               <TouchableOpacity
                 style={styles.addMoreButton}
                 onPress={() => {
@@ -2451,7 +2464,7 @@ const MessageInputBox = ({
                   !isEditable &&
                   !voiceNotes?.recordTime &&
                   !isDeleteAnimation ? (
-                  GIFPicker && !isOtherUserAIChatbot(chatroomDBDetails, user) ? (
+                  GIFPicker && !isUserChatbot ? (
                     <TouchableOpacity
                       style={styles.gifView}
                       onPress={() => GiphyDialog.show()}
@@ -2600,7 +2613,7 @@ const MessageInputBox = ({
           </TouchableOpacity>
         ) : (
           <View>
-            {isRecordingPermission && AudioRecorder && AudioPlayer ? (
+            {isRecordingPermission && AudioRecorder && AudioPlayer && !isUserChatbot ? (
               <GestureDetector gesture={composedGesture}>
                 <Animated.View>
                   {voiceNotes.recordTime && !isRecordingLocked && (
@@ -2643,7 +2656,7 @@ const MessageInputBox = ({
                   </Animated.View>
                 </Animated.View>
               </GestureDetector>
-            ) : AudioRecorder ? (
+            ) : AudioRecorder && !isUserChatbot ? (
               <Animated.View style={[styles.sendButton, panStyle]}>
                 <Pressable
                   onPress={askPermission}
@@ -2736,7 +2749,7 @@ const MessageInputBox = ({
                   </LMChatTextView>
                 </View>
                 {/* doc */}
-                { ( (chatroomType == 10 && !isOtherUserAIChatbot(chatroomDBDetails, user)) || (chatroomType == 0 || chatroomType == 7) ) ?
+                { ( (chatroomType == 10 && !isUserChatbot) || (chatroomType == 0 || chatroomType == 7) ) ?
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
