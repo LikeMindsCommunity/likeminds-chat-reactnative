@@ -1,3 +1,4 @@
+import { chatSchema } from "../../assets/chatSchema";
 import {
   CLEAR_CHATROOM_CONVERSATION,
   CLEAR_CHATROOM_DETAILS,
@@ -41,6 +42,8 @@ import {
   SET_MESSAGE_ID,
   SHOW_SHIMMER,
   HIDE_SHIMMER,
+  ADD_SHIMMER_MESSAGE,
+  REMOVE_SHIMMER_MESSAGE,
 } from "../types/types";
 
 export interface ChatroomReducerState {
@@ -127,6 +130,21 @@ export function chatroomReducer(state = initialState, action: any) {
         conversations: newArr,
       };
     }
+    case ADD_SHIMMER_MESSAGE: {
+      let isShimmerPresent = state?.conversations?.findIndex(
+        message => message?.isShimmer == true
+      )
+      if (isShimmerPresent == -1) {
+        return {...state, conversations: [ { id: Date.now(), isShimmer: true }, ...state.conversations ]}
+      }
+      return { ...state }
+    }
+    case REMOVE_SHIMMER_MESSAGE: {
+      const filterConversation = state.conversations?.filter(
+        message => message?.isShimmer == undefined
+      )
+      return {...state, conversation: filterConversation }
+    }
     case ADD_STATE_MESSAGE: {
       const { conversation = {} } = action.body;
       return {
@@ -159,7 +177,10 @@ export function chatroomReducer(state = initialState, action: any) {
       return { ...state, chatroomDBDetails: chatroomDBDetails };
     }
     case GET_CONVERSATIONS_SUCCESS: {
-      const { conversations = [] } = action.body;
+      let { conversations = [] } = action.body;
+      if (state.shimmerVisible) {
+        conversations = [ {id: Date.now(), isShimmer: true} , ...conversations]
+      }
       return { ...state, conversations: conversations };
     }
     case PAGINATED_CONVERSATIONS_END_SUCCESS: {
