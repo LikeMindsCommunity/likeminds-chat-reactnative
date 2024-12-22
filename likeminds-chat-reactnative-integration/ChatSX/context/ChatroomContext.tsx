@@ -315,6 +315,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     chatroomCreator,
     currentChatroomTopic,
     temporaryStateMessage,
+    messageId
   }: any = useAppSelector((state) => state.chatroom);
   const { user, community, memberRights } = useAppSelector(
     (state) => state.homefeed
@@ -856,6 +857,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       );
       if (messageSentByUserId != conversationId) {
         setShimmerVisibleForChatbot(false);
+      }
+      if (messageId != conversationId) {
         dispatch({
           type: HIDE_SHIMMER
         })
@@ -898,7 +901,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         }
       }
     });
-  }, [chatroomID, messageSentByUserId]);
+  }, [chatroomID, messageSentByUserId, messageId]);
 
   // this useffect updates routes, previousRoute variables when we come to chatroom.
   useEffect(() => {

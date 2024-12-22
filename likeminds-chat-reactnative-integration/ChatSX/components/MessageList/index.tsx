@@ -297,7 +297,7 @@ const MessageListComponent = ({
             data={conversations}
             keyExtractor={(item: any, index) => {
               const isArray = Array.isArray(item);
-              return isArray ? `${index}` : `${item?.id}`;
+              return isArray ? `${index}` : item?.id ? `${index}` : `${item?.id}`;
             }}
             extraData={{
               value: [
@@ -305,10 +305,49 @@ const MessageListComponent = ({
                 uploadingFilesMessages,
                 stateArr,
                 conversations,
+                shimmerVisible,
+                shimmerVisibleForChatbot
               ],
             }}
             estimatedItemSize={250}
             renderItem={({ item: value, index }: any) => {
+
+              if (isOtherUserChatbot && value?.isShimmer) {
+                return (
+                  <>
+                    <View
+                      style={{
+                        width: 250,
+                        paddingLeft: 8,
+                        paddingVertical: 15,
+                        borderTopRightRadius: 12,
+                        borderTopLeftRadius: 12,
+                        borderBottomRightRadius: 12,
+                        flexDirection: 'row',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <View
+                        style={{ width: 40, height: 40, borderRadius: 100, marginRight: 10, backgroundColor: '#D0D0D0' }}
+                      />
+                      <View>
+                        <ShimmerPlaceHolder
+                          style={{ width: 150, height: 10, borderRadius: 5 }}
+                        />
+                        <ShimmerPlaceHolder
+                          style={{
+                            width: 120,
+                            height: 10,
+                            marginTop: 10,
+                            borderRadius: 5,
+                          }}
+                        />
+                      </View>
+                    </View>
+                  </>
+                )
+              }
+
               let hideDate = false;
               const uploadingFilesMessagesIDArr = Object.keys(
                 uploadingFilesMessages
@@ -344,7 +383,7 @@ const MessageListComponent = ({
                 <View>
                   {index < conversations?.length &&
                     conversations[index]?.date !==
-                    conversations[index + 1]?.date && !hideDate ? (
+                    conversations[index + 1]?.date && !hideDate && !(shimmerVisible || shimmerVisibleForChatbot) ? (
                     <View style={[styles.statusMessage]}>
                       <Text
                         style={{
@@ -423,40 +462,6 @@ const MessageListComponent = ({
             keyboardShouldPersistTaps={"handled"}
             inverted
           />
-          {isOtherUserChatbot && (shimmerVisibleForChatbot || shimmerVisible ) ?
-            <>
-              <View
-                style={{
-                  width: 250,
-                  paddingLeft: 8,
-                  paddingVertical: 15,
-                  borderTopRightRadius: 12,
-                  borderTopLeftRadius: 12,
-                  borderBottomRightRadius: 12,
-                  flexDirection: 'row',
-                  alignItems: 'center'
-                }}
-              >
-                <View
-                  style={{ width: 45, height: 45, borderRadius: 100, marginRight: 10, backgroundColor: '#D0D0D0' }}
-                />
-                <View>
-                  <ShimmerPlaceHolder
-                    style={{ width: 150, height: 10, borderRadius: 5 }}
-                  />
-                  <ShimmerPlaceHolder
-                    style={{
-                      width: 120,
-                      height: 10,
-                      marginTop: 10,
-                      borderRadius: 5,
-                    }}
-                  />
-                </View>
-              </View>
-            </>
-            : <></>
-          }
           {isScrollingUp && (
             <TouchableOpacity
               style={[
