@@ -6,6 +6,6 @@ export class LMChatAnalytics {
     eventProperties?: Map<string | undefined, string | undefined>
   ) {
     const lmChatInterface = CallBack.lmChatInterface;
-    lmChatInterface.onEventTriggered(eventName, eventProperties);
+    lmChatInterface?.onEventTriggered(eventName, eventProperties);
   }
 }

@@ -20,5 +20,5 @@ export interface LMChatBotOverlayProviderProps {
   myClient: LMChatClient;
   children: React.ReactNode;
   lmChatInterface?: any;
-  callbackClass: LMCoreCallbacks;
+  callbackClass?: LMCoreCallbacks;
 }
