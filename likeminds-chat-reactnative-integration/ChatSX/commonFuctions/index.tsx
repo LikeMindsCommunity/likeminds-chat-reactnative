@@ -172,6 +172,7 @@ export const decode = ({
     return;
   }
 
+  // incase of chatbot disable all regex except for text enclosed within ** ** to be made bold
   if (boldText) {
     return parseBoldText(text);
   }
@@ -305,6 +306,7 @@ export const decode = ({
   }
 };
 
+// this function makes return text as bold that are enclosed within ** **
 const parseBoldText = (input) => {
   // Regex to match text enclosed between ** (e.g., **bold text**)
   const parts = input.split(/(\*\*.*?\*\*)/g);
