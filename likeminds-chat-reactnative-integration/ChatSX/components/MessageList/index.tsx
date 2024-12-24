@@ -312,6 +312,7 @@ const MessageListComponent = ({
             estimatedItemSize={250}
             renderItem={({ item: value, index }: any) => {
 
+              // return shimmer component if message is just a shimmer
               if (isOtherUserChatbot && value?.isShimmer) {
                 return (
                   <>
@@ -324,24 +325,42 @@ const MessageListComponent = ({
                         borderTopLeftRadius: 12,
                         borderBottomRightRadius: 12,
                         flexDirection: 'row',
-                        alignItems: 'center'
+                        alignItems: 'center',
                       }}
                     >
-                      <View
-                        style={{ width: 40, height: 40, borderRadius: 100, marginRight: 10, backgroundColor: '#D0D0D0' }}
+                      <Image
+                        style={{ width: Layout.normalize(40), height: Layout.normalize(40), borderRadius: 100, marginRight: -10, backgroundColor: '#D0D0D0' }}
+                        source={chatroomDBDetails?.member?.imageUrl ? {uri: chatroomDBDetails?.member?.imageUrl } : require("../../assets/images/default_pic.png")}
                       />
                       <View>
-                        <ShimmerPlaceHolder
-                          style={{ width: 150, height: 10, borderRadius: 5 }}
-                        />
-                        <ShimmerPlaceHolder
-                          style={{
-                            width: 120,
-                            height: 10,
-                            marginTop: 10,
-                            borderRadius: 5,
-                          }}
-                        />
+
+                      </View>
+                      <Image source={require("../../assets/images/tail_3x.png")}
+                        style={{
+                          height: 20, width: 20,
+                          alignSelf: 'flex-end', top: -5, left: 15
+                        }}
+                      />
+                      <View style={{
+                        padding: 10,
+                        backgroundColor: 'white',
+                        flexDirection: 'row',
+                        borderRadius: 14
+                      }}>
+                        <View style={{
+                          flexDirection: 'row',
+                          gap: 6
+                        }}>
+                          <ShimmerPlaceHolder
+                            style={{ width: 10, height: 10, borderRadius: 5 }}
+                          />
+                          <ShimmerPlaceHolder
+                            style={{ width: 10, height: 10, borderRadius: 5 }}
+                          />
+                          <ShimmerPlaceHolder
+                            style={{ width: 10, height: 10, borderRadius: 5 }}
+                          />
+                        </View>
                       </View>
                     </View>
                   </>
@@ -453,13 +472,63 @@ const MessageListComponent = ({
                       />
                     </Pressable>
                   </Swipeable>
+                  {/* <>
+                    <View
+                      style={{
+                        width: 250,
+                        paddingLeft: 8,
+                        paddingVertical: 15,
+                        borderTopRightRadius: 12,
+                        borderTopLeftRadius: 12,
+                        borderBottomRightRadius: 12,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        // backgroundColor: 'white'
+                      }}
+                    >
+                      <Image
+                        style={{ width: Layout.normalize(40), height: Layout.normalize(40), borderRadius: 100, marginRight: -15, backgroundColor: '#D0D0D0' }}
+                        source={chatroomDBDetails?.member?.imageUrl ? {uri: chatroomDBDetails?.member?.imageUrl } : require("../../assets/images/default_pic.png")}
+                      />
+                      <View>
+
+                      </View>
+                      <Image source={require("../../assets/images/tail_3x.png")}
+                        style={{
+                          height: 20, width: 20,
+                          alignSelf: 'flex-end', top: -5, left: 15
+                        }}
+                      />
+                      <View style={{
+                        padding: 10,
+                        backgroundColor: 'white',
+                        flexDirection: 'row',
+                        borderRadius: 14
+                      }}>
+                        <View style={{
+                          flexDirection: 'row',
+                          gap: 6
+                        }}>
+                          <ShimmerPlaceHolder
+                            style={{ width: 10, height: 10, borderRadius: 5 }}
+                          />
+                          <ShimmerPlaceHolder
+                            style={{ width: 10, height: 10, borderRadius: 5 }}
+                          />
+                          <ShimmerPlaceHolder
+                            style={{ width: 10, height: 10, borderRadius: 5 }}
+                          />
+                        </View>
+                      </View>
+                    </View>
+                  </> */}
                 </View>
               );
             }}
             onScroll={handleOnScroll}
             ListHeaderComponent={renderFooter}
             ListFooterComponent={renderFooter}
-            keyboardShouldPersistTaps={"handled"}
+            // keyboardShouldPersistTaps={"handled"}
             inverted
           />
           {isScrollingUp && (

@@ -848,6 +848,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       conversationId
     );
     const DB_RESPONSE = val?.data;
+    let flagForShimmer = shimmerVisibleForChatbot
     if (DB_RESPONSE?.conversationsData?.length !== 0) {
       await myClient?.saveConversationData(
         DB_RESPONSE,
@@ -855,13 +856,17 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         DB_RESPONSE?.conversationsData,
         community?.id
       );
+
       if (messageSentByUserId != conversationId) {
-        setShimmerVisibleForChatbot(false);
+        setShimmerVisibleForChatbot(() => false);
+        flagForShimmer = false;
       }
+
       if (messageId != conversationId) {
         dispatch({
           type: HIDE_SHIMMER
         })
+        setShimmerVisibleForChatbot(false);
       }
     }
     if (page === 1) {
@@ -872,7 +877,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       const conversationsFromRealm = await myClient?.getConversations(payload);
       dispatch({
         type: GET_CONVERSATIONS_SUCCESS,
-        body: { conversations: conversationsFromRealm },
+        body: { conversations: conversationsFromRealm, shimmer: flagForShimmer },
       });
     }
     return;
@@ -1856,9 +1861,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           }
 
           const payload: Attachment = {
-            // conversationId: conversationID,
             id: conversationID,
-            // filesCount: selectedImages?.length,
             index: i + 1,
             meta:
               fileType === VIDEO_TEXT
@@ -1897,7 +1900,6 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           };
 
           attachments.push(payload);
-          // const uploadRes = await myClient?.putMultimedia(payload as any);
         }
       } catch (error) {
         dispatch({

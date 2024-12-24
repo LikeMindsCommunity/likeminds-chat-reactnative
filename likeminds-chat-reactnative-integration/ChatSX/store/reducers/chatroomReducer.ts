@@ -177,8 +177,9 @@ export function chatroomReducer(state = initialState, action: any) {
       return { ...state, chatroomDBDetails: chatroomDBDetails };
     }
     case GET_CONVERSATIONS_SUCCESS: {
-      let { conversations = [] } = action.body;
-      if (state.shimmerVisible) {
+      let { conversations = [], shimmer } = action.body;
+      // Append the shimmer message again after DB calls if conditions are true
+      if (state.shimmerVisible || shimmer) {
         conversations = [ {id: Date.now(), isShimmer: true} , ...conversations]
       }
       return { ...state, conversations: conversations };
