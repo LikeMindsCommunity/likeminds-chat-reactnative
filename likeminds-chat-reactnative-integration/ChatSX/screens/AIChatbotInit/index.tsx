@@ -37,6 +37,8 @@ const LMChatAIBotInitiaitionScreen = ({
     const [animationData, setAnimationData] = useState(null);
     const [fetchingAnimationData, setFetchingAnimationData] = useState(true);
 
+    const chatBotInitScreenStyles = STYLES.$CHATBOT_INIT_SCREEN_STYLE;
+
     useLayoutEffect(() => {
         const fetchAnimation = async () => {
             try {
@@ -114,7 +116,10 @@ const LMChatAIBotInitiaitionScreen = ({
 
 
     return (
-        <View style={{ flex: 1, backgroundColor: STYLES.$BACKGROUND_COLORS.LIGHT }}>
+        <View style={StyleSheet.flatten([
+            { flex: 1, backgroundColor: STYLES.$BACKGROUND_COLORS.LIGHT },
+            chatBotInitScreenStyles?.parentViewStyle
+        ])}>
             {
                 !fetchingAnimationData ?
                     <>
@@ -129,10 +134,13 @@ const LMChatAIBotInitiaitionScreen = ({
                                 }
                                 autoPlay
                             />
-                            <LMChatTextView textStyle={{
-                                fontSize: 20,
-                                bottom: 20
-                            }}>
+                            <LMChatTextView textStyle={StyleSheet.flatten([
+                                {
+                                    fontSize: 20,
+                                    bottom: 20
+                                },
+                                chatBotInitScreenStyles?.previewTextStyle,
+                            ])}>
                                 {previewText ? previewText : "Setting up AI chatbot..."}
                             </LMChatTextView>
                         </View>

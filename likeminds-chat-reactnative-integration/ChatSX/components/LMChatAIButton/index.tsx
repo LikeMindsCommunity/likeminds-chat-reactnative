@@ -7,6 +7,8 @@ import { pushAPI, token } from "../../notifications";
 import { useAppDispatch } from "../../store";
 import { Client } from "../../client";
 import { useNavigation } from "@react-navigation/native";
+import { StyleSheet } from "react-native";
+import { CHATBOT_INITIATE_SCREEN, CHATROOM } from "../../constants/Screens";
 
 interface LMChatAIButtonProps {
     text?: string;
@@ -44,6 +46,7 @@ export default function LMChatAIButton({
     onTap
 }: LMChatAIButtonProps) {
     const [isInitiated, setIsInitiated] = useState(false);
+    const LMChatButtonStyles = STYLES?.$LMCHAT_AI_BUTTON_STYLE;
     const dispatch = useAppDispatch();
     const navigation = useNavigation();
 
@@ -59,10 +62,9 @@ export default function LMChatAIButton({
             await dispatch(getMemberState());
             const appConfig = await Client?.myClient?.getAppConfig();
             if (appConfig === null || appConfig === undefined) {
-                navigation.navigate("ChatBotInitiateScreen")
+                navigation.navigate(CHATBOT_INITIATE_SCREEN)
             } else {
-                console.log(appConfig);
-                navigation.navigate("Chatroom", {
+                navigation.navigate(CHATROOM, {
                     chatroomID: appConfig?.chatroomIdWithAIChatbot
                 })
             }
@@ -89,9 +91,9 @@ export default function LMChatAIButton({
             await dispatch(getMemberState());
             const appConfig = await Client?.myClient?.getAppConfig();
             if (appConfig === undefined || appConfig === null) {
-                navigation.navigate("ChatBotInitiateScreen")
+                navigation.navigate(CHATBOT_INITIATE_SCREEN)
             } else {
-                navigation.navigate("Chatroom", {
+                navigation.navigate(CHATROOM, {
                     chatroomID: appConfig?.chatroomIdWithAIChatbot
                 })
             }
@@ -113,25 +115,37 @@ export default function LMChatAIButton({
                 }
                 AIChatBotButtonPress();
             }}
-            buttonStyle={{
-                borderRadius: borderRadius,
-                elevation: 6,
-                backgroundColor: backgroundColor
-            }} text={{
+            buttonStyle={
+                StyleSheet.flatten([
+                    {
+                        borderRadius: borderRadius,
+                        elevation: 6,
+                        borderWidth: 0,
+                        backgroundColor: backgroundColor
+                    },
+                    LMChatButtonStyles?.buttonStyle
+                ])
+            } text={{
                 children: text,
-                textStyle: {
-                    color: textColor,
-                    fontWeight: 'bold',
-                    fontSize: textSize,
-                    marginHorizontal: 5
-                },
+                textStyle: StyleSheet.flatten([
+                    {
+                        color: textColor,
+                        fontWeight: 'bold',
+                        fontSize: textSize,
+                        marginHorizontal: 5
+                    },
+                    LMChatButtonStyles?.textStyle
+                ]),
             }}
             icon={{
                 assetPath: icon ? icon : require("../../assets/images/AIChatBot.png"),
-                iconStyle: {
-                    height: 30,
-                    width: 30
-                },
+                iconStyle: StyleSheet.flatten([
+                    {
+                        height: 30,
+                        width: 30
+                    },
+                    LMChatButtonStyles?.iconStyle
+                ]),
             }}
         />
     )
