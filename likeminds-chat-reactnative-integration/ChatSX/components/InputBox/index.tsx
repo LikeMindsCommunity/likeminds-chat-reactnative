@@ -2296,7 +2296,7 @@ const MessageInputBox = ({
                 : null,
             ]}
           >
-            {!!isUploadScreen && !isDoc && !isGif && !(chatroomType == 10 && isUserChatbot) ? (
+            {!!isUploadScreen && !isDoc && !isGif && !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot) ? (
               <TouchableOpacity
                 style={styles.addMoreButton}
                 onPress={() => {
@@ -2308,7 +2308,7 @@ const MessageInputBox = ({
                   iconStyle={styles.emoji}
                 />
               </TouchableOpacity>
-            ) : !!isUploadScreen && !!isDoc && !isGif && !(chatroomType == 10 && isUserChatbot) ? (
+            ) : !!isUploadScreen && !!isDoc && !isGif && !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot) ? (
               <TouchableOpacity
                 style={styles.addMoreButton}
                 onPress={() => {
@@ -2479,7 +2479,7 @@ const MessageInputBox = ({
                   placeholderText={
                     inputBoxStyles?.placeholderText
                       ? inputBoxStyles?.placeholderText
-                      : "Type a message"
+                      : isUserChatbot ? "Ask your query" : "Type a message"
                   }
                   placeholderTextColor={inputBoxStyles?.placeholderTextColor}
                   plainTextStyle={[
@@ -2527,7 +2527,7 @@ const MessageInputBox = ({
             )}
 
             {!isUploadScreen &&
-              !(chatRequestState === 0 || chatRequestState === null) &&
+              !(chatRequestState === ChatroomType.OPENCHATROOM || chatRequestState === null) &&
               !isEditable &&
               !voiceNotes?.recordTime &&
               !isDeleteAnimation ? (
@@ -2568,7 +2568,7 @@ const MessageInputBox = ({
           isVoiceResult ||
           isUploadScreen ||
           isRecordingLocked ||
-          (chatroomType === 10 && chatRequestState === null) ? (
+          (chatroomType === ChatroomType.OPENCHATROOM && chatRequestState === null) ? (
           <TouchableOpacity
             onPressOut={async () => {
               if (
@@ -2749,7 +2749,7 @@ const MessageInputBox = ({
                   </LMChatTextView>
                 </View>
                 {/* doc */}
-                { ( (chatroomType == 10 && !isUserChatbot) || (chatroomType == 0 || chatroomType == 7) ) ?
+                { ( (chatroomType == ChatroomType.DMCHATROOM && !isUserChatbot) || (chatroomType == ChatroomType.OPENCHATROOM || chatroomType == ChatroomType.ANNOUNCEMENTROOM) ) ?
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
@@ -2775,7 +2775,7 @@ const MessageInputBox = ({
                   </LMChatTextView>
                 </View> : null}
                 {/* poll */}
-                { (chatroomType == 0 || chatroomType == 7) && canUserCreatePoll ? (
+                { (chatroomType == ChatroomType.OPENCHATROOM || chatroomType == ChatroomType.ANNOUNCEMENTROOM) && canUserCreatePoll ? (
                   <View style={styles.iconContainer}>
                     <TouchableOpacity
                       onPress={() => {
