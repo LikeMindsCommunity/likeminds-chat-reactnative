@@ -247,7 +247,6 @@ const FileUpload = ({
 
           const payload = {
             id: conversationID,
-            // filesCount: selectedImages?.length,
             index: i + 1,
             meta:
               fileType === VIDEO_TEXT
@@ -284,7 +283,6 @@ const FileUpload = ({
             updated_at: conversationID,
           };
 
-          // const uploadRes = await myClient?.putMultimedia(payload as any);
 
           LMChatAnalytics.track(
             Events.ATTACHMENT_UPLOADED,

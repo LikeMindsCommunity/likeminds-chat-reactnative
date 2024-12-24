@@ -92,6 +92,7 @@ export const getCurrentConversation = async (
   return newConversation;
 };
 
+// function to get whether we're in a conversation with a chatbot
 export const isOtherUserAIChatbot = (chatroom: Chatroom, user: Member ) => {
   if (chatroom == null || chatroom == undefined || user == null || user == undefined) {
     return false;
@@ -108,6 +109,7 @@ export const isOtherUserAIChatbot = (chatroom: Chatroom, user: Member ) => {
   return false;
 }
 
+// function to split the filename into the name of the file and it's extension
 export function splitFileName(filename: string) {
   // Check if the filename contains a dot
   if (!filename.includes('.')) {

@@ -338,7 +338,7 @@ const ViewParticipants = ({ navigation, route }: any) => {
                       userNameStyles?.fontFamily && {
                         fontFamily: userNameStyles?.fontFamily,
                       },
-                    ] as unknown as TextStyle
+                    ] as TextStyle[]
                   }
                   numberOfLines={1}
                 >
