@@ -9,6 +9,7 @@ import { Client } from "../../client";
 import { useNavigation } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 import { CHATBOT_INITIATE_SCREEN, CHATROOM } from "../../constants/Screens";
+import Layout from "../../constants/Layout";
 
 interface LMChatAIButtonProps {
     text?: string;
@@ -31,9 +32,9 @@ interface LMChatAIButtonProps {
 export default function LMChatAIButton({
     text = "AI bot",
     textColor = "white",
-    textSize = 16,
-    backgroundColor = STYLES.$COLORS.PRIMARY,
-    borderRadius = 20,
+    textSize = 18,
+    backgroundColor = '#020D42',
+    borderRadius = 28,
     icon,
     iconPlacement = "start",
     apiKey,
@@ -121,6 +122,8 @@ export default function LMChatAIButton({
                         borderRadius: borderRadius,
                         elevation: 6,
                         borderWidth: 0,
+                        paddingHorizontal: 6,
+                        paddingVertical: 10,
                         backgroundColor: backgroundColor
                     },
                     LMChatButtonStyles?.buttonStyle
@@ -141,8 +144,8 @@ export default function LMChatAIButton({
                 assetPath: icon ? icon : require("../../assets/images/AIChatBot.png"),
                 iconStyle: StyleSheet.flatten([
                     {
-                        height: 30,
-                        width: 30
+                        height: Layout.normalize(30),
+                        width: Layout.normalize(30),
                     },
                     LMChatButtonStyles?.iconStyle
                 ]),
