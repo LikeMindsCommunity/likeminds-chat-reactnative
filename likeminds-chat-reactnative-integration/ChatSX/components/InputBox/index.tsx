@@ -2282,7 +2282,8 @@ const MessageInputBox = ({
           <View
             style={[
               styles.textInput,
-              !(isEditable || isReply) ? styles.inputBoxWithShadow : null,
+              // styles for shadow around input box, left commented for future reference
+              // !(isEditable || isReply) ? styles.inputBoxWithShadow : null,
               {
                 backgroundColor: isUploadScreen
                   ? STYLES.$BACKGROUND_COLORS.DARK
@@ -2291,7 +2292,6 @@ const MessageInputBox = ({
               (isReply && !isUploadScreen) || isEditable || isUserTagging
                 ? {
                   borderWidth: 0,
-                  margin: isIOS ? 0 : Layout.normalize(2),
                 }
                 : null,
             ]}
@@ -2466,7 +2466,13 @@ const MessageInputBox = ({
                   !isDeleteAnimation ? (
                   GIFPicker && !isUserChatbot ? (
                     <TouchableOpacity
-                      style={styles.gifView}
+                      style={[
+                        styles.gifView,
+                        {
+                          alignSelf: 'flex-end',
+                          bottom: Layout.normalize(1)
+                        }
+                      ]}
                       onPress={() => GiphyDialog.show()}
                     >
                       <LMChatTextView textStyle={styles.gifText}>
@@ -2527,14 +2533,17 @@ const MessageInputBox = ({
             )}
 
             {!isUploadScreen &&
-              !(chatRequestState === ChatroomType.OPENCHATROOM || chatRequestState === null) &&
+              (!(chatRequestState === ChatroomType.OPENCHATROOM || chatRequestState === null) || isUserChatbot) &&
               !isEditable &&
               !voiceNotes?.recordTime &&
               !isDeleteAnimation ? (
               <TouchableOpacity
                 style={[
                   styles.emojiButton,
-                  { marginLeft: Layout.normalize(15) },
+                  { marginLeft: Layout.normalize(10), 
+                    alignSelf: "flex-end",
+                    bottom: Layout.normalize(5)
+                   },
                 ]}
                 onPress={() => {
                   Keyboard.dismiss();
@@ -2542,10 +2551,14 @@ const MessageInputBox = ({
                 }}
               >
                 <LMChatIcon
-                  assetPath={require("../../assets/images/open_files3x.png")}
+                  assetPath={ isUserChatbot ? require("../../assets/images/chatbot_attachment_button3x.png") : require("../../assets/images/open_files3x.png")}
                   iconStyle={
                     [
                       styles.emoji,
+                      isUserChatbot ? {
+                        height: Layout.normalize(20),
+                        width: Layout.normalize(20)
+                      } : null,
                       inputBoxStyles?.attachmentIconStyles,
                     ] as ImageStyle
                   }
