@@ -134,9 +134,9 @@ const ChatroomHeader = ({
               source={
                 backIconPath
                   ? backIconPath
-                  : require("../../assets/images/back_arrow3x.png")
+                  : isOtherUserChatbot ? require("../../assets/images/chatbot_arrow3x.png") : require("../../assets/images/back_arrow3x.png")
               }
-              style={backIconPath ? styles.backOptionalBtn : styles.backBtn}
+              style={backIconPath ? styles.backOptionalBtn : isOtherUserChatbot ? styles.chatBotBackBtn : styles.backBtn}
             />
           </TouchableOpacity>
           {!(Object.keys(chatroomDBDetails)?.length === 0) ? (
@@ -304,7 +304,7 @@ const ChatroomHeader = ({
             }}
           >
             <Image
-              source={require("../../assets/images/blue_back_arrow3x.png")}
+              source={ isOtherUserChatbot ? require("../../assets/images/chatbot_arrow3x.png") : require("../../assets/images/blue_back_arrow3x.png")}
               style={[
                 styles.selectedBackBtn,
                 {
