@@ -76,7 +76,7 @@ const Swipeable = ({
     event: GestureUpdateEvent<PanGestureHandlerEventPayload>
   ) => {
     "worklet";
-    if (event.translationX >= 75) {
+    if (event.translationX >= 90) {
       setIsReplyBoxOpen(true);
     } else if (event.translationX > 0) {
       x.value = event.translationX;
@@ -90,7 +90,7 @@ const Swipeable = ({
   // this method handles onEnd callback of pan gesture
   const onEndPanGesture = () => {
     "worklet";
-    x.value = withSpring(0);
+    x.value = withTiming(0);
     pressed.value = false;
     setIsReplyBoxOpen(false);
   };
