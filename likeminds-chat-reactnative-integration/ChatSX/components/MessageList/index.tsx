@@ -5,6 +5,8 @@ import {
   Keyboard,
   TouchableOpacity,
   Image,
+  Platform,
+  SafeAreaView,
 } from "react-native";
 import React, {
   ReactNode,
@@ -84,6 +86,7 @@ const MessageListComponent = ({
     user,
     chatroomDBDetails,
   }: ChatroomContextValues = useChatroomContext();
+
 
   const isOtherUserChatbot = useMemo(() => {
     return isOtherUserAIChatbot(chatroomDBDetails, user);
@@ -472,82 +475,32 @@ const MessageListComponent = ({
                       />
                     </Pressable>
                   </Swipeable>
-                  {/* <>
-                    <View
-                      style={{
-                        width: 250,
-                        paddingLeft: 8,
-                        paddingVertical: 15,
-                        borderTopRightRadius: 12,
-                        borderTopLeftRadius: 12,
-                        borderBottomRightRadius: 12,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        // backgroundColor: 'white'
-                      }}
-                    >
-                      <Image
-                        style={{ width: Layout.normalize(40), height: Layout.normalize(40), borderRadius: 100, marginRight: -15, backgroundColor: '#D0D0D0' }}
-                        source={chatroomDBDetails?.member?.imageUrl ? {uri: chatroomDBDetails?.member?.imageUrl } : require("../../assets/images/default_pic.png")}
-                      />
-                      <View>
-
-                      </View>
-                      <Image source={require("../../assets/images/tail_3x.png")}
-                        style={{
-                          height: 20, width: 20,
-                          alignSelf: 'flex-end', top: -5, left: 15
-                        }}
-                      />
-                      <View style={{
-                        padding: 10,
-                        backgroundColor: 'white',
-                        flexDirection: 'row',
-                        borderRadius: 14
-                      }}>
-                        <View style={{
-                          flexDirection: 'row',
-                          gap: 6
-                        }}>
-                          <ShimmerPlaceHolder
-                            style={{ width: 10, height: 10, borderRadius: 5 }}
-                          />
-                          <ShimmerPlaceHolder
-                            style={{ width: 10, height: 10, borderRadius: 5 }}
-                          />
-                          <ShimmerPlaceHolder
-                            style={{ width: 10, height: 10, borderRadius: 5 }}
-                          />
-                        </View>
-                      </View>
-                    </View>
-                  </> */}
                 </View>
               );
             }}
             onScroll={handleOnScroll}
             ListHeaderComponent={renderFooter}
             ListFooterComponent={renderFooter}
-            // keyboardShouldPersistTaps={"handled"}
+            keyboardShouldPersistTaps={"handled"}
             inverted
           />
           {isScrollingUp && (
-            <TouchableOpacity
-              style={[
-                styles.arrowButton,
-                {
-                  bottom: keyboardVisible
-                    ? Layout.normalize(55)
-                    : Layout.normalize(20),
-                },
-              ]}
-              onPress={scrollToBottomProp ? scrollToBottomProp : scrollToBottom}
-            >
-              <Image
-                source={require("../../assets/images/scrollDown.png")}
-                style={styles.arrowButtonImage}
-              />
-            </TouchableOpacity>
+            <SafeAreaView style={{zIndex: 10}}>
+              <TouchableOpacity
+                style={[
+                  styles.arrowButton,
+                  {
+                    bottom: Layout.normalize(-50)
+                  },
+                ]}
+                onPress={scrollToBottomProp ? scrollToBottomProp : scrollToBottom}
+              >
+                <Image
+                  source={require("../../assets/images/scrollDown.png")}
+                  style={styles.arrowButtonImage}
+                />
+              </TouchableOpacity>
+            </SafeAreaView>
           )}
         </>
       ) : (
