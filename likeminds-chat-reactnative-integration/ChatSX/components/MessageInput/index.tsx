@@ -313,14 +313,17 @@ const MessageInput = ({
           )}
         </View>
       ) : null}
-      {isOtherUserChatbot ? <SafeAreaView style={{justifyContent:'center', alignItems: 'center'}}>
-        <LMChatTextView textStyle={{
-          fontSize: 13,
-          color: "#999999",
-        }}>
-          AI may make mistakes.
-        </LMChatTextView>
-      </SafeAreaView> : <></>}
+      <SafeAreaView style={{ justifyContent: 'center', alignItems: 'center' }}>
+        {
+          isOtherUserChatbot ? 
+          <LMChatTextView textStyle={{
+            fontSize: 13,
+            color: "#999999",
+          }}>
+            AI may make mistakes.
+          </LMChatTextView> : <></>
+        }
+      </SafeAreaView>
     </View>
   );
 };
