@@ -1,6 +1,6 @@
 import { initMyClient } from "./ChatSX/setup";
 import { LMChatProvider } from "./ChatSX/lmChatProvider";
-import { LMOverlayProvider } from "./ChatSX/lmOverlayProvider";
+import { LMChatBotOverlayProvider, LMOverlayProvider } from "./ChatSX/lmOverlayProvider";
 import FileUpload from "./ChatSX/screens/FIleUpload";
 import CarouselScreen from "./ChatSX/screens/CarouselScreen";
 import PollResult from "./ChatSX/components/PollResult";
@@ -50,7 +50,8 @@ import {
   SearchInChatroomContextProvider,
 } from "./ChatSX/context";
 import ChatroomTopic from "./ChatSX/components/ChatroomTopic";
-import LMChatAIBotInitiaitionScreen from "./ChatSX/screens/AIChatbotInit"
+import LMChatbotInitializationScreen from "./ChatSX/screens/AIChatbotInit"
+import LMChatAIButton from "./ChatSX/components/LMChatAIButton";
 
 export {
   ChatRoom,
@@ -101,5 +102,7 @@ export {
   CreatePollContextProvider,
   SearchInChatroomContextProvider,
   ChatroomTopic,
-  LMChatAIBotInitiaitionScreen
+  LMChatBotOverlayProvider,
+  LMChatbotInitializationScreen,
+  LMChatAIButton
 };

@@ -4,7 +4,6 @@ import LMChatAIButton from '@likeminds.community/chat-rn-core/ChatSX/components/
 import { Credentials } from '../login/credentials'
 
 const HomeScreen = () => {
-    console.log(Credentials.apiKey, Credentials.userUniqueId, Credentials.username)
     return (
         <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{
@@ -14,8 +13,8 @@ const HomeScreen = () => {
             </Text>
             <View style={{
                 position: 'absolute',
-                right: 10,
-                bottom: 10
+                right: 20,
+                bottom: 20
             }}>
                 <LMChatAIButton
                     apiKey={Credentials.apiKey}

@@ -45,7 +45,9 @@ import {
   getNotification,
   Token,
   getRoute,
-  LMChatAIBotInitiaitionScreen,
+  LMChatAIButton,
+  LMChatBotOverlayProvider,
+  LMChatbotInitializationScreen,
 } from '@likeminds.community/chat-rn-core';
 import ChatroomScreenWrapper from './screens/Chatroom/ChatroomScreenWrapper';
 import { setStyles } from './styles';
@@ -72,7 +74,6 @@ import SearchInChatroomScreen from './screens/SearchInChatroom';
 import { ScreenName } from './src/enums/screenNameEnums';
 import { LMCoreCallbacks } from '@likeminds.community/chat-rn-core/ChatSX/setupChat';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { LMChatBotOverlayProvider } from '@likeminds.community/chat-rn-core/ChatSX/lmOverlayProvider';
 import HomeScreen from './screens/HomeScreen';
 // import { LMChatBotOverlayProvider } from '@likeminds.community/chat-rn-core/ChatSX/lmOverlayProvider';
 
@@ -184,56 +185,55 @@ function App(): React.JSX.Element {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer ref={navigationRef} independent={true}>
-        {
-          apiKey && userName && userUniqueID ?
-            <>
-              {Platform.OS === 'ios' ? (
-                <KeyboardAvoidingView
-                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                  style={{ flex: 1 }}>
-                  <LMChatBotOverlayProvider
+      {userName && userUniqueID && apiKey && myClient ? (
+        <>
+          {Platform.OS === 'ios' ? (
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={{ flex: 1 }}>
+              <NavigationContainer ref={navigationRef} independent={true}>
+                <LMChatBotOverlayProvider
+                  myClient={myClient}
+                  // lmChatInterface={lmChatInterface}
+                  // callbackClass={callbackClass}
+                  >
+                  <Stack.Navigator>
+                    <Stack.Screen name='name' component={HomeScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name={ScreenName.ChatBotInitiateScreen} component={LMChatbotInitializationScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="Chatroom" component={ChatroomScreenWrapper} options={{
+                      gestureEnabled: Platform.OS === 'ios' ? false : true,
+                    }} />
+                    <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper} />
+                    <Stack.Screen name={ScreenName.SearchInChatroom} component={SearchInChatroom} options={{ headerShown: false,
+                       gestureEnabled: Platform.OS === 'ios' ? false : true, }} />
+                    <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{ headerShown: false,
+                       gestureEnabled: Platform.OS === 'ios' ? false : true, }} />
+                  </Stack.Navigator>
+                </LMChatBotOverlayProvider>
+              </NavigationContainer>
+            </KeyboardAvoidingView>
+          ) : (
+            <NavigationContainer ref={navigationRef} independent={true}>
+              <LMChatBotOverlayProvider
                     myClient={myClient}
                     lmChatInterface={lmChatInterface}
                     callbackClass={callbackClass}>
                     <Stack.Navigator>
-                      <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
-                      <Stack.Screen name={ScreenName.ChatBotInitiateScreen} component={LMChatAIBotInitiaitionScreen} options={{ headerShown: false }} />
-                      <Stack.Screen name="Chatroom" component={ChatroomScreenWrapper} options={{
-                        gestureEnabled: Platform.OS === 'ios' ? false : true,
-                      }} />
+                      <Stack.Screen name='name' component={HomeScreen} options={{ headerShown: false }} />
+                      <Stack.Screen name={ScreenName.ChatBotInitiateScreen} component={LMChatbotInitializationScreen} options={{ headerShown: false }} />
+                      <Stack.Screen name={ScreenName.Chatroom} component={ChatroomScreenWrapper} />
                       <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper} />
-                      <Stack.Screen name={ScreenName.SearchInChatroom} component={SearchInChatroom} options={{
-                        headerShown: false,
-                        gestureEnabled: Platform.OS === 'ios' ? false : true,
-                      }} />
-                      <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{
-                        headerShown: false,
-                        gestureEnabled: Platform.OS === 'ios' ? false : true,
-                      }} />
+                      <Stack.Screen name={ScreenName.SearchInChatroom} component={SearchInChatroom} options={{ headerShown: false }} />
+                      <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{ headerShown: false }} />
                     </Stack.Navigator>
-                  </LMChatBotOverlayProvider>
-                </KeyboardAvoidingView>
-              ) : (
-                <LMChatBotOverlayProvider
-                  myClient={myClient}
-                  lmChatInterface={lmChatInterface}
-                  callbackClass={callbackClass}>
-                  <Stack.Navigator>
-                    <Stack.Screen name='name' component={HomeScreen} options={{ headerShown: false }} />
-                    <Stack.Screen name={ScreenName.ChatBotInitiateScreen} component={LMChatAIBotInitiaitionScreen} options={{ headerShown: false }} />
-                    <Stack.Screen name={ScreenName.Chatroom} component={ChatroomScreenWrapper} />
-                    <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper} />
-                    <Stack.Screen name={ScreenName.SearchInChatroom} component={SearchInChatroom} options={{ headerShown: false }} />
-                    <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{ headerShown: false }} />
-                  </Stack.Navigator>
-                </LMChatBotOverlayProvider>
-              )}
-            </> :
-            <FetchKeyInputScreen isTrue={isTrue} setTrue={setIsTrue} />
-        }
-      </NavigationContainer>
-    </GestureHandlerRootView >
+              </LMChatBotOverlayProvider>
+            </NavigationContainer>
+          )}
+        </>
+      ) : !userName && !userUniqueID && !apiKey ? (
+        <FetchKeyInputScreen isTrue={isTrue} setTrue={setIsTrue} />
+      ) : null}
+    </GestureHandlerRootView>
   );
 }
 
