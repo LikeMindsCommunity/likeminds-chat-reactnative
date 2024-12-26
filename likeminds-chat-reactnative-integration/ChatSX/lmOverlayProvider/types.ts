@@ -10,7 +10,7 @@ export interface LMOverlayProviderProps {
   apiKey?: string;
   accessToken?: string;
   refreshToken?: string;
-  callbackClass: LMCoreCallbacks;
+  callbackClass?: LMCoreCallbacks;
   profileImageUrl?: string;
   lmChatInterface?: any;
   imageUrl?: string;
