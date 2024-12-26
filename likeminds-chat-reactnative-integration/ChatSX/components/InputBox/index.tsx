@@ -1398,7 +1398,7 @@ const MessageInputBox = ({
             onConversationsCreate(payload) as any
           );
 
-          if (response && isUserChatbot) {
+          if (response) {
             setMessageSentByUserId(response?.conversation?.id ?? "");
             dispatch({
               type: SET_MESSAGE_ID,
@@ -1501,7 +1501,7 @@ const MessageInputBox = ({
             onConversationsCreate(payload) as any
           );
 
-          if (response && isUserChatbot) {
+          if (response) {
             setMessageSentByUserId(response?.conversation?.id ?? "");
             dispatch({
               type: SET_MESSAGE_ID,
