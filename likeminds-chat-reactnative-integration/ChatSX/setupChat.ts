@@ -27,7 +27,7 @@ export class LMCoreCallbacks {
 // create a new class LMChatSdkCallbackImplementation which is an implementation of the abstract class provided by data layer
 export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
   lmCoreCallbacks?: LMCoreCallbacks;
-  client?: LMChatClient;
+  client: LMChatClient;
 
   onAccessTokenExpiredAndRefreshed(
     accessToken: string,
@@ -73,7 +73,7 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
       };
     }
   }
-  constructor(lmCoreCallbacks?: LMCoreCallbacks, client?: LMChatClient) {
+  constructor(client: LMChatClient, lmCoreCallbacks?: LMCoreCallbacks) {
     super();
     this.lmCoreCallbacks = lmCoreCallbacks;
     this.client = client;

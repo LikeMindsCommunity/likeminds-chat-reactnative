@@ -14,7 +14,7 @@ export const LMChatBotOverlayProvider = ({
 
   useEffect(() => {
     myClient?.setLMSDKCallbacks(
-      new LMSDKCallbacksImplementations(callbackClass, myClient)
+      new LMSDKCallbacksImplementations(myClient, callbackClass)
     );
   }, [callbackClass, myClient]);
 
@@ -45,7 +45,7 @@ export const LMOverlayProvider = ({
 }: LMOverlayProviderProps) => {
   useEffect(() => {
     myClient.setLMSDKCallbacks(
-      new LMSDKCallbacksImplementations(callbackClass, myClient)
+      new LMSDKCallbacksImplementations(myClient, callbackClass)
     );
   }, [callbackClass, myClient]);
   return (
