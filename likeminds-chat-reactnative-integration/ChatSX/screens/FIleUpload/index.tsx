@@ -268,19 +268,19 @@ const FileUpload = ({
                 : selectedFilesToUpload[i]?.fileName,
             type: fileType,
             url: awsResponse,
-            thumbnail_url:
+            thumbnailUrl:
               fileType === VIDEO_TEXT || fileType === GIF_TEXT
                 ? getVideoThumbnailData?.Location
                 : null,
             height: gifHeight ? gifHeight : null,
             width: gifWidth ? gifWidth : null,
-            local_file_path: item.uri,
-            aws_folder_path: path,
-            thumbnail_aws_folder_path: thumbnailURL ? thumbnailUrlPath : "",
-            thumbnail_local_file_path: thumbnailURL,
-            file_url: awsResponse,
-            created_at: conversationID,
-            updated_at: conversationID,
+            localFilePath: item.uri,
+            awsFolderPath: path,
+            thumbnailAwsFolderPath: thumbnailURL ? thumbnailUrlPath : "",
+            thumbnailLocalFilePath: thumbnailURL,
+            fileUrl: awsResponse,
+            createdAt: conversationID,
+            updatedAt: conversationID,
           };
 
 
