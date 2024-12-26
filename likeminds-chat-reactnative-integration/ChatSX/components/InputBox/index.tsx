@@ -66,10 +66,12 @@ import {
   CAMERA_TEXT,
   CAPITAL_GIF_TEXT,
   CHARACTER_LIMIT_MESSAGE,
+  CHATBOT_MESSAGE_PLACEHOLDER,
   DOCUMENTS_TEXT,
   GIF_TEXT,
   GRANTED,
   IMAGE_TEXT,
+  MESSAGE_BOX_PLACEHOLDER,
   PDF_TEXT,
   PHOTOS_AND_VIDEOS_TEXT,
   POLL_TEXT,
@@ -2282,8 +2284,6 @@ const MessageInputBox = ({
           <View
             style={[
               styles.textInput,
-              // styles for shadow around input box, left commented for future reference
-              // !(isEditable || isReply) ? styles.inputBoxWithShadow : null,
               {
                 backgroundColor: isUploadScreen
                   ? STYLES.$BACKGROUND_COLORS.DARK
@@ -2485,7 +2485,7 @@ const MessageInputBox = ({
                   placeholderText={
                     inputBoxStyles?.placeholderText
                       ? inputBoxStyles?.placeholderText
-                      : isUserChatbot ? "Ask your query" : "Type a message"
+                      : isUserChatbot ? CHATBOT_MESSAGE_PLACEHOLDER : MESSAGE_BOX_PLACEHOLDER
                   }
                   placeholderTextColor={inputBoxStyles?.placeholderTextColor}
                   plainTextStyle={[

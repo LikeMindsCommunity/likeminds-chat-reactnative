@@ -139,3 +139,5 @@ export const NOT_SUPPORTED_TEXT =
   "This message is not supported in this app yet.";
 export const CHATROOM_LEFT = "Chatroom left";
 export const CHATROOM_JOINED = "Joined successfully";
+export const MESSAGE_BOX_PLACEHOLDER = "Type a message"
+export const CHATBOT_MESSAGE_PLACEHOLDER = "Ask a query"
