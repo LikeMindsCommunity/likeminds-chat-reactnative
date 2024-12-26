@@ -194,8 +194,6 @@ function App(): React.JSX.Element {
               <NavigationContainer ref={navigationRef} independent={true}>
                 <LMChatBotOverlayProvider
                   myClient={myClient}
-                  // lmChatInterface={lmChatInterface}
-                  // callbackClass={callbackClass}
                   >
                   <Stack.Navigator>
                     <Stack.Screen name='name' component={HomeScreen} options={{ headerShown: false }} />
