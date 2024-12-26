@@ -49,7 +49,7 @@ export default function LMChatAIButton({
     const [isInitiated, setIsInitiated] = useState(false);
     const LMChatButtonStyles = STYLES?.$LMCHAT_AI_BUTTON_STYLE;
     const dispatch = useAppDispatch();
-    const navigation = useNavigation();
+    const navigation: any = useNavigation();
 
     const callValidateApi = async (accessToken, refreshToken) => {
         const payload: ValidateUser = {
