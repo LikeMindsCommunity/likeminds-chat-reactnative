@@ -941,8 +941,8 @@ const MessageInputBox = ({
     voiceNote?: any,
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
-    setShimmerVisibleForChatbot(true);
     if(isUserChatbot) {
+      setShimmerVisibleForChatbot(true);
       dispatch({
         type: SHOW_SHIMMER
       })
@@ -1398,7 +1398,7 @@ const MessageInputBox = ({
             onConversationsCreate(payload) as any
           );
 
-          if (response) {
+          if (response && isUserChatbot) {
             setMessageSentByUserId(response?.conversation?.id ?? "");
             dispatch({
               type: SET_MESSAGE_ID,
@@ -1501,7 +1501,7 @@ const MessageInputBox = ({
             onConversationsCreate(payload) as any
           );
 
-          if (response) {
+          if (response && isUserChatbot) {
             setMessageSentByUserId(response?.conversation?.id ?? "");
             dispatch({
               type: SET_MESSAGE_ID,
