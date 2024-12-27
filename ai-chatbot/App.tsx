@@ -206,6 +206,8 @@ function App(): React.JSX.Element {
                        gestureEnabled: Platform.OS === 'ios' ? false : true, }} />
                     <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{ headerShown: false,
                        gestureEnabled: Platform.OS === 'ios' ? false : true, }} />
+                    <Stack.Screen name={ScreenName.CarouselScreen} component={CarouselScreen} options={{ headerShown: false,
+                       gestureEnabled: Platform.OS === 'ios' ? false : true, }} /> 
                   </Stack.Navigator>
                 </LMChatBotOverlayProvider>
               </NavigationContainer>
@@ -223,6 +225,7 @@ function App(): React.JSX.Element {
                       <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper} />
                       <Stack.Screen name={ScreenName.SearchInChatroom} component={SearchInChatroom} options={{ headerShown: false }} />
                       <Stack.Screen name={ScreenName.ImageCropScreen} component={ImageCropScreen} options={{ headerShown: false }} />
+                      <Stack.Screen name={ScreenName.CarouselScreen} component={CarouselScreen} options={{ headerShown: false}} /> 
                     </Stack.Navigator>
               </LMChatBotOverlayProvider>
             </NavigationContainer>
