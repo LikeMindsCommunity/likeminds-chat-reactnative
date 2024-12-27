@@ -7,14 +7,15 @@ interface Props {
   message: string;
   isToast: boolean;
   onDismiss: () => void;
+  time?: number;
 }
 
-const ToastMessage = ({ isToast, onDismiss, message }: Props) => {
+const ToastMessage = ({ isToast, onDismiss, message, time = 1000 }: Props) => {
   useEffect(() => {
     if (isToast) {
       setTimeout(() => {
         onDismiss();
-      }, 1000);
+      }, time);
     }
   }, [isToast]);
 

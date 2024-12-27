@@ -76,7 +76,7 @@ const ExploreFeedFilters = ({ filterIconPath }: any) => {
                 filterHeader?.fontFamily && {
                   fontFamily: filterHeader?.fontFamily,
                 },
-              ] as TextStyle
+              ] as TextStyle[]
             }
           >
             {arr[filterState]}

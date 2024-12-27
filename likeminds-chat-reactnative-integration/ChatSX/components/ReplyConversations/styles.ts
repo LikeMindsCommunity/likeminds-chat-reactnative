@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
     padding: Layout.normalize(10),
     overflow: "hidden",
     marginBottom: STYLES.$MARGINS.XS,
-    maxWidth: Layout.window.width - Layout.normalize(90),
+    maxWidth: Layout.window.width - Layout.normalize(100),
   },
   icon: {
     height: Layout.normalize(15),

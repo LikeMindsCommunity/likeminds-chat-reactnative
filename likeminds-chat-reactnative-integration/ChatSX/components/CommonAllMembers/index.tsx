@@ -450,7 +450,7 @@ const CommonAllMembers = ({
     const apiRes = await myClient?.checkDMLimit({
       uuid: uuid,
     });
-    const res = apiRes?.data;
+    const res: any = apiRes?.data;
     if (apiRes?.success === false) {
       dispatch({
         type: SHOW_TOAST,
@@ -492,7 +492,7 @@ const CommonAllMembers = ({
             }
           }
         } else {
-          const userDMLimit = res?.userDmLimit;
+          const userDMLimit: any = res?.userDmLimit;
           
           // to show alert only if API has valid response
           if (userDMLimit) {
@@ -578,7 +578,7 @@ const CommonAllMembers = ({
                       userNameStyles?.fontFamily && {
                         fontFamily: userNameStyles?.fontFamily,
                       },
-                    ] as TextStyle
+                    ] as TextStyle[]
                   }
                   numberOfLines={1}
                 >
@@ -597,7 +597,7 @@ const CommonAllMembers = ({
                           userTitleStyles?.fontFamily && {
                             fontFamily: userTitleStyles?.fontFamily,
                           },
-                        ] as TextStyle
+                        ] as TextStyle[]
                       }
                     >{` • ${item?.customTitle}`}</Text>
                   ) : null}

@@ -8,7 +8,7 @@ import { setupPlayer } from "../audio";
 import { GIPHY_SDK_API_KEY } from "../awsExports";
 import { Client } from "../client";
 import { FAILED } from "../constants/Strings";
-import { LMChatProviderProps } from "./type";
+import { LMChatBotProviderProps, LMChatProviderProps } from "./type";
 import { CallBack } from "../callBacks/callBackClass";
 import GIFPicker from "../optionalDependecies/Gif";
 import { Token } from "../tokens";
@@ -19,6 +19,71 @@ import {
   validateUser,
 } from "../store/actions/homefeed";
 import { pushAPI, token } from "../notifications/index"
+
+export const LMChatBotProvider = ({
+  myClient,
+  children,
+  lmChatInterface
+}: LMChatBotProviderProps) => {
+
+  const dispatch = useAppDispatch();
+
+  // to initialise track player
+  useEffect(() => {
+    async function setup() {
+      await setupPlayer();
+    }
+    setup();
+  }, []);
+
+  // to configure gifphy sdk
+  useEffect(() => {
+    if (GIFPicker) {
+      const { GiphySDK } = GIFPicker;
+      GiphySDK?.configure({ apiKey: GIPHY_SDK_API_KEY });
+    }
+  }, []);
+
+  useEffect(() => {
+    const func = async () => {
+      const res: any = await myClient?.getAllAttachmentUploadConversations();
+      if (res) {
+        const len = res.length;
+        if (len > 0) {
+          for (let i = 0; i < len; i++) {
+            const data = res[i];
+            const uploadingFilesMessagesSavedObject = JSON.parse(data?.value);
+            dispatch({
+              type: UPDATE_FILE_UPLOADING_OBJECT,
+              body: {
+                message: {
+                  ...uploadingFilesMessagesSavedObject,
+                  isInProgress: FAILED,
+                },
+                ID: data?.key,
+              },
+            });
+          }
+        }
+      }
+    };
+
+    func();
+  }, []);
+
+  useEffect(() => {
+    //setting client in Client class
+    Client.setMyClient(myClient);
+
+    // setting lmChatInterface in CallBack class
+    CallBack.setLMChatInterface(lmChatInterface);
+  }, [myClient, lmChatInterface])
+
+  return (
+    <View style={styles.flexStyling}>{children}</View>
+  )
+}
+
 export const LMChatProvider = ({
   myClient,
   children,
@@ -98,7 +163,7 @@ export const LMChatProvider = ({
 
         token().then((res) => {
           if (!!res) {
-            pushAPI(res,accessToken)
+            pushAPI(res, accessToken)
           }
         })
 
@@ -127,7 +192,7 @@ export const LMChatProvider = ({
         await dispatch(getMemberState());
         token().then((res) => {
           if (!!res) {
-            pushAPI(res,accessToken)
+            pushAPI(res, accessToken)
           }
         })
         setIsInitiated(true);

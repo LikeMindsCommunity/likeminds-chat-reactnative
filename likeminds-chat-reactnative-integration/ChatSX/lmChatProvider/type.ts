@@ -13,3 +13,9 @@ export interface LMChatProviderProps {
   lmChatInterface?: any;
   imageUrl?: string;
 }
+
+export interface LMChatBotProviderProps {
+  myClient: LMChatClient;
+  children?: React.ReactNode;
+  lmChatInterface?: any;
+}

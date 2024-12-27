@@ -2,7 +2,8 @@ import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import React, { useState } from "react";
 import { LMChatIcon } from "../LMChatIcon";
 import { LMChatButtonProps } from "./types";
-import defaultStyles from "../constants/defaultStyles";
+import { LMChatTextView } from "../LMChatTextView";
+import STYLES from "../../constants/Styles";
 
 export const LMChatButton = ({
   text,
@@ -45,6 +46,7 @@ export const LMChatButton = ({
           {
             flexDirection: placement === "end" ? "row-reverse" : "row",
             alignItems: "center",
+            paddingHorizontal: 10
           },
         ])}
       >
@@ -79,7 +81,51 @@ export const LMChatButton = ({
           )
         ) : null}
         {/* text view */}
+        {text ? (
+            active ? (
+              activeText ? (
+                // this renders the text for active state
+                <LMChatTextView
+                  textStyle={StyleSheet.flatten([
+                    defaultStyles.buttonTextStyle,
+                    activeText.textStyle,
+                  ])}
+                  maxLines={activeText.maxLines}
+                  selectable={activeText.selectable}
+                >
+                  {activeText.children}
+                </LMChatTextView>
+              ) : null
+            ) : (
+              // this renders the text in inactive state
+              <LMChatTextView
+                textStyle={StyleSheet.flatten([
+                  defaultStyles.buttonTextStyle,
+                  text.textStyle,
+                ])}
+                maxLines={text.maxLines}
+                selectable={text.selectable}
+              >
+                {text.children}
+              </LMChatTextView>
+            )
+          ) : null}
       </View>
     </TouchableOpacity>
   );
 };
+
+const defaultStyles = StyleSheet.create({
+  buttonViewStyle: {
+    backgroundColor: STYLES.$COLORS.PRIMARY,
+    borderWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 5,
+    borderRadius: 5,
+  },
+  buttonTextStyle: {
+    fontSize: 16,
+    color: STYLES.$COLORS.FONT_PRIMARY,
+  },
+});

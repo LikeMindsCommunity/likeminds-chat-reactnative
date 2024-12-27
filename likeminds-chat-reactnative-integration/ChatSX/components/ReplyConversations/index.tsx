@@ -132,7 +132,7 @@ export const ReplyBox = ({ item, chatroomName }: ReplyBox) => {
               [
                 styles.messageText,
                 textStyles ? { ...textStyles } : null,
-              ] as TextStyle
+              ] as TextStyle[]
             }
           >
             {decode({
@@ -165,7 +165,7 @@ export const ReplyBox = ({ item, chatroomName }: ReplyBox) => {
                 [
                   styles.messageText,
                   textStyles ? { ...textStyles } : null,
-                ] as TextStyle
+                ] as TextStyle[]
               }
             >{` (+${item?.attachments.length - 1} more)`}</Text>
           ) : null}
@@ -354,7 +354,7 @@ const ReplyConversations = () => {
                   [
                     styles.messageText,
                     textStyles ? { ...textStyles } : null,
-                  ] as TextStyle
+                  ] as TextStyle[]
                 }
               >
                 {decode({

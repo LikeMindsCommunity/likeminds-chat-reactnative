@@ -184,7 +184,7 @@ const ExploreFeedItem: React.FC<Props> = ({
                     chatroomTitle?.fontFamily && {
                       fontFamily: chatroomTitle?.fontFamily,
                     },
-                  ] as TextStyle
+                  ] as TextStyle[]
                 }
                 numberOfLines={1}
               >
@@ -219,7 +219,7 @@ const ExploreFeedItem: React.FC<Props> = ({
                     chatroomSubTitle?.fontFamily && {
                       fontFamily: chatroomSubTitle?.fontFamily,
                     },
-                  ] as TextStyle
+                  ] as TextStyle[]
                 }
                 numberOfLines={1}
               >{`${participants} • `}</Text>
@@ -244,7 +244,7 @@ const ExploreFeedItem: React.FC<Props> = ({
                     chatroomSubTitle?.fontFamily && {
                       fontFamily: chatroomSubTitle?.fontFamily,
                     },
-                  ] as TextStyle
+                  ] as TextStyle[]
                 }
                 numberOfLines={1}
               >{`${messageCount}`}</Text>
@@ -287,7 +287,7 @@ const ExploreFeedItem: React.FC<Props> = ({
                         joinButton?.borderRadius && {
                           borderRadius: joinButton?.borderRadius,
                         },
-                      ] as TextStyle
+                      ] as TextStyle[]
                     }
                   >
                     {joinButton?.placeHolderText
@@ -331,7 +331,7 @@ const ExploreFeedItem: React.FC<Props> = ({
                         joinedButton?.borderRadius && {
                           borderRadius: joinedButton?.borderRadius,
                         },
-                      ] as TextStyle
+                      ] as TextStyle[]
                     }
                   >
                     {joinButton?.placeHolderText
@@ -357,7 +357,7 @@ const ExploreFeedItem: React.FC<Props> = ({
                 chatroomDescription?.fontFamily && {
                   fontFamily: chatroomDescription?.fontFamily,
                 },
-              ] as TextStyle
+              ] as TextStyle[]
             }
           >
             {title}

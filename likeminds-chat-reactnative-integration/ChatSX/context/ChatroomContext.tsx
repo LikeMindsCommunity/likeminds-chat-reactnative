@@ -23,6 +23,7 @@ import {
   GET_CHATROOM_ACTIONS_SUCCESS,
   GET_CHATROOM_DB_SUCCESS,
   GET_CONVERSATIONS_SUCCESS,
+  HIDE_SHIMMER,
   LONG_PRESSED,
   REACTION_SENT,
   REJECT_INVITE_SUCCESS,
@@ -74,7 +75,7 @@ import {
 } from "@likeminds.community/chat-rn";
 import { Credentials } from "../credentials";
 import { initAPI } from "../store/actions/homefeed";
-import { createTemporaryStateMessage } from "../utils/chatroomUtils";
+import { createTemporaryStateMessage, splitFileName } from "../utils/chatroomUtils";
 import { LMChatAnalytics } from "../analytics/LMChatAnalytics";
 import { getChatroomType, getConversationType } from "../utils/analyticsUtils";
 import {
@@ -106,6 +107,7 @@ import { fetchResourceFromURI, formatTime } from "../commonFuctions";
 import { Image as CompressedImage } from "react-native-compressor";
 import { Client } from "../client";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
+import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseModels/Attachment";
 
 interface UploadResource {
   selectedImages: any;
@@ -166,6 +168,8 @@ export interface ChatroomContextValues {
   filteredChatroomActions: any[];
   modalVisible: boolean;
   refInput: any;
+  shimmerVisibleForChatbot: boolean;
+  messageSentByUserId: string;
 
   // Functions
   setIsEditable: Dispatch<SetStateAction<boolean>>;
@@ -223,6 +227,8 @@ export interface ChatroomContextValues {
     voiceNotesToUpload?: any
   ) => void;
   onReplyPrivatelyClick: (uuid: string, conversationID: number) => void;
+  setShimmerVisibleForChatbot: Dispatch<SetStateAction<boolean>>;
+  setMessageSentByUserId: Dispatch<SetStateAction<string>>;
   backAction: any;
 }
 
@@ -265,10 +271,14 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   const refInput = useRef<any>();
 
   const db = myClient?.firebaseInstance();
+  const dipatch = useAppDispatch();
 
   const [replyChatID, setReplyChatID] = useState<number>();
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [shimmerVisibleForChatbot, setShimmerVisibleForChatbot] = useState(false);
+
+  const [messageSentByUserId, setMessageSentByUserId] = useState("");
   const [isToast, setIsToast] = useState(false);
   const [msg, setMsg] = useState("");
   const [reportModalVisible, setReportModalVisible] = useState(false);
@@ -305,6 +315,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     chatroomCreator,
     currentChatroomTopic,
     temporaryStateMessage,
+    messageId
   }: any = useAppSelector((state) => state.chatroom);
   const { user, community, memberRights } = useAppSelector(
     (state) => state.homefeed
@@ -837,6 +848,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       conversationId
     );
     const DB_RESPONSE = val?.data;
+    let flagForShimmer = shimmerVisibleForChatbot
     if (DB_RESPONSE?.conversationsData?.length !== 0) {
       await myClient?.saveConversationData(
         DB_RESPONSE,
@@ -844,6 +856,18 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         DB_RESPONSE?.conversationsData,
         community?.id
       );
+
+      if (messageSentByUserId != conversationId) {
+        setShimmerVisibleForChatbot(() => false);
+        flagForShimmer = false;
+      }
+
+      if (messageId != conversationId) {
+        dispatch({
+          type: HIDE_SHIMMER
+        })
+        setShimmerVisibleForChatbot(false);
+      }
     }
     if (page === 1) {
       const payload = GetConversationsRequestBuilder.builder()
@@ -853,7 +877,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       const conversationsFromRealm = await myClient?.getConversations(payload);
       dispatch({
         type: GET_CONVERSATIONS_SUCCESS,
-        body: { conversations: conversationsFromRealm },
+        body: { conversations: conversationsFromRealm, shimmer: flagForShimmer },
       });
     }
     return;
@@ -882,12 +906,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         }
       }
     });
-  }, [chatroomID]);
+  }, [chatroomID, messageSentByUserId, messageId]);
 
   // this useffect updates routes, previousRoute variables when we come to chatroom.
   useEffect(() => {
     if (isFocused) {
-      routes = navigation.getState()?.routes;
+      routes = (navigation.getState())?.routes;
       previousRoute = routes[routes?.length - 2];
     }
   }, [isFocused, chatroomID]);
@@ -916,7 +940,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   // This is to check eligibity of user that whether he/she can set chatroom topic or not
   useEffect(() => {
-    const selectedMessagesLength = selectedMessages.length;
+    const selectedMessagesLength = selectedMessages?.length;
     const selectedMessage = selectedMessages[0];
 
     if (
@@ -1753,6 +1777,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     isRetry,
   }: UploadResource) => {
     LogBox.ignoreLogs(["new NativeEventEmitter"]);
+    let attachments: Attachment[] = [];
     for (let i = 0; i < selectedImages?.length; i++) {
       const item = selectedImages[i];
       const attachmentType = isRetry ? item?.type : item?.type?.split("/")[0];
@@ -1771,8 +1796,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           : docAttachmentType === PDF_TEXT
           ? item.name
           : null;
-      const path = `files/collabcard/${chatroomID}/conversation/${conversationID}/${name}`;
-      const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${conversationID}/${thumbnailURL}`;
+
+        const fileInfo = splitFileName(name);
+        const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${fileInfo?.name}-${conversationID}.${fileInfo.extension}`;
+        const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
 
       let uriFinal: any;
 
@@ -1833,9 +1860,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             fileType = VOICE_NOTE_TEXT;
           }
 
-          const payload = {
-            conversationId: conversationID,
-            filesCount: selectedImages?.length,
+          const payload: Attachment = {
+            id: conversationID,
             index: i + 1,
             meta:
               fileType === VIDEO_TEXT
@@ -1864,9 +1890,16 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             url: awsResponse,
             thumbnailUrl:
               fileType === VIDEO_TEXT ? getVideoThumbnailData?.Location : null,
+            awsFolderPath: path,
+            localFilePath: item.uri,
+            thumbnailAWSFolderPath: thumbnailUrlPath,
+            thumbnailLocalFilePath: fileType === VIDEO_TEXT ? thumbnailURL : null,
+            fileUrl: awsResponse,
+            createdAt: conversationID,
+            updatedAt: conversationID,
           };
 
-          const uploadRes = await myClient?.putMultimedia(payload as any);
+          attachments.push(payload);
         }
       } catch (error) {
         dispatch({
@@ -1908,6 +1941,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     await myClient?.removeAttactmentUploadConversationByKey(
       conversationID?.toString()
     );
+    return attachments;
   };
 
   // method to handle file upload
@@ -2033,7 +2067,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
                 userDMLimit?.numberInDuration
               } DM requests per ${
                 userDMLimit?.duration
-              }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp)}`,
+              }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp as number)}`,
               [
                 {
                   text: CANCEL_BUTTON,
@@ -2102,6 +2136,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     filteredChatroomActions,
     modalVisible,
     refInput,
+    shimmerVisibleForChatbot,
+    messageSentByUserId,
 
     setIsEditable,
     setIsReact,
@@ -2143,6 +2179,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     handleFileUpload,
     onReplyPrivatelyClick,
     backAction,
+    setShimmerVisibleForChatbot,
+    setMessageSentByUserId
   };
 
   return (

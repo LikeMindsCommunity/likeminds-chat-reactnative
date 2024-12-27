@@ -15,7 +15,7 @@ import {
   TextStyle,
   ViewStyle,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { styles } from "./styles";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { onConversationsCreate } from "../../store/actions/chatroom";
@@ -44,6 +44,9 @@ import {
   SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
   CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
   SET_CHATROOM_TOPIC,
+  SHOW_SHIMMER,
+  SET_MESSAGE_ID,
+  ADD_SHIMMER_MESSAGE,
 } from "../../store/types/types";
 import { ReplyBox } from "../ReplyConversations";
 import { chatSchema } from "../../assets/chatSchema";
@@ -52,6 +55,7 @@ import {
   launchCamera,
   ImagePickerResponse,
   Asset,
+  MediaType,
 } from "react-native-image-picker";
 import DocumentPicker from "react-native-document-picker";
 import { CREATE_POLL_SCREEN, FILE_UPLOAD } from "../../constants/Screens";
@@ -62,10 +66,12 @@ import {
   CAMERA_TEXT,
   CAPITAL_GIF_TEXT,
   CHARACTER_LIMIT_MESSAGE,
+  CHATBOT_MESSAGE_PLACEHOLDER,
   DOCUMENTS_TEXT,
   GIF_TEXT,
   GRANTED,
   IMAGE_TEXT,
+  MESSAGE_BOX_PLACEHOLDER,
   PDF_TEXT,
   PHOTOS_AND_VIDEOS_TEXT,
   POLL_TEXT,
@@ -145,6 +151,8 @@ import LottieView from "../../optionalDependecies/LottieView";
 import { SyncConversationRequest } from "@likeminds.community/chat-rn";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
+import { useChatroomContext } from "../../context/ChatroomContext";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 // to intialise audio recorder player
 const audioRecorderPlayerAttachment = AudioRecorder
@@ -221,6 +229,8 @@ const MessageInputBox = ({
   const [isVoiceNoteIconPress, setIsVoiceNoteIconPress] = useState(false);
   const { chatroomDBDetails }: any = useAppSelector((state) => state.chatroom);
 
+  const { memberRights, setMessageSentByUserId, setShimmerVisibleForChatbot } = useChatroomContext();
+
   const [ogTagsState, setOgTagsState] = useState<any>({});
   const [closedOnce, setClosedOnce] = useState(false);
   const [showLinkPreview, setShowLinkPreview] = useState(true);
@@ -270,6 +280,13 @@ const MessageInputBox = ({
   let isGroupTag = false;
 
   const dispatch = useAppDispatch();
+  const isUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user);
+  }, [user, chatroomDBDetails]);
+  const canUserCreatePoll = useMemo(() => {
+    return memberRights?.find(item => item?.id == 2) ? true : false;
+  }, [user, memberRights])
+
   const conversationArrayLength = conversations.length;
 
   AWS.config.update({
@@ -620,13 +637,16 @@ const MessageInputBox = ({
 
   //select Images and videoes From Gallery
   const selectGallery = async () => {
+    let limit = (chatroomType == 10 && isUserChatbot) ? 1 : 0;
+    let mediaType: MediaType = (chatroomType == 10 && isUserChatbot) ? "photo" : "mixed";
     const options: LaunchActivityProps = {
-      mediaType: "mixed",
-      selectionLimit: 0,
+      mediaType,
+      selectionLimit: limit,
     };
     navigation.navigate(FILE_UPLOAD, {
       chatroomID: chatroomID,
       previousMessage: message, // to keep message on uploadScreen InputBox
+      limit
     });
     await launchImageLibrary(options, async (response: ImagePickerResponse) => {
       if (response?.didCancel) {
@@ -820,7 +840,7 @@ const MessageInputBox = ({
           body: { color: STYLES.$STATUS_BAR_STYLE["light-content"] },
         });
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   const handleModalClose = () => {
@@ -921,6 +941,12 @@ const MessageInputBox = ({
     voiceNote?: any,
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
+    if(isUserChatbot) {
+      setShimmerVisibleForChatbot(true);
+      dispatch({
+        type: SHOW_SHIMMER
+      })
+    }
     setClosedPreview(true);
     setShowLinkPreview(false);
     setMessage("");
@@ -1095,14 +1121,12 @@ const MessageInputBox = ({
         replyObj.id = ID?.toString();
         replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
         replyObj.communityId = community?.id?.toString();
-        replyObj.date = `${
-          time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-        } ${months[time.getMonth()]} ${time.getFullYear()}`;
+        replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+          } ${months[time.getMonth()]} ${time.getFullYear()}`;
         replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
         replyObj.communityId = community?.id?.toString();
-        replyObj.date = `${
-          time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-        } ${months[time.getMonth()]} ${time.getFullYear()}`;
+        replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+          } ${months[time.getMonth()]} ${time.getFullYear()}`;
         replyObj.attachmentCount = attachmentsCount;
         replyObj.attachments = dummyAttachmentsArr;
         replyObj.hasFiles = attachmentsCount > 0 ? true : false;
@@ -1131,9 +1155,8 @@ const MessageInputBox = ({
       obj.id = ID?.toString();
       obj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
       obj.communityId = community?.id?.toString();
-      obj.date = `${
-        time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-      } ${months[time.getMonth()]} ${time.getFullYear()}`;
+      obj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+        } ${months[time.getMonth()]} ${time.getFullYear()}`;
       obj.attachmentCount = attachmentsCount;
       obj.attachments = dummyAttachmentsArr;
       obj.hasFiles = attachmentsCount > 0 ? true : false;
@@ -1291,13 +1314,74 @@ const MessageInputBox = ({
         );
       } else {
         if (!isUploadScreen) {
+          if(isUserChatbot) {
+            dispatch({
+              type: ADD_SHIMMER_MESSAGE,
+            })
+          }
+          let attachments;
+          if (attachmentsCount > 0) {
+            // start uploading
+            dispatch({
+              type: SET_FILE_UPLOADING_MESSAGES,
+              body: {
+                message: isReply
+                  ? {
+                    ...replyObj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  }
+                  : {
+                    ...obj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  },
+                ID: ID,
+              },
+            });
+
+            const id = ID;
+            const message = isReply
+              ? {
+                ...replyObj,
+                id: ID,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              }
+              : {
+                ...obj,
+                id: ID,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              };
+
+            await myClient?.saveAttachmentUploadConversation(
+              ID.toString(),
+              JSON.stringify(message)
+            );
+
+            if (voiceNotesToUpload?.length > 0) {
+              attachments = await handleFileUpload(
+                ID,
+                false,
+                true,
+                voiceNotesToUpload
+              );
+            } else {
+              attachments = await handleFileUpload(ID, false);
+            }
+          }
           const payload: any = {
             chatroomId: chatroomID,
-            hasFiles: false,
+            hasFiles: attachments?.length > 0 ? true : false,
             text: conversationText?.trim(),
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
+            attachments,
+            triggerBot: isUserChatbot ? true : false
           };
 
           if (
@@ -1315,6 +1399,13 @@ const MessageInputBox = ({
           );
 
           if (response) {
+            setMessageSentByUserId(response?.conversation?.id ?? "");
+            dispatch({
+              type: SET_MESSAGE_ID,
+              body: {
+                id: response?.conversation?.id
+              }
+            })
             await myClient?.replaceSavedConversation(response?.conversation);
           }
 
@@ -1332,73 +1423,68 @@ const MessageInputBox = ({
               type: EMPTY_BLOCK_DELETION,
               body: {},
             });
-          } else if (response && attachmentsCount > 0) {
-            // start uploading
-
-            dispatch({
-              type: SET_FILE_UPLOADING_MESSAGES,
-              body: {
-                message: isReply
-                  ? {
-                      ...replyObj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    }
-                  : {
-                      ...obj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    },
-                ID: response?.id,
-              },
-            });
-
-            const id = response?.id;
-            const message = isReply
-              ? {
-                  ...replyObj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                }
-              : {
-                  ...obj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                };
-
-            await myClient?.saveAttachmentUploadConversation(
-              id.toString(),
-              JSON.stringify(message)
-            );
-
-            if (voiceNotesToUpload?.length > 0) {
-              await handleFileUpload(
-                response?.id,
-                false,
-                true,
-                voiceNotesToUpload
-              );
-            } else {
-              await handleFileUpload(response?.id, false);
-            }
           }
         } else {
+          if(isUserChatbot) {
+            dispatch({
+              type: ADD_SHIMMER_MESSAGE,
+            })
+          }
           dispatch({
             type: FILE_SENT,
             body: { status: !fileSent },
           });
           navigation.goBack();
+          // start uploading
+          dispatch({
+            type: SET_FILE_UPLOADING_MESSAGES,
+            body: {
+              message: isReply
+                ? {
+                  ...replyObj,
+                  id: ID,
+                  temporaryId: ID,
+                  isInProgress: SUCCESS,
+                }
+                : {
+                  ...obj,
+                  id: ID,
+                  temporaryId: ID,
+                  isInProgress: SUCCESS,
+                },
+              ID: ID,
+            },
+          });
+
+          const id = ID;
+          const message = isReply
+            ? {
+              ...replyObj,
+              id: ID,
+              temporaryId: ID,
+              isInProgress: SUCCESS,
+            }
+            : {
+              ...obj,
+              id: ID,
+              temporaryId: ID,
+              isInProgress: SUCCESS,
+            };
+
+          await myClient?.saveAttachmentUploadConversation(
+            ID.toString(),
+            JSON.stringify(message)
+          );
+          const attachments = await handleFileUpload(ID, false);
           const payload: any = {
             chatroomId: chatroomID,
-            hasFiles: false,
+            hasFiles: attachments?.length > 0 ? true : false,
             text: conversationText?.trim(),
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
+            attachments,
+            triggerBot: isUserChatbot ? true : false
           };
 
           if (
@@ -1415,6 +1501,17 @@ const MessageInputBox = ({
             onConversationsCreate(payload) as any
           );
 
+          if (response) {
+            setMessageSentByUserId(response?.conversation?.id ?? "");
+            dispatch({
+              type: SET_MESSAGE_ID,
+              body: {
+                id: response?.conversation?.id
+              }
+            })
+          }
+          
+
           await myClient?.replaceSavedConversation(response?.conversation);
 
           if (response === undefined) {
@@ -1425,49 +1522,6 @@ const MessageInputBox = ({
                 msg: "Message not sent. Please check your internet connection",
               },
             });
-          } else if (response) {
-            // start uploading
-            dispatch({
-              type: SET_FILE_UPLOADING_MESSAGES,
-              body: {
-                message: isReply
-                  ? {
-                      ...replyObj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    }
-                  : {
-                      ...obj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    },
-                ID: response?.id,
-              },
-            });
-
-            const id = response?.id;
-            const message = isReply
-              ? {
-                  ...replyObj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                }
-              : {
-                  ...obj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                };
-
-            await myClient?.saveAttachmentUploadConversation(
-              id?.toString(),
-              JSON.stringify(message)
-            );
-
-            await handleFileUpload(response?.id, false);
           }
           dispatch({
             type: STATUS_BAR_STYLE,
@@ -1980,8 +2034,8 @@ const MessageInputBox = ({
       ? 5
       : 5
     : isIOS
-    ? 20
-    : 5;
+      ? 20
+      : 5;
 
   return (
     <View>
@@ -2006,31 +2060,31 @@ const MessageInputBox = ({
           styles.inputContainer,
           !isUploadScreen
             ? {
-                marginBottom: inputBoxStyles?.messageInputMarginBottom
-                  ? inputBoxStyles?.messageInputMarginBottom
-                  : marginValue,
-              }
+              marginBottom: inputBoxStyles?.messageInputMarginBottom
+                ? inputBoxStyles?.messageInputMarginBottom
+                : 5,
+            }
             : null,
         ]}
       >
         <View
           style={
             (isReply && !isUploadScreen) ||
-            isUserTagging ||
-            isEditable ||
-            Object.keys(ogTagsState).length !== 0
+              isUserTagging ||
+              isEditable ||
+              Object.keys(ogTagsState).length !== 0
               ? [
-                  styles.replyBoxParent,
-                  {
-                    borderTopWidth:
-                      isReply && !isUploadScreen && !isUserTagging ? 0 : 0,
-                    borderTopLeftRadius:
-                      isReply && !isUploadScreen && !isUserTagging ? 10 : 20,
-                    borderTopRightRadius:
-                      isReply && !isUploadScreen && !isUserTagging ? 10 : 20,
-                    backgroundColor: isUploadScreen ? "black" : "white",
-                  },
-                ]
+                styles.replyBoxParent,
+                {
+                  borderTopWidth:
+                    isReply && !isUploadScreen && !isUserTagging ? 0 : 0,
+                  borderTopLeftRadius:
+                    isReply && !isUploadScreen && !isUserTagging ? 10 : 20,
+                  borderTopRightRadius:
+                    isReply && !isUploadScreen && !isUserTagging ? 10 : 20,
+                  backgroundColor: isUploadScreen ? "black" : "white",
+                },
+              ]
               : null
           }
         >
@@ -2168,8 +2222,8 @@ const MessageInputBox = ({
           )}
 
           {Object.keys(ogTagsState).length !== 0 &&
-          showLinkPreview &&
-          !closedOnce ? (
+            showLinkPreview &&
+            !closedOnce ? (
             <View
               style={[
                 styles.taggableUsersBox,
@@ -2230,7 +2284,6 @@ const MessageInputBox = ({
           <View
             style={[
               styles.textInput,
-              !(isEditable || isReply) ? styles.inputBoxWithShadow : null,
               {
                 backgroundColor: isUploadScreen
                   ? STYLES.$BACKGROUND_COLORS.DARK
@@ -2238,13 +2291,12 @@ const MessageInputBox = ({
               },
               (isReply && !isUploadScreen) || isEditable || isUserTagging
                 ? {
-                    borderWidth: 0,
-                    margin: isIOS ? 0 : Layout.normalize(2),
-                  }
+                  borderWidth: 0,
+                }
                 : null,
             ]}
           >
-            {!!isUploadScreen && !isDoc && !isGif ? (
+            {!!isUploadScreen && !isDoc && !isGif && !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot) ? (
               <TouchableOpacity
                 style={styles.addMoreButton}
                 onPress={() => {
@@ -2256,7 +2308,7 @@ const MessageInputBox = ({
                   iconStyle={styles.emoji}
                 />
               </TouchableOpacity>
-            ) : !!isUploadScreen && !!isDoc && !isGif ? (
+            ) : !!isUploadScreen && !!isDoc && !isGif && !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot) ? (
               <TouchableOpacity
                 style={styles.addMoreButton}
                 onPress={() => {
@@ -2289,7 +2341,7 @@ const MessageInputBox = ({
                     source={require("../../assets/lottieJSON/delete.json")}
                     style={{ height: 40, width: 40 }}
                     autoPlay
-                    // loop
+                  // loop
                   />
                 </View>
               </View>
@@ -2399,22 +2451,28 @@ const MessageInputBox = ({
                   styles.inputParent,
                   isUploadScreen
                     ? {
-                        marginHorizontal: Layout.normalize(5),
-                      }
+                      marginHorizontal: Layout.normalize(5),
+                    }
                     : { marginHorizontal: Layout.normalize(15) },
                 ]}
               >
                 {!isUploadScreen &&
-                !(
-                  chatRequestState === ChatroomChatRequestState.INITIATED ||
-                  chatRequestState === null
-                ) &&
-                !isEditable &&
-                !voiceNotes?.recordTime &&
-                !isDeleteAnimation ? (
-                  GIFPicker ? (
+                  !(
+                    chatRequestState === ChatroomChatRequestState.INITIATED ||
+                    chatRequestState === null
+                  ) &&
+                  !isEditable &&
+                  !voiceNotes?.recordTime &&
+                  !isDeleteAnimation ? (
+                  GIFPicker && !isUserChatbot ? (
                     <TouchableOpacity
-                      style={styles.gifView}
+                      style={[
+                        styles.gifView,
+                        {
+                          alignSelf: 'flex-end',
+                          bottom: Layout.normalize(1)
+                        }
+                      ]}
                       onPress={() => GiphyDialog.show()}
                     >
                       <LMChatTextView textStyle={styles.gifText}>
@@ -2427,7 +2485,7 @@ const MessageInputBox = ({
                   placeholderText={
                     inputBoxStyles?.placeholderText
                       ? inputBoxStyles?.placeholderText
-                      : "Type a message"
+                      : isUserChatbot ? CHATBOT_MESSAGE_PLACEHOLDER : MESSAGE_BOX_PLACEHOLDER
                   }
                   placeholderTextColor={inputBoxStyles?.placeholderTextColor}
                   plainTextStyle={[
@@ -2448,7 +2506,7 @@ const MessageInputBox = ({
                           ? STYLES.$BACKGROUND_COLORS.LIGHT
                           : STYLES.$BACKGROUND_COLORS.DARK,
                       },
-                    ] as TextStyle
+                    ] as TextStyle[]
                   }
                   onContentSizeChange={(event) => {
                     setInputHeight(event.nativeEvent.contentSize.height);
@@ -2475,14 +2533,17 @@ const MessageInputBox = ({
             )}
 
             {!isUploadScreen &&
-            !(chatRequestState === 0 || chatRequestState === null) &&
-            !isEditable &&
-            !voiceNotes?.recordTime &&
-            !isDeleteAnimation ? (
+              (!(chatRequestState === ChatroomType.OPENCHATROOM || chatRequestState === null) || isUserChatbot) &&
+              !isEditable &&
+              !voiceNotes?.recordTime &&
+              !isDeleteAnimation ? (
               <TouchableOpacity
                 style={[
                   styles.emojiButton,
-                  { marginLeft: Layout.normalize(15) },
+                  { marginLeft: Layout.normalize(10), 
+                    alignSelf: "flex-end",
+                    bottom: Layout.normalize(5)
+                   },
                 ]}
                 onPress={() => {
                   Keyboard.dismiss();
@@ -2490,10 +2551,14 @@ const MessageInputBox = ({
                 }}
               >
                 <LMChatIcon
-                  assetPath={require("../../assets/images/open_files3x.png")}
+                  assetPath={ isUserChatbot ? require("../../assets/images/chatbot_attachment_button3x.png") : require("../../assets/images/open_files3x.png")}
                   iconStyle={
                     [
                       styles.emoji,
+                      isUserChatbot ? {
+                        height: Layout.normalize(20),
+                        width: Layout.normalize(20)
+                      } : null,
                       inputBoxStyles?.attachmentIconStyles,
                     ] as ImageStyle
                   }
@@ -2513,10 +2578,10 @@ const MessageInputBox = ({
           is first DM message
         } */}
         {!!message ||
-        isVoiceResult ||
-        isUploadScreen ||
-        isRecordingLocked ||
-        (chatroomType === 10 && chatRequestState === null) ? (
+          isVoiceResult ||
+          isUploadScreen ||
+          isRecordingLocked ||
+          (chatroomType === ChatroomType.OPENCHATROOM && chatRequestState === null) ? (
           <TouchableOpacity
             onPressOut={async () => {
               if (
@@ -2561,7 +2626,7 @@ const MessageInputBox = ({
           </TouchableOpacity>
         ) : (
           <View>
-            {isRecordingPermission && AudioRecorder && AudioPlayer ? (
+            {isRecordingPermission && AudioRecorder && AudioPlayer && !isUserChatbot ? (
               <GestureDetector gesture={composedGesture}>
                 <Animated.View>
                   {voiceNotes.recordTime && !isRecordingLocked && (
@@ -2604,7 +2669,7 @@ const MessageInputBox = ({
                   </Animated.View>
                 </Animated.View>
               </GestureDetector>
-            ) : AudioRecorder ? (
+            ) : AudioRecorder && !isUserChatbot ? (
               <Animated.View style={[styles.sendButton, panStyle]}>
                 <Pressable
                   onPress={askPermission}
@@ -2644,8 +2709,9 @@ const MessageInputBox = ({
       >
         <Pressable style={styles.centeredView} onPress={handleModalClose}>
           <View style={styles.modalViewParent}>
-            <Pressable onPress={() => {}} style={[styles.modalView]}>
+            <Pressable onPress={() => { }} style={[styles.modalView]}>
               <View style={styles.alignModalElements}>
+                {/* camera */}
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
@@ -2670,6 +2736,7 @@ const MessageInputBox = ({
                     {CAMERA_TEXT}
                   </LMChatTextView>
                 </View>
+                {/* image/video */}
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
@@ -2694,6 +2761,8 @@ const MessageInputBox = ({
                     {PHOTOS_AND_VIDEOS_TEXT}
                   </LMChatTextView>
                 </View>
+                {/* doc */}
+                { ( (chatroomType == ChatroomType.DMCHATROOM && !isUserChatbot) || (chatroomType == ChatroomType.OPENCHATROOM || chatroomType == ChatroomType.ANNOUNCEMENTROOM) ) ?
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
@@ -2717,8 +2786,9 @@ const MessageInputBox = ({
                   <LMChatTextView textStyle={styles.iconText}>
                     {DOCUMENTS_TEXT}
                   </LMChatTextView>
-                </View>
-                {chatroomType !== 10 ? (
+                </View> : null}
+                {/* poll */}
+                { (chatroomType == ChatroomType.OPENCHATROOM || chatroomType == ChatroomType.ANNOUNCEMENTROOM) && canUserCreatePoll ? (
                   <View style={styles.iconContainer}>
                     <TouchableOpacity
                       onPress={() => {

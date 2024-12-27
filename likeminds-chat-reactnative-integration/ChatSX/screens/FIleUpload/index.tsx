@@ -45,6 +45,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import VideoPlayer from "react-native-media-console";
+import { splitFileName } from "../../utils/chatroomUtils";
 interface UploadResource {
   selectedImages: any;
   conversationID: any;
@@ -71,7 +72,7 @@ const FileUpload = ({
   const route = useRoute();
   const { backIconPath, imageCropIcon }: any = route.params;
 
-  const { chatroomType } = useChatroomContext();
+  const { chatroomType, user } = useChatroomContext();
 
   const selectedImageBorderColor =
     STYLES.$FILE_UPLOAD_STYLE?.selectedImageBorderColor;
@@ -79,7 +80,7 @@ const FileUpload = ({
   const myClient = Client.myClient;
   const video = useRef<any>(null);
 
-  const { chatroomID, previousMessage = "" }: any = route?.params;
+  const { chatroomID, previousMessage = "", limit }: any = route?.params;
   const {
     selectedFilesToUpload = [],
     selectedFileToView = {},
@@ -153,6 +154,7 @@ const FileUpload = ({
   }: UploadResource) => {
     LogBox.ignoreLogs(["new NativeEventEmitter"]);
     const s3 = new S3();
+    let attachments = [];
     for (let i = 0; i < selectedImages?.length; i++) {
       const item = selectedImages[i];
       const attachmentType = isRetry ? item?.type : item?.type?.split("/")[0];
@@ -173,9 +175,10 @@ const FileUpload = ({
           : docAttachmentType === PDF_TEXT
           ? item.name
           : null;
-
-      const path = `files/collabcard/${chatroomID}/conversation/${conversationID}/${name}`;
-      const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${conversationID}/${thumbnailURL}`;
+      
+      const fileInfo = splitFileName(name);
+      const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${fileInfo?.name}-${conversationID}.${fileInfo.extension}`;
+      const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
       let uriFinal: any;
 
       if (attachmentType === IMAGE_TEXT) {
@@ -185,7 +188,7 @@ const FileUpload = ({
         const compressedImg = await fetchResourceFromURI(compressedImgURI);
         uriFinal = compressedImg;
       } else {
-        const img = await fetchResourceFromURI(item.uri ? item.uri : item.url);
+        const img = (await fetchResourceFromURI(item.uri ? item.uri : item.url));
         uriFinal = img;
       }
 
@@ -243,8 +246,7 @@ const FileUpload = ({
           }
 
           const payload = {
-            conversationId: conversationID,
-            filesCount: selectedImages?.length,
+            id: conversationID,
             index: i + 1,
             meta:
               fileType === VIDEO_TEXT
@@ -272,9 +274,15 @@ const FileUpload = ({
                 : null,
             height: gifHeight ? gifHeight : null,
             width: gifWidth ? gifWidth : null,
+            localFilePath: item.uri,
+            awsFolderPath: path,
+            thumbnailAwsFolderPath: thumbnailURL ? thumbnailUrlPath : "",
+            thumbnailLocalFilePath: thumbnailURL,
+            fileUrl: awsResponse,
+            createdAt: conversationID,
+            updatedAt: conversationID,
           };
 
-          const uploadRes = await myClient?.putMultimedia(payload as any);
 
           LMChatAnalytics.track(
             Events.ATTACHMENT_UPLOADED,
@@ -285,6 +293,7 @@ const FileUpload = ({
               [Keys.TYPE, attachmentType],
             ])
           );
+          attachments.push(payload);
         }
       } catch (error) {
         dispatch({
@@ -325,6 +334,7 @@ const FileUpload = ({
     await myClient?.removeAttactmentUploadConversationByKey(
       conversationID?.toString()
     );
+    return attachments;
   };
 
   const handleFileUpload = async (conversationID: any, isRetry: any) => {
