@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import {
   CarouselScreenStyles,
+  ChatBotInitiateScreenStyles,
   ChatBubbleStyles,
   ChatroomHeaderStyles,
   ChatroomTopicStyles,
@@ -8,6 +9,7 @@ import {
   FileUploadStyles,
   HomeFeedStyles,
   InputBoxStyles,
+  LMChatAIButtonStyle,
   MemberDirectoryStyles,
   ReactionListStyles,
   SearchInChatroomStyles,
@@ -99,6 +101,8 @@ export class STYLES {
   static $EXPLORE_CHATROOM_STYLE: ExploreChatroomStyles = {};
   static $HOME_FEED_STYLE: HomeFeedStyles = {};
   static $SEARCH_IN_CHATROOM: SearchInChatroomStyles = {};
+  static $CHATBOT_INIT_SCREEN_STYLE: ChatBotInitiateScreenStyles = {};
+  static $LMCHAT_AI_BUTTON_STYLE: LMChatAIButtonStyle = {};
   static setTheme({
     hue,
     fontColor,
@@ -203,6 +207,18 @@ export class STYLES {
     STYLES.$SEARCH_IN_CHATROOM = {
       ...searchInChatroomStyles,
     };
+  }
+  static setChatbotInitScreenStyle(
+    ChatBotInitiateScreenStyle: ChatBotInitiateScreenStyles
+  ) {
+    STYLES.$CHATBOT_INIT_SCREEN_STYLE = {
+      ...ChatBotInitiateScreenStyle
+    }
+  }
+  static setLMChatAIButtonStyle(
+    LMChatAIButtonStyle: LMChatAIButtonStyle
+  ) {
+    STYLES.$LMCHAT_AI_BUTTON_STYLE = LMChatAIButtonStyle
   }
 }
 

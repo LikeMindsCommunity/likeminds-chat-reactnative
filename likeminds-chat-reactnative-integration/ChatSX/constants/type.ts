@@ -1,4 +1,4 @@
-import { ImageStyle, TextStyle } from "react-native";
+import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 
 interface FontTypes {
   LIGHT?: string;
@@ -283,4 +283,15 @@ export interface SearchInChatroomStyles {
   timeStampStyles?: TextStyle;
   searchedHighlightedTextStyle?: TextStyle;
   searchedNonHighlightedTextStyle?: TextStyle;
+}
+
+export interface ChatBotInitiateScreenStyles {
+  previewTextStyle?: TextStyle;
+  parentViewStyle?: ViewStyle
+}
+
+export interface LMChatAIButtonStyle {
+  buttonStyle?: ViewStyle;
+  textStyle?: TextStyle;
+  iconStyle?: ImageStyle;
 }

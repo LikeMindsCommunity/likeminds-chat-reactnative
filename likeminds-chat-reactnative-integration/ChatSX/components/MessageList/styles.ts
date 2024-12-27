@@ -16,7 +16,6 @@ export const styles = StyleSheet.create({
   },
   arrowButton: {
     position: "absolute",
-    bottom: Layout.normalize(20),
     right: Layout.normalize(15),
     backgroundColor: "white",
     padding: Layout.normalize(10),

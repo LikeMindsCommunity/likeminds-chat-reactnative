@@ -27,6 +27,11 @@ export const styles = StyleSheet.create({
     resizeMode: "contain",
     tintColor: STYLES.$COLORS.SECONDARY,
   },
+  chatBotBackBtn: {
+    height: Layout.normalize(20),
+    width: Layout.normalize(20),
+    resizeMode: "contain",
+  },
   backOptionalBtn: {
     height: Layout.normalize(20),
     width: Layout.normalize(24),

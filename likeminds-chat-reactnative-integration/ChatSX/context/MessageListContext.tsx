@@ -387,7 +387,7 @@ export const MessageListContextProvider = ({
     const onStartReachedThreshold = 10;
     const onEndReachedThreshold = 10;
 
-    const isUp = offset > 0 && offset > currentOffset;
+    const isUp = offset > 0;
 
     setIsScrollingUp(isUp);
     setCurrentOffset(offset);

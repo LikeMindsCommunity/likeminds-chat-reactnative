@@ -7,7 +7,7 @@ import {
   Keyboard,
   StatusBar,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Client } from "../../client";
 import {
   ChatroomContextValues,
@@ -41,6 +41,7 @@ import { NavigateToGroupDetailsParams } from "../../../ChatSX/callBacks/type";
 import { CallBack } from "../../../ChatSX/callBacks/callBackClass";
 import Layout from "../../../ChatSX/constants/Layout";
 import { SEARCH_IN_CHATROOM } from "../../constants/Screens";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 interface ChatroomHeaderProps {
   showChatroomIcon?: boolean;
@@ -97,6 +98,9 @@ const ChatroomHeader = ({
   const chatroomSubHeaderStyle = chatroomHeaderStyles?.chatroomSubHeaderStyle;
   const chatroomSelectedHeaderIcons =
     chatroomHeaderStyles?.chatroomSelectedHeaderIcons;
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user);
+  }, [chatroomDBDetails, user])
 
   const dispatch = useAppDispatch();
 
@@ -130,9 +134,9 @@ const ChatroomHeader = ({
               source={
                 backIconPath
                   ? backIconPath
-                  : require("../../assets/images/back_arrow3x.png")
+                  : isOtherUserChatbot ? require("../../assets/images/chatbot_arrow3x.png") : require("../../assets/images/back_arrow3x.png")
               }
-              style={backIconPath ? styles.backOptionalBtn : styles.backBtn}
+              style={backIconPath ? styles.backOptionalBtn : isOtherUserChatbot ? styles.chatBotBackBtn : styles.backBtn}
             />
           </TouchableOpacity>
           {!(Object.keys(chatroomDBDetails)?.length === 0) ? (
@@ -254,7 +258,7 @@ const ChatroomHeader = ({
               </TouchableOpacity>
             ) : null}
 
-            {chatroomDetails ? (
+            {chatroomDetails && !isOtherUserChatbot ? (
               <TouchableOpacity
                 onPress={() => {
                   setModalVisible(!modalVisible);
@@ -300,7 +304,7 @@ const ChatroomHeader = ({
             }}
           >
             <Image
-              source={require("../../assets/images/blue_back_arrow3x.png")}
+              source={ isOtherUserChatbot ? require("../../assets/images/chatbot_arrow3x.png") : require("../../assets/images/blue_back_arrow3x.png")}
               style={[
                 styles.selectedBackBtn,
                 {
@@ -406,7 +410,7 @@ const ChatroomHeader = ({
             {len === 1 &&
               !isFirstMessageDeleted &&
               memberCanMessage &&
-              chatroomFollowStatus && (
+              chatroomFollowStatus && !isOtherUserChatbot && (
                 <TouchableOpacity
                   onPress={() => {
                     if (len > 0) {
@@ -518,7 +522,7 @@ const ChatroomHeader = ({
               </>
             ) : null}
 
-            {isSelectedMessageEditable &&
+            {isSelectedMessageEditable && !isOtherUserChatbot &&
             (chatroomType === ChatroomType.DMCHATROOM
               ? !!chatRequestState
               : true) ? ( // this condition checks in case of DM, chatRequestState != 0 && chatRequestState != null then only show edit Icon
@@ -547,7 +551,7 @@ const ChatroomHeader = ({
                 />
               </TouchableOpacity>
             ) : null}
-            {isDelete && (
+            {isDelete && !isOtherUserChatbot && (
               <TouchableOpacity
                 onPress={async () => {
                   const res = await myClient
@@ -633,7 +637,7 @@ const ChatroomHeader = ({
                 />
               </TouchableOpacity>
             )}
-            {len === 1 &&
+            {len === 1 && !isOtherUserChatbot &&
               !isFirstMessageDeleted &&
               showThreeDotsOnSelectedHeader && (
                 <TouchableOpacity

@@ -338,7 +338,7 @@ const ViewParticipants = ({ navigation, route }: any) => {
                       userNameStyles?.fontFamily && {
                         fontFamily: userNameStyles?.fontFamily,
                       },
-                    ] as TextStyle
+                    ] as TextStyle[]
                   }
                   numberOfLines={1}
                 >
@@ -357,7 +357,7 @@ const ViewParticipants = ({ navigation, route }: any) => {
                           userTitleStyles?.fontFamily && {
                             fontFamily: userTitleStyles?.fontFamily,
                           },
-                        ] as TextStyle
+                        ] as TextStyle[]
                       }
                     >{` • ${item?.customTitle}`}</Text>
                   ) : null}
