@@ -20,7 +20,7 @@
   "homepage": "https://likeminds.community/",
   "license": "ISC",
   "dependencies": {
-    "@likeminds.community/chat-rn": "1.8.0",
+    "@likeminds.community/chat-rn": "1.7.1",
     "@react-native/babel-preset": "0.74.0",
     "diff": "5.1.0",
     "realm": "11.10.2"
