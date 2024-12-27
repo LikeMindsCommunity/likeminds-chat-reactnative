@@ -2020,7 +2020,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     const apiRes = await myClient?.checkDMLimit({
       uuid: uuid,
     });
-    const res: any = apiRes?.data;
+    const res = apiRes?.data;
     if (apiRes?.success === false) {
       dispatch({
         type: SHOW_TOAST,
@@ -2057,7 +2057,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             }
           }
         } else {
-          const userDMLimit: any = res?.userDmLimit;
+          const userDMLimit = res?.userDmLimit;
 
           // to show alert only if API has valid response
           if (userDMLimit) {
@@ -2067,7 +2067,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
                 userDMLimit?.numberInDuration
               } DM requests per ${
                 userDMLimit?.duration
-              }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp)}`,
+              }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp as number)}`,
               [
                 {
                   text: CANCEL_BUTTON,
