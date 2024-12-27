@@ -90,7 +90,6 @@ const LMChatAIBotInitiaitionScreen = ({
                             uuid: firstChatbot?.uuid
                         });
                         if (DMChatroom?.success) {
-                            console.log(DMChatroom);
                             await Client?.myClient?.initiateAppConfig();
                             const res = await Client?.myClient?.setChatroomIdWithAIChatbot(
                                 DMChatroom?.data?.chatroom?.id?.toString()
