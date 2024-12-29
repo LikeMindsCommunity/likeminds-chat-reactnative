@@ -18,7 +18,21 @@ import {
 import { CREATE_POLL_SCREEN } from "../../constants/Screens";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 
-const SelectFilesModal = () => {
+interface SelectFilesModalProps {
+  handleGalleryProp?: () => void;
+  handleDocumentProp?: () => void;
+  handleCameraProp?: () => void;
+  handlePollProp?: () => void;
+  handleModalCloseProp?: () => void;
+}
+
+const SelectFilesModal = ({
+  handleGalleryProp,
+  handleDocumentProp,
+  handleCameraProp,
+  handlePollProp,
+  handleModalCloseProp,
+}: SelectFilesModalProps) => {
   const {
     modalVisible,
     setModalVisible,
@@ -44,7 +58,12 @@ const SelectFilesModal = () => {
           setModalVisible(!modalVisible);
         }}
       >
-        <Pressable style={styles.centeredView} onPress={handleModalClose}>
+        <Pressable
+          style={styles.centeredView}
+          onPress={
+            handleModalCloseProp ? handleModalCloseProp : handleModalClose
+          }
+        >
           <View style={styles.modalViewParent}>
             <Pressable onPress={() => {}} style={[styles.modalView]}>
               <View style={styles.alignModalElements}>
@@ -53,7 +72,11 @@ const SelectFilesModal = () => {
                     onPress={() => {
                       setModalVisible(false);
                       setTimeout(() => {
-                        handleCamera();
+                        if (handleCameraProp) {
+                          handleCameraProp();
+                        } else {
+                          handleCamera();
+                        }
                       }, 50);
                     }}
                     style={styles.cameraStyle}
@@ -77,7 +100,11 @@ const SelectFilesModal = () => {
                     onPress={() => {
                       setModalVisible(false);
                       setTimeout(() => {
-                        handleGallery();
+                        if (handleGalleryProp) {
+                          handleGalleryProp();
+                        } else {
+                          handleGallery();
+                        }
                       }, 500);
                     }}
                     style={styles.imageStyle}
@@ -101,6 +128,11 @@ const SelectFilesModal = () => {
                     onPress={() => {
                       setModalVisible(false);
                       setTimeout(() => {
+                        if (handleDocumentProp) {
+                          handleDocumentProp();
+                        } else {
+                          handleDoc();
+                        }
                         handleDoc();
                       }, 50);
                     }}
@@ -125,10 +157,14 @@ const SelectFilesModal = () => {
                     <TouchableOpacity
                       onPress={() => {
                         setModalVisible(false);
-                        navigation.navigate(CREATE_POLL_SCREEN, {
-                          chatroomID: chatroomID,
-                          conversationsLength: conversations.length * 2,
-                        });
+                        if (handlePollProp) {
+                          handlePollProp();
+                        } else {
+                          navigation.navigate(CREATE_POLL_SCREEN, {
+                            chatroomID: chatroomID,
+                            conversationsLength: conversations.length * 2,
+                          });
+                        }
                       }}
                       style={styles.pollStyle}
                     >

@@ -7,7 +7,11 @@ import { SET_IS_REPLY, SET_REPLY_MESSAGE } from "../../store/types/types";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import { useAppDispatch } from "../../store";
 
-const ReplyBoxView = () => {
+interface ReplyBoxViewProps {
+  handleReplyBoxCloseProp?: () => void;
+}
+
+const ReplyBoxView = ({ handleReplyBoxCloseProp }: ReplyBoxViewProps) => {
   const { isReply, isUploadScreen, replyMessage, chatroomName } =
     useInputBoxContext();
   const dispatch = useAppDispatch();
@@ -22,11 +26,15 @@ const ReplyBoxView = () => {
           />
           <TouchableOpacity
             onPress={() => {
-              dispatch({ type: SET_IS_REPLY, body: { isReply: false } });
-              dispatch({
-                type: SET_REPLY_MESSAGE,
-                body: { replyMessage: "" },
-              });
+              if (handleReplyBoxCloseProp) {
+                handleReplyBoxCloseProp();
+              } else {
+                dispatch({ type: SET_IS_REPLY, body: { isReply: false } });
+                dispatch({
+                  type: SET_REPLY_MESSAGE,
+                  body: { replyMessage: "" },
+                });
+              }
             }}
             style={styles.replyBoxClose}
           >

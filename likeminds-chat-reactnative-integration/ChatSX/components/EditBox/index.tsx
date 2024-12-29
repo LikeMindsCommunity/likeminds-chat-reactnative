@@ -7,7 +7,11 @@ import { SELECTED_MESSAGES, SET_EDIT_MESSAGE } from "../../store/types/types";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import { useAppDispatch } from "../../store";
 
-const EditBox = () => {
+interface EditBoxProps {
+  handleEditBoxCloseProp?: () => void;
+}
+
+const EditBox = ({ handleEditBoxCloseProp }: EditBoxProps) => {
   const {
     setIsEditable,
     setMessage,
@@ -27,18 +31,22 @@ const EditBox = () => {
           />
           <TouchableOpacity
             onPress={() => {
-              setIsEditable(false);
-              setMessage("");
-              dispatch({
-                type: SET_EDIT_MESSAGE,
-                body: {
-                  editConversation: "",
-                },
-              });
-              dispatch({
-                type: SELECTED_MESSAGES,
-                body: [],
-              });
+              if (handleEditBoxCloseProp) {
+                handleEditBoxCloseProp();
+              } else {
+                setIsEditable(false);
+                setMessage("");
+                dispatch({
+                  type: SET_EDIT_MESSAGE,
+                  body: {
+                    editConversation: "",
+                  },
+                });
+                dispatch({
+                  type: SELECTED_MESSAGES,
+                  body: [],
+                });
+              }
             }}
             style={styles.replyBoxClose}
           >

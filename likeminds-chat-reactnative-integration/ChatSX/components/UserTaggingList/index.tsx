@@ -10,23 +10,29 @@ import Layout from "../../constants/Layout";
 import STYLES from "../../constants/Styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 
-const UserTaggingList = () => {
+interface UserTaggingListProps {
+  onUserTaggingClickedProp?: ({
+    uuid,
+    userName,
+    communityId,
+    mentionUsername,
+  }) => void;
+}
+
+const UserTaggingList = ({
+  onUserTaggingClickedProp,
+}: UserTaggingListProps) => {
   const {
     userTaggingList,
     isUserTagging,
     isUploadScreen,
     userTaggingListHeight,
     groupTags,
-    chatroomName,
     message,
-    taggedUserName,
-    setMessage,
-    setUserTaggingList,
-    setGroupTags,
-    setIsUserTagging,
     isIOS,
     handleLoadMore,
     renderFooter,
+    onUserTaggingClicked,
   } = useInputBoxContext();
   return (
     <View>
@@ -51,25 +57,22 @@ const UserTaggingList = () => {
                     const uuid = item?.sdkClientInfo?.uuid;
                     const userName = item?.name;
                     const communityId = item?.sdkClientInfo?.community;
-                    LMChatAnalytics.track(
-                      Events.USER_TAGS_SOMEONE,
-                      new Map<string, string>([
-                        [Keys.COMMUNITY_ID, communityId?.toString()],
-                        [Keys.CHATROOM_NAME, chatroomName?.toString()],
-                        [Keys.TAGGED_USER_ID, uuid?.toString()],
-                        [Keys.TAGGED_USER_NAME, userName?.toString()],
-                      ])
-                    );
-                    const res = replaceLastMention(
-                      message,
-                      taggedUserName,
-                      item?.name,
-                      uuid ? `user_profile/${uuid}` : uuid
-                    );
-                    setMessage(res);
-                    setUserTaggingList([]);
-                    setGroupTags([]);
-                    setIsUserTagging(false);
+
+                    if (onUserTaggingClickedProp) {
+                      onUserTaggingClickedProp({
+                        uuid,
+                        userName,
+                        communityId,
+                        mentionUsername: item?.name,
+                      });
+                    } else {
+                      onUserTaggingClicked({
+                        uuid,
+                        userName,
+                        communityId,
+                        mentionUsername: item?.name,
+                      });
+                    }
                   }}
                   style={styles.taggableUserView}
                 >

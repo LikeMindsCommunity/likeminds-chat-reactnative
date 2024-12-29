@@ -45,6 +45,9 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import VideoPlayer from "react-native-media-console";
+import { InputBoxContextProvider } from "../../context/InputBoxContext";
+import FileUploadHeader from "../../components/FileUploadHeader";
+import FileUploadView from "../../components/FileUploadView";
 interface UploadResource {
   selectedImages: any;
   conversationID: any;
@@ -344,183 +347,27 @@ const FileUpload = ({
 
   return (
     <View style={styles.page}>
-      {len > 0 ? (
-        <View style={styles.headingContainer}>
-          <View style={styles.headingItems}>
-            <TouchableOpacity
-              style={styles.touchableBackButton}
-              onPress={() => {
-                dispatch({
-                  type: CLEAR_SELECTED_FILES_TO_UPLOAD,
-                });
-                dispatch({
-                  type: CLEAR_SELECTED_FILE_TO_VIEW,
-                });
-                dispatch({
-                  type: STATUS_BAR_STYLE,
-                  body: { color: STYLES.$STATUS_BAR_STYLE.default },
-                });
-                navigation.goBack();
-              }}
-            >
-              {backIconPath ? (
-                <Image source={backIconPath} style={styles.backBtn} />
-              ) : (
-                <Image
-                  source={require("../../assets/images/blue_back_arrow3x.png")}
-                  style={styles.backBtn}
-                />
-              )}
-            </TouchableOpacity>
-            {itemType === IMAGE_TEXT ? (
-              <TouchableOpacity
-                style={styles.touchableBackButton}
-                onPress={() => {
-                  navigation.navigate(IMAGE_CROP_SCREEN, {
-                    uri: selectedFileToView?.uri,
-                    fileName: selectedFileToView?.fileName,
-                  });
-                }}
-              >
-                {imageCropIcon ? (
-                  <Image source={imageCropIcon} style={styles.cropIcon} />
-                ) : (
-                  <Image
-                    source={require("../../assets/images/crop_icon3x.png")}
-                    style={styles.cropIcon}
-                  />
-                )}
-              </TouchableOpacity>
-            ) : null}
-          </View>
-        </View>
-      ) : null}
-      <View style={styles.selectedFileToView}>
-        {itemType === IMAGE_TEXT ? (
-          <Image
-            source={{ uri: selectedFileToView?.uri }}
-            style={styles.mainImage}
-          />
-        ) : itemType === VIDEO_TEXT ? (
-          <View style={styles.video}>
-            <VideoPlayer
-              // @ts-ignore
-              source={{ uri: selectedFileToView?.uri }}
-              videoStyle={styles.videoPlayer}
-              videoRef={video}
-              disableBack={true}
-              disableVolume={true}
-              disableFullscreen={true}
-              paused={true}
-              showOnStart={true}
-            />
-          </View>
-        ) : docItemType === PDF_TEXT ? (
-          <Image
-            source={{ uri: selectedFileToView?.thumbnailUrl }}
-            style={styles.mainImage}
-          />
-        ) : isGif ? (
-          <View>
-            <Image
-              source={{ uri: selectedFileToView?.url }}
-              style={styles.mainImage}
-            />
-          </View>
-        ) : null}
-      </View>
+    
+    <FileUploadHeader />
+
+    <FileUploadView />
+
 
       <View style={styles.bottomBar}>
         {len > 0 ? (
-          <CustomisableMethodsContextProvider
-            handleGalleryProp={handleGallery}
-            handleCameraProp={handleCamera}
-            handleDocProp={handleDoc}
-            onEditProp={onEdit}
-          >
-            <InputBox
+            <InputBoxContextProvider
               isUploadScreen={true}
               isDoc={docItemType === PDF_TEXT ? true : false}
               chatroomID={chatroomID}
-              navigation={navigation}
               previousMessage={previousMessage}
               handleFileUpload={handleFileUpload}
               isGif={isGif}
               chatroomType={chatroomType}
               metaData={conversationMetaData ? conversationMetaData : {}}
-            />
-          </CustomisableMethodsContextProvider>
+            >
+              <InputBox />
+            </InputBoxContextProvider>
         ) : null}
-
-        {!isGif && (
-          <ScrollView
-            contentContainerStyle={styles.bottomListOfImages}
-            horizontal={true}
-            bounces={false}
-          >
-            {len > 0 &&
-              selectedFilesToUpload.map((item: any, index: any) => {
-                let fileType = item?.type?.split("/")[0];
-                return (
-                  <Pressable
-                    key={item?.uri + index}
-                    onPress={() => {
-                      dispatch({
-                        type: SELECTED_FILE_TO_VIEW,
-                        body: { image: item },
-                      });
-                    }}
-                    style={({ pressed }) => [
-                      { opacity: pressed ? 0.5 : 1.0 },
-                      styles.imageItem,
-                      {
-                        borderColor:
-                          docItemType === PDF_TEXT
-                            ? selectedFileToView?.name === item?.name
-                              ? selectedImageBorderColor
-                                ? selectedImageBorderColor
-                                : "red"
-                              : "black"
-                            : selectedFileToView?.fileName === item?.fileName
-                            ? selectedImageBorderColor
-                              ? selectedImageBorderColor
-                              : "red"
-                            : "black",
-                        borderWidth: 1,
-                      },
-                    ]}
-                  >
-                    <Image
-                      source={
-                        itemType === VIDEO_TEXT
-                          ? {
-                              uri:
-                                "file://" +
-                                selectedFilesToUploadThumbnails[index]?.uri,
-                            }
-                          : { uri: selectedFilesToUploadThumbnails[index]?.uri }
-                      }
-                      style={styles.smallImage}
-                    />
-                    {fileType === VIDEO_TEXT ? (
-                      <View
-                        style={{
-                          position: "absolute",
-                          bottom: 0,
-                          left: Layout.normalize(5),
-                        }}
-                      >
-                        <Image
-                          source={require("../../assets/images/video_icon3x.png")}
-                          style={styles.videoIcon}
-                        />
-                      </View>
-                    ) : null}
-                  </Pressable>
-                );
-              })}
-          </ScrollView>
-        )}
       </View>
     </View>
   );

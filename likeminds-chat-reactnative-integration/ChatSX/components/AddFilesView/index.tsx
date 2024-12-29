@@ -4,7 +4,11 @@ import { LMChatIcon } from "../../uiComponents";
 import { styles } from "../InputBox/styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 
-const AddFilesView = () => {
+interface AddFilesViewProps {
+  handleFilesViewProp?: () => void;
+}
+
+const AddFilesView = ({handleFilesViewProp}: AddFilesViewProps) => {
   const {
     isUploadScreen,
     chatRequestState,
@@ -24,8 +28,12 @@ const AddFilesView = () => {
         <TouchableOpacity
           style={[styles.emojiButton]}
           onPress={() => {
-            Keyboard.dismiss();
-            setModalVisible(true);
+            if(handleFilesViewProp){
+              handleFilesViewProp()
+            }else{
+              Keyboard.dismiss();
+              setModalVisible(true);
+            }
           }}
         >
           <LMChatIcon

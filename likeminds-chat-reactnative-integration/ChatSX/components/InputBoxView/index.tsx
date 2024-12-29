@@ -14,7 +14,21 @@ import { useInputBoxContext } from "../../context/InputBoxContext";
 import Layout from "../../constants/Layout";
 import { ChatroomChatRequestState } from "../../enums";
 
-const InputBoxView = () => {
+interface InputBoxViewwProps {
+  handleStopRecordProp?: () => void;
+  clearVoiceRecordProp?: () => void;
+  onPausePlayProp?: () => void;
+  onResumePlayProp?: () => void;
+  handleGifProp?: () => void;
+}
+
+const InputBoxView = ({
+  handleStopRecordProp,
+  clearVoiceRecordProp,
+  onPausePlayProp,
+  onResumePlayProp,
+  handleGifProp,
+}: InputBoxViewwProps) => {
   const {
     isEditable,
     voiceNotes,
@@ -80,13 +94,21 @@ const InputBoxView = () => {
           </View>
           {isRecordingLocked ? (
             <View style={styles.alignItems}>
-              <TouchableOpacity onPress={handleStopRecord}>
+              <TouchableOpacity
+                onPress={
+                  handleStopRecordProp ? handleStopRecordProp : handleStopRecord
+                }
+              >
                 <LMChatIcon
                   assetPath={require("../../assets/images/stop_recording_icon3x.png")}
                   iconStyle={styles.emoji}
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={clearVoiceRecord}>
+              <TouchableOpacity
+                onPress={
+                  clearVoiceRecordProp ? clearVoiceRecordProp : clearVoiceRecord
+                }
+              >
                 <LMChatIcon
                   assetPath={require("../../assets/images/cross_circle_icon3x.png")}
                   iconStyle={styles.emoji}
@@ -111,7 +133,11 @@ const InputBoxView = () => {
             {isVoiceNotePlaying ? (
               <TouchableOpacity
                 onPress={() => {
-                  onPausePlay();
+                  if (onPausePlayProp) {
+                    onPausePlayProp();
+                  } else {
+                    onPausePlay();
+                  }
                 }}
               >
                 <LMChatIcon
@@ -122,10 +148,14 @@ const InputBoxView = () => {
             ) : (
               <TouchableOpacity
                 onPress={() => {
-                  if (voiceNotesPlayer?.playTime !== "") {
-                    onResumePlay();
+                  if (onResumePlayProp) {
+                    onResumePlayProp();
                   } else {
-                    startPlay(voiceNotesLink);
+                    if (voiceNotesPlayer?.playTime !== "") {
+                      onResumePlay();
+                    } else {
+                      startPlay(voiceNotesLink);
+                    }
                   }
                 }}
               >
@@ -146,7 +176,9 @@ const InputBoxView = () => {
             )}
           </View>
           <TouchableOpacity
-            onPress={clearVoiceRecord}
+            onPress={
+              clearVoiceRecordProp ? clearVoiceRecordProp : clearVoiceRecord
+            }
             style={styles.alignItems}
           >
             <LMChatIcon
@@ -177,7 +209,13 @@ const InputBoxView = () => {
             GIFPicker ? (
               <TouchableOpacity
                 style={styles.gifView}
-                onPress={() => GiphyDialog.show()}
+                onPress={() => {
+                  if (handleGifProp) {
+                    handleGifProp();
+                  } else {
+                    GiphyDialog.show();
+                  }
+                }}
               >
                 <LMChatTextView textStyle={styles.gifText}>
                   {CAPITAL_GIF_TEXT}

@@ -30,6 +30,7 @@ import {
   getAllPdfThumbnail,
   getPdfThumbnail,
   getVideoThumbnail,
+  replaceLastMention,
 } from "../commonFuctions";
 import { check, PERMISSIONS, request } from "react-native-permissions";
 import {
@@ -238,6 +239,12 @@ export interface InputBoxContext {
   stopPlay: any;
   stopRecord: any;
   metaData: any;
+  onUserTaggingClicked: ({
+    uuid,
+    userName,
+    communityId,
+    mentionUsername,
+  }) => void;
 }
 
 const InputBoxContext = createContext<InputBoxContext | undefined>(undefined);
@@ -281,7 +288,7 @@ export const InputBoxContextProvider = ({
   const myClient = Client.myClient;
   const inputBoxStyles = STYLES.$INPUT_BOX_STYLE;
 
-  const navigation: any = useNavigation()
+  const navigation: any = useNavigation();
 
   const [isKeyBoardFocused, setIsKeyBoardFocused] = useState(false);
   const [message, setMessage] = useState(previousMessage);
@@ -1904,6 +1911,39 @@ export const InputBoxContextProvider = ({
     );
   };
 
+  // this function is for adding tagged user in the input text.
+  const onUserTaggingClicked = ({
+    uuid,
+    userName,
+    communityId,
+    mentionUsername,
+  }: {
+    uuid: string;
+    userName: string;
+    communityId: string;
+    mentionUsername: string;
+  }) => {
+    LMChatAnalytics.track(
+      Events.USER_TAGS_SOMEONE,
+      new Map<string, string>([
+        [Keys.COMMUNITY_ID, communityId?.toString()],
+        [Keys.CHATROOM_NAME, chatroomName?.toString()],
+        [Keys.TAGGED_USER_ID, uuid?.toString()],
+        [Keys.TAGGED_USER_NAME, userName?.toString()],
+      ])
+    );
+    const res = replaceLastMention(
+      message,
+      taggedUserName,
+      mentionUsername,
+      uuid ? `user_profile/${uuid}` : uuid
+    );
+    setMessage(res);
+    setUserTaggingList([]);
+    setGroupTags([]);
+    setIsUserTagging(false);
+  };
+
   // Audio and play section
 
   // to stop recorder after 15 min
@@ -2217,6 +2257,7 @@ export const InputBoxContextProvider = ({
     stopPlay,
     stopRecord,
     metaData,
+    onUserTaggingClicked,
   };
 
   return (

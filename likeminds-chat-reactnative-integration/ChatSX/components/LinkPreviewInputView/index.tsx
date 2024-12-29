@@ -5,7 +5,13 @@ import { LMChatIcon } from "../../uiComponents";
 import { styles } from "../InputBox/styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 
-const LinkPreviewInputView = () => {
+interface LinkPreviewInputViewProps {
+  handleLinkPreviewCloseProp?: () => void;
+}
+
+const LinkPreviewInputView = ({
+  handleLinkPreviewCloseProp,
+}: LinkPreviewInputViewProps) => {
   const {
     ogTagsState,
     showLinkPreview,
@@ -31,9 +37,13 @@ const LinkPreviewInputView = () => {
           <LinkPreviewInputBox ogTags={ogTagsState} />
           <TouchableOpacity
             onPress={() => {
-              setShowLinkPreview(false);
-              setClosedOnce(true);
-              setClosedPreview(true);
+              if (handleLinkPreviewCloseProp) {
+                handleLinkPreviewCloseProp();
+              } else {
+                setShowLinkPreview(false);
+                setClosedOnce(true);
+                setClosedPreview(true);
+              }
             }}
             style={styles.replyBoxClose}
           >

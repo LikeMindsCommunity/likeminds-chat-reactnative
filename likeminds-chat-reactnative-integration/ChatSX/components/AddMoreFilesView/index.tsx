@@ -4,7 +4,15 @@ import { LMChatIcon } from "../../uiComponents";
 import { styles } from "../InputBox/styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 
-const AddMoreFilesView = () => {
+interface AddMoreFilesViewProps {
+  handleGalleryProp?: () => void;
+  handleDocumentProp?: () => void;
+}
+
+const AddMoreFilesView = ({
+  handleGalleryProp,
+  handleDocumentProp,
+}: AddMoreFilesViewProps) => {
   const { isUploadScreen, isDoc, isGif, selectGallery, selectDoc } =
     useInputBoxContext();
   return (
@@ -13,7 +21,11 @@ const AddMoreFilesView = () => {
         <TouchableOpacity
           style={styles.addMoreButton}
           onPress={() => {
-            selectGallery();
+            if (handleGalleryProp) {
+              handleGalleryProp();
+            } else {
+              selectGallery();
+            }
           }}
         >
           <LMChatIcon
@@ -25,7 +37,11 @@ const AddMoreFilesView = () => {
         <TouchableOpacity
           style={styles.addMoreButton}
           onPress={() => {
-            selectDoc();
+            if (handleDocumentProp) {
+              handleDocumentProp();
+            } else {
+              selectDoc();
+            }
           }}
         >
           <LMChatIcon

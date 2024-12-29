@@ -11,13 +11,24 @@ import EditBox from "../EditBox";
 import AddMoreFilesView from "../AddMoreFilesView";
 import InputBoxView from "../InputBoxView";
 import AddFilesView from "../AddFilesView";
-import RecordSendInputFabView from "../RecordSendInputFabView";
+import RecordSendInputFabView, {
+  OnSendMessageProp,
+} from "../RecordSendInputFabView";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import TextInputWrapper from "../TextInputWrapper";
 import InputWrapperLeftSection from "../InputWrapperLeftSection";
 import InputWrapper from "../InputWrapper";
 
-const MessageInputBox = () => {
+interface MessageInputBoxProp {
+  onSendMessageProp?: ({
+    message,
+    metaData,
+    voiceNote,
+    isSendWhileVoiceNoteRecorderPlayerRunning,
+  }: OnSendMessageProp) => void;
+}
+
+const MessageInputBox = ({ onSendMessageProp }: MessageInputBoxProp) => {
   const { hideDMSentAlert, message, DMSentAlertModalVisible, onSend } =
     useInputBoxContext();
 
@@ -40,7 +51,9 @@ const MessageInputBox = () => {
         </InputWrapperLeftSection>
 
         {/* Send message and send voice notes UI */}
-        <RecordSendInputFabView />
+        <RecordSendInputFabView
+          onSendMessageProp={onSendMessageProp ? onSendMessageProp : undefined}
+        />
       </InputWrapper>
 
       {/* More features modal like select Images, Docs etc. */}
@@ -49,7 +62,7 @@ const MessageInputBox = () => {
       <SendDMRequestModal
         hideDMSentAlert={hideDMSentAlert}
         DMSentAlertModalVisible={DMSentAlertModalVisible}
-        onSend={onSend}
+        onSend={onSendMessageProp ? onSendMessageProp : onSend}
         message={message}
       />
     </View>
