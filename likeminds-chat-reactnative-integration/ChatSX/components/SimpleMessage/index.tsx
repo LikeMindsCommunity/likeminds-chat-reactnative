@@ -136,18 +136,6 @@ const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
               showMoreTextStyle={showMoreTextStyle}
               isOtherUserChatbot={isOtherUserChatbot}
             />
-            <Text>
-              {decode({
-                text: item?.answer,
-                enableClick: true,
-                chatroomName: chatroomName,
-                communityId: user?.sdkClientInfo?.community,
-                textStyles: textStyles,
-                linkTextColor: linkTextColor,
-                taggingTextColor: taggingTextColor,
-                boldText: isOtherUserChatbot,
-              })}
-            </Text>
             {customMessageFooter ? customMessageFooter : <MessageFooter />}
           </View>
           {(reactionArr.length > 0 || item?.answer?.split("").length > 100) &&
