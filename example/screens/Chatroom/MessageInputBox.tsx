@@ -27,6 +27,7 @@ import {
   SET_REPLY_MESSAGE,
 } from '@likeminds.community/chat-rn-core/ChatSX/store/types/types';
 import {Keyboard, StyleSheet, View} from 'react-native';
+import {CustomWidgetTestComponent} from './CustomWidgetTestComponent';
 
 const MessageInputBox = () => {
   const {
@@ -175,14 +176,7 @@ const MessageInputBox = () => {
                 console.log('handleGifProp 2');
               }}
             />
-            <CustomWidgetTestComponent
-              handleFilesViewProp={() => {
-                console.log('handleFilesViewProp 1');
-                Keyboard.dismiss();
-                setModalVisible(true);
-                console.log('handleFilesViewProp 2');
-              }}
-            />
+            <CustomWidgetTestComponent />
             <AddFilesView
               handleFilesViewProp={() => {
                 console.log('handleFilesViewProp 1');
@@ -241,69 +235,3 @@ const MessageInputBox = () => {
 };
 
 export default MessageInputBox;
-
-import {TouchableOpacity, ImageStyle} from 'react-native';
-import React from 'react';
-import {LMChatIcon} from '@likeminds.community/chat-rn-core/ChatSX/uiComponents';
-import Layout from '@likeminds.community/chat-rn-core/ChatSX/constants/Layout';
-
-interface AddFilesViewProps {
-  handleFilesViewProp?: () => void;
-}
-
-const stylesNew = StyleSheet.create({
-  emojiButton: {
-    padding: Layout.normalize(10),
-    position: 'absolute',
-    right: 30,
-  },
-  emoji: {
-    width: Layout.normalize(40),
-    height: Layout.normalize(40),
-    resizeMode: 'contain',
-  },
-});
-
-const CustomWidgetTestComponent = ({
-  handleFilesViewProp,
-}: AddFilesViewProps) => {
-  const {
-    isUploadScreen,
-    chatRequestState,
-    isEditable,
-    voiceNotes,
-    isDeleteAnimation,
-    setModalVisible,
-    inputBoxStyles,
-  } = useInputBoxContext();
-  return (
-    <>
-      {!isUploadScreen &&
-      !(chatRequestState === 0 || chatRequestState === null) &&
-      !isEditable &&
-      !voiceNotes?.recordTime &&
-      !isDeleteAnimation ? (
-        <TouchableOpacity
-          style={[stylesNew.emojiButton]}
-          onPress={() => {
-            if (handleFilesViewProp) {
-              handleFilesViewProp();
-            } else {
-              Keyboard.dismiss();
-              setModalVisible(true);
-            }
-          }}>
-          <LMChatIcon
-            assetPath={require('../../assets/images/chatActive.png')}
-            iconStyle={
-              [
-                stylesNew.emoji,
-                inputBoxStyles?.attachmentIconStyles,
-              ] as ImageStyle
-            }
-          />
-        </TouchableOpacity>
-      ) : null}
-    </>
-  );
-};
