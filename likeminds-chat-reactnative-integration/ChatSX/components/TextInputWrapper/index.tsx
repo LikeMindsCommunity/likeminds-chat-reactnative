@@ -21,7 +21,6 @@ const TextInputWrapper = ({ children }: { children: React.ReactNode }) => {
         (isReply && !isUploadScreen) || isEditable || isUserTagging
           ? {
               borderWidth: 0,
-              margin: isIOS ? 0 : Layout.normalize(2),
             }
           : null,
       ]}

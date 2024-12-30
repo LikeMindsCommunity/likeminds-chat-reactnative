@@ -3,15 +3,18 @@ import React from "react";
 import { LMChatIcon } from "../../uiComponents";
 import { styles } from "../InputBox/styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
+import { ChatroomType } from "../../enums";
+import Layout from "../../constants/Layout";
 
 interface AddFilesViewProps {
   handleFilesViewProp?: () => void;
 }
 
-const AddFilesView = ({handleFilesViewProp}: AddFilesViewProps) => {
+const AddFilesView = ({ handleFilesViewProp }: AddFilesViewProps) => {
   const {
     isUploadScreen,
     chatRequestState,
+    isUserChatbot,
     isEditable,
     voiceNotes,
     isDeleteAnimation,
@@ -21,25 +24,42 @@ const AddFilesView = ({handleFilesViewProp}: AddFilesViewProps) => {
   return (
     <>
       {!isUploadScreen &&
-      !(chatRequestState === 0 || chatRequestState === null) &&
+      !(
+        chatRequestState === ChatroomType.OPENCHATROOM ||
+        chatRequestState === null ||
+        isUserChatbot
+      ) &&
       !isEditable &&
       !voiceNotes?.recordTime &&
       !isDeleteAnimation ? (
         <TouchableOpacity
           style={[styles.emojiButton]}
           onPress={() => {
-            if(handleFilesViewProp){
-              handleFilesViewProp()
-            }else{
+            if (handleFilesViewProp) {
+              handleFilesViewProp();
+            } else {
               Keyboard.dismiss();
               setModalVisible(true);
             }
           }}
         >
           <LMChatIcon
-            assetPath={require("../../assets/images/open_files3x.png")}
+            assetPath={
+              isUserChatbot
+                ? require("../../assets/images/chatbot_attachment_button3x.png")
+                : require("../../assets/images/open_files3x.png")
+            }
             iconStyle={
-              [styles.emoji, inputBoxStyles?.attachmentIconStyles] as ImageStyle
+              [
+                styles.emoji,
+                isUserChatbot
+                  ? {
+                      height: Layout.normalize(20),
+                      width: Layout.normalize(20),
+                    }
+                  : null,
+                inputBoxStyles?.attachmentIconStyles,
+              ] as ImageStyle
             }
           />
         </TouchableOpacity>

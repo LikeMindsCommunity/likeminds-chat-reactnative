@@ -4,7 +4,7 @@ import { useInputBoxContext } from "../../context/InputBoxContext";
 import { styles } from "../InputBox/styles";
 
 const InputWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { isUploadScreen, inputBoxStyles, marginValue } = useInputBoxContext();
+  const { isUploadScreen, inputBoxStyles } = useInputBoxContext();
   return (
     <View
       style={[
@@ -13,7 +13,7 @@ const InputWrapper = ({ children }: { children: React.ReactNode }) => {
           ? {
               marginBottom: inputBoxStyles?.messageInputMarginBottom
                 ? inputBoxStyles?.messageInputMarginBottom
-                : marginValue,
+                : 5,
             }
           : null,
       ]}

@@ -63,6 +63,7 @@ const RecordSendInputFabView = ({
     panStyle,
     askPermission,
     setIsVoiceNoteIconPress,
+    isUserChatbot,
   } = useInputBoxContext();
   return (
     <>
@@ -77,7 +78,8 @@ const RecordSendInputFabView = ({
       isVoiceResult ||
       isUploadScreen ||
       isRecordingLocked ||
-      (chatroomType === 10 && chatRequestState === null) ? (
+      (chatroomType === ChatroomType.DMCHATROOM &&
+        chatRequestState === null) ? (
         <TouchableOpacity
           onPressOut={async () => {
             if (
@@ -144,7 +146,10 @@ const RecordSendInputFabView = ({
         </TouchableOpacity>
       ) : (
         <View>
-          {isRecordingPermission && AudioRecorder && AudioPlayer ? (
+          {isRecordingPermission &&
+          AudioRecorder &&
+          AudioPlayer &&
+          !isUserChatbot ? (
             <GestureDetector gesture={composedGesture}>
               <Animated.View>
                 {voiceNotes.recordTime && !isRecordingLocked && (
@@ -187,7 +192,7 @@ const RecordSendInputFabView = ({
                 </Animated.View>
               </Animated.View>
             </GestureDetector>
-          ) : AudioRecorder ? (
+          ) : AudioRecorder && !isUserChatbot ? (
             <Animated.View style={[styles.sendButton, panStyle]}>
               <Pressable
                 onPress={askPermission}

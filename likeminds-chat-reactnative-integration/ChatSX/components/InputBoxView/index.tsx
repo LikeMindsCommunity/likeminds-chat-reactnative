@@ -8,7 +8,12 @@ import {
   LMChatTextInput,
   LMChatTextView,
 } from "../../uiComponents";
-import { CAPITAL_GIF_TEXT, SLIDE_TO_CANCEL } from "../../constants/Strings";
+import {
+  CAPITAL_GIF_TEXT,
+  CHATBOT_MESSAGE_PLACEHOLDER,
+  MESSAGE_BOX_PLACEHOLDER,
+  SLIDE_TO_CANCEL,
+} from "../../constants/Strings";
 import STYLES from "../../constants/Styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import Layout from "../../constants/Layout";
@@ -55,6 +60,7 @@ const InputBoxView = ({
     handleInputChange,
     setInputHeight,
     MAX_LENGTH,
+    isUserChatbot,
   } = useInputBoxContext();
   return (
     <>
@@ -206,7 +212,7 @@ const InputBoxView = ({
           !isEditable &&
           !voiceNotes?.recordTime &&
           !isDeleteAnimation ? (
-            GIFPicker ? (
+            GIFPicker && !isUserChatbot ? (
               <TouchableOpacity
                 style={styles.gifView}
                 onPress={() => {
@@ -227,7 +233,9 @@ const InputBoxView = ({
             placeholderText={
               inputBoxStyles?.placeholderText
                 ? inputBoxStyles?.placeholderText
-                : "Type a message"
+                : isUserChatbot
+                ? CHATBOT_MESSAGE_PLACEHOLDER
+                : MESSAGE_BOX_PLACEHOLDER
             }
             placeholderTextColor={inputBoxStyles?.placeholderTextColor}
             plainTextStyle={[

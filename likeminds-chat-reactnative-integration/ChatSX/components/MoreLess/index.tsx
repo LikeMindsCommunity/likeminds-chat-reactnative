@@ -12,6 +12,7 @@ const MoreLess = ({
   linkTextColor,
   taggingTextColor,
   showMoreTextStyle,
+  isOtherUserChatbot = false,
 }) => {
   const [showMore, setShowMore] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
@@ -37,6 +38,7 @@ const MoreLess = ({
           textStyles: textStyles,
           linkTextColor: linkTextColor,
           taggingTextColor: taggingTextColor,
+          boldText: isOtherUserChatbot,
         })}
       </Text>
       {isTruncated ? (

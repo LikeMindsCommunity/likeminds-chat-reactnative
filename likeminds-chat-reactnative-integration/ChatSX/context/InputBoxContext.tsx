@@ -3,6 +3,7 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -49,6 +50,7 @@ import {
   replaceMentionValues,
 } from "../uiComponents/LMChatTextInput/utils";
 import {
+  ADD_SHIMMER_MESSAGE,
   CLEAR_SELECTED_FILE_TO_VIEW,
   CLEAR_SELECTED_FILES_TO_UPLOAD,
   CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
@@ -67,7 +69,9 @@ import {
   SET_EDIT_MESSAGE,
   SET_FILE_UPLOADING_MESSAGES,
   SET_IS_REPLY,
+  SET_MESSAGE_ID,
   SET_REPLY_MESSAGE,
+  SHOW_SHIMMER,
   SHOW_TOAST,
   STATUS_BAR_STYLE,
   UPDATE_CHAT_REQUEST_STATE,
@@ -79,6 +83,7 @@ import {
   ImagePickerResponse,
   launchCamera,
   launchImageLibrary,
+  MediaType,
 } from "react-native-image-picker";
 import { FILE_UPLOAD } from "../constants/Screens";
 import DocumentPicker from "react-native-document-picker";
@@ -118,6 +123,8 @@ import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/common
 import { SyncConversationRequest } from "@likeminds.community/chat-rn";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { useNavigation } from "@react-navigation/native";
+import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
+import { useChatroomContext } from "./ChatroomContext";
 
 export interface InputBoxContextProps {
   children: ReactNode;
@@ -245,6 +252,8 @@ export interface InputBoxContext {
     communityId,
     mentionUsername,
   }) => void;
+  isUserChatbot: boolean;
+  canUserCreatePoll: boolean;
 }
 
 const InputBoxContext = createContext<InputBoxContext | undefined>(undefined);
@@ -336,6 +345,9 @@ export const InputBoxContextProvider = ({
   const [url, setUrl] = useState("");
   const [closedPreview, setClosedPreview] = useState(false);
 
+  const { memberRights, setMessageSentByUserId, setShimmerVisibleForChatbot } =
+    useChatroomContext();
+
   const MAX_FILE_SIZE = 104857600; // 100MB in bytes
   const MAX_LENGTH = 300;
 
@@ -379,6 +391,14 @@ export const InputBoxContextProvider = ({
   let isGroupTag = false;
 
   const dispatch = useAppDispatch();
+
+  const isUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user);
+  }, [user, chatroomDBDetails]);
+  const canUserCreatePoll = useMemo(() => {
+    return memberRights?.find((item) => item?.id == 2) ? true : false;
+  }, [user, memberRights]);
+
   const conversationArrayLength = conversations.length;
 
   AWS.config.update({
@@ -728,13 +748,18 @@ export const InputBoxContextProvider = ({
 
   //select Images and videoes From Gallery
   const selectGallery = async () => {
+    let limit =
+      chatroomType == ChatroomType.DMCHATROOM && isUserChatbot ? 1 : 0;
+    let mediaType: MediaType =
+      chatroomType == 10 && isUserChatbot ? "photo" : "mixed";
     const options: LaunchActivityProps = {
-      mediaType: "mixed",
-      selectionLimit: 0,
+      mediaType,
+      selectionLimit: limit,
     };
     navigation.navigate(FILE_UPLOAD, {
       chatroomID: chatroomID,
       previousMessage: message, // to keep message on uploadScreen InputBox
+      limit,
     });
     await launchImageLibrary(options, async (response: ImagePickerResponse) => {
       if (response?.didCancel) {
@@ -745,7 +770,6 @@ export const InputBoxContextProvider = ({
         return;
       } else {
         const selectedImages: Asset[] | undefined = response.assets; // selectedImages can be anything images or videos or both
-
         if (!selectedImages) {
           return;
         }
@@ -1030,6 +1054,12 @@ export const InputBoxContextProvider = ({
     voiceNote?: any,
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
+    if (isUserChatbot) {
+      setShimmerVisibleForChatbot(true);
+      dispatch({
+        type: SHOW_SHIMMER,
+      });
+    }
     setClosedPreview(true);
     setShowLinkPreview(false);
     setMessage("");
@@ -1064,10 +1094,8 @@ export const InputBoxContextProvider = ({
       voiceNote?.length > 0 ? voiceNote : selectedVoiceNoteFilesToUpload;
     const attachmentsCount =
       filesToUpload > 0 ? filesToUpload : voiceNotesToUpload?.length; //if any
-
     let dummySelectedFileArr: any = []; //if any
     let dummyAttachmentsArr: any = []; //if any
-
     // for making data for `images`, `videos` and `pdf` key
     if (attachmentsCount > 0) {
       for (let i = 0; i < attachmentsCount; i++) {
@@ -1095,7 +1123,6 @@ export const InputBoxContextProvider = ({
         }
       }
     }
-
     // for making data for `attachments` key
     if (attachmentsCount > 0) {
       for (let i = 0; i < attachmentsCount; i++) {
@@ -1159,7 +1186,6 @@ export const InputBoxContextProvider = ({
         }
       }
     }
-
     const conversationText = replaceMentionValues(
       conversation,
       ({ id, name }) => {
@@ -1176,12 +1202,10 @@ export const InputBoxContextProvider = ({
         }
       }
     );
-
     const isMessageTrimmed =
       !!conversation.trim() ||
       isVoiceResult ||
       isSendWhileVoiceNoteRecorderPlayerRunning;
-
     // check if message is empty string or not
     if ((isMessageTrimmed && !isUploadScreen) || isUploadScreen) {
       const replyObj = chatSchema.reply;
@@ -1229,6 +1253,9 @@ export const InputBoxContextProvider = ({
               updatedAt: ID,
             }
           : {};
+        if (!closedOnce || !closedPreview) {
+          replyObj.ogTags = ogTagsState;
+        }
       }
       const obj = chatSchema.normal;
       obj.member.name = user?.name;
@@ -1272,19 +1299,16 @@ export const InputBoxContextProvider = ({
       if (!closedOnce || !closedPreview) {
         obj.ogTags = ogTagsState;
       }
-
       dispatch({
         type: UPDATE_CONVERSATIONS,
         body: isReply
           ? { obj: { ...replyObj, isInProgress: SUCCESS } }
           : { obj: { ...obj, isInProgress: SUCCESS } },
       });
-
       dispatch({
         type: MESSAGE_SENT,
         body: isReply ? { id: replyObj?.id } : { id: obj?.id },
       });
-
       if (
         chatroomType !== ChatroomType.DMCHATROOM && // if not DM
         chatRequestState !== null // if not first DM message sent to an user
@@ -1314,7 +1338,6 @@ export const InputBoxContextProvider = ({
           }
         }
       }
-
       if (isUploadScreen) {
         dispatch({
           type: CLEAR_SELECTED_FILES_TO_UPLOAD,
@@ -1323,12 +1346,10 @@ export const InputBoxContextProvider = ({
           type: CLEAR_SELECTED_FILE_TO_VIEW,
         });
       }
-
       if (isReply) {
         dispatch({ type: SET_IS_REPLY, body: { isReply: false } });
         dispatch({ type: SET_REPLY_MESSAGE, body: { replyMessage: "" } });
       }
-
       // -- Code for local message handling ended
       // condition for request DM for the first time
       if (
@@ -1341,7 +1362,6 @@ export const InputBoxContextProvider = ({
           chatRequestState: ChatroomChatRequestState.INITIATED,
           text: conversation?.trim(),
         });
-
         const val = await syncConversationAPI(
           page,
           Math.floor(Date.now() * 1000),
@@ -1352,18 +1372,15 @@ export const InputBoxContextProvider = ({
           (obj) => obj.answer === conversation
         );
         matchingObject.member = user;
-
         // saving the first message to localDB
         await myClient?.saveNewConversation(
           chatroomID?.toString(),
           matchingObject
         );
-
         dispatch({
           type: SHOW_TOAST,
           body: { isToast: true, msg: "Direct messaging request sent" },
         });
-
         //dispatching redux action for local handling of chatRequestState
         dispatch({
           type: UPDATE_CHAT_REQUEST_STATE,
@@ -1387,7 +1404,6 @@ export const InputBoxContextProvider = ({
           chatRequestState: ChatroomChatRequestState.ACCEPTED,
           text: conversation?.trim(),
         });
-
         const val = await syncConversationAPI(
           page,
           Math.floor(Date.now() * 1000),
@@ -1398,13 +1414,11 @@ export const InputBoxContextProvider = ({
           (obj) => obj.answer === conversation
         );
         matchingObject.member = user;
-
         // saving the first message to localDB
         await myClient?.saveNewConversation(
           chatroomID?.toString(),
           matchingObject
         );
-
         dispatch({
           type: UPDATE_CHAT_REQUEST_STATE,
           body: { chatRequestState: ChatroomChatRequestState.ACCEPTED },
@@ -1419,19 +1433,78 @@ export const InputBoxContextProvider = ({
         );
       } else {
         if (!isUploadScreen) {
+          if (isUserChatbot) {
+            dispatch({
+              type: ADD_SHIMMER_MESSAGE,
+            });
+          }
+          let attachments;
+          if (attachmentsCount > 0) {
+            // start uploading
+            dispatch({
+              type: SET_FILE_UPLOADING_MESSAGES,
+              body: {
+                message: isReply
+                  ? {
+                      ...replyObj,
+                      id: ID,
+                      temporaryId: ID,
+                      isInProgress: SUCCESS,
+                    }
+                  : {
+                      ...obj,
+                      id: ID,
+                      temporaryId: ID,
+                      isInProgress: SUCCESS,
+                    },
+                ID: ID,
+              },
+            });
+
+            const message = isReply
+              ? {
+                  ...replyObj,
+                  id: ID,
+                  temporaryId: ID,
+                  isInProgress: SUCCESS,
+                }
+              : {
+                  ...obj,
+                  id: ID,
+                  temporaryId: ID,
+                  isInProgress: SUCCESS,
+                };
+
+            await myClient?.saveAttachmentUploadConversation(
+              ID.toString(),
+              JSON.stringify(message)
+            );
+
+            if (voiceNotesToUpload?.length > 0) {
+              attachments = await handleFileUpload(
+                ID,
+                false,
+                true,
+                voiceNotesToUpload
+              );
+            } else {
+              attachments = await handleFileUpload(ID, false);
+            }
+          }
           let payload: any = {
             chatroomId: chatroomID,
-            hasFiles: false,
+            hasFiles: attachments?.length > 0 ? true : false,
             text: conversationText?.trim(),
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
+            attachments,
+            triggerBot: isUserChatbot ? true : false,
           };
 
           if (metaData) {
             payload = { ...payload, metadata: metaData };
           }
-
           if (
             Object.keys(ogTagsState || {}).length !== 0 &&
             url &&
@@ -1441,12 +1514,18 @@ export const InputBoxContextProvider = ({
           } else if (url && (!closedOnce || !closedPreview)) {
             payload.shareLink = url;
           }
-
           const response: any = await dispatch(
             onConversationsCreate(payload) as any
           );
 
           if (response) {
+            setMessageSentByUserId(response?.conversation?.id ?? "");
+            dispatch({
+              type: SET_MESSAGE_ID,
+              body: {
+                id: response?.conversation?.id,
+              },
+            });
             await myClient?.replaceSavedConversation(
               response?.conversation,
               response?.widgets
@@ -1462,78 +1541,71 @@ export const InputBoxContextProvider = ({
                 msg: BLOCKED_DM,
               },
             });
-
             dispatch({
               type: EMPTY_BLOCK_DELETION,
               body: {},
             });
-          } else if (response && attachmentsCount > 0) {
-            // start uploading
-
-            dispatch({
-              type: SET_FILE_UPLOADING_MESSAGES,
-              body: {
-                message: isReply
-                  ? {
-                      ...replyObj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    }
-                  : {
-                      ...obj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    },
-                ID: response?.id,
-              },
-            });
-
-            const id = response?.id;
-            const message = isReply
-              ? {
-                  ...replyObj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                }
-              : {
-                  ...obj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                };
-
-            await myClient?.saveAttachmentUploadConversation(
-              id.toString(),
-              JSON.stringify(message)
-            );
-
-            if (voiceNotesToUpload?.length > 0) {
-              await handleFileUpload(
-                response?.id,
-                false,
-                true,
-                voiceNotesToUpload
-              );
-            } else {
-              await handleFileUpload(response?.id, false);
-            }
           }
         } else {
+          if (isUserChatbot) {
+            dispatch({
+              type: ADD_SHIMMER_MESSAGE,
+            });
+          }
           dispatch({
             type: FILE_SENT,
             body: { status: !fileSent },
           });
           navigation.goBack();
+          // start uploading
+          dispatch({
+            type: SET_FILE_UPLOADING_MESSAGES,
+            body: {
+              message: isReply
+                ? {
+                    ...replyObj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  }
+                : {
+                    ...obj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  },
+              ID: ID,
+            },
+          });
+
+          const message = isReply
+            ? {
+                ...replyObj,
+                id: ID,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              }
+            : {
+                ...obj,
+                id: ID,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              };
+
+          await myClient?.saveAttachmentUploadConversation(
+            ID.toString(),
+            JSON.stringify(message)
+          );
+          const attachments = await handleFileUpload(ID, false);
           let payload: any = {
             chatroomId: chatroomID,
-            hasFiles: false,
+            hasFiles: attachments?.length > 0 ? true : false,
             text: conversationText?.trim(),
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
+            attachments,
+            triggerBot: isUserChatbot ? true : false,
           };
 
           if (metaData) {
@@ -1541,7 +1613,7 @@ export const InputBoxContextProvider = ({
           }
 
           if (
-            Object.keys(ogTagsState || {}).length !== 0 &&
+            Object.keys(ogTagsState).length !== 0 &&
             url &&
             (!closedOnce || !closedPreview)
           ) {
@@ -1549,10 +1621,19 @@ export const InputBoxContextProvider = ({
           } else if (url && (!closedOnce || !closedPreview)) {
             payload.shareLink = url;
           }
-
           const response: any = await dispatch(
             onConversationsCreate(payload) as any
           );
+
+          if (response) {
+            setMessageSentByUserId(response?.conversation?.id ?? "");
+            dispatch({
+              type: SET_MESSAGE_ID,
+              body: {
+                id: response?.conversation?.id,
+              },
+            });
+          }
 
           await myClient?.replaceSavedConversation(
             response?.conversation,
@@ -1567,49 +1648,6 @@ export const InputBoxContextProvider = ({
                 msg: "Message not sent. Please check your internet connection",
               },
             });
-          } else if (response) {
-            // start uploading
-            dispatch({
-              type: SET_FILE_UPLOADING_MESSAGES,
-              body: {
-                message: isReply
-                  ? {
-                      ...replyObj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    }
-                  : {
-                      ...obj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    },
-                ID: response?.id,
-              },
-            });
-
-            const id = response?.id;
-            const message = isReply
-              ? {
-                  ...replyObj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                }
-              : {
-                  ...obj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                };
-
-            await myClient?.saveAttachmentUploadConversation(
-              id?.toString(),
-              JSON.stringify(message)
-            );
-
-            await handleFileUpload(response?.id, false);
           }
           dispatch({
             type: STATUS_BAR_STYLE,
@@ -1642,7 +1680,6 @@ export const InputBoxContextProvider = ({
         ])
       );
     }
-
     dispatch({ type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD });
     setIsRecordingLocked(false);
     setOgTagsState({});
@@ -2258,6 +2295,8 @@ export const InputBoxContextProvider = ({
     stopRecord,
     metaData,
     onUserTaggingClicked,
+    isUserChatbot,
+    canUserCreatePoll,
   };
 
   return (

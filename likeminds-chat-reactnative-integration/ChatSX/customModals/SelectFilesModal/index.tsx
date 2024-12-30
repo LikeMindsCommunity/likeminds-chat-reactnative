@@ -17,6 +17,7 @@ import {
 } from "../../constants/Strings";
 import { CREATE_POLL_SCREEN } from "../../constants/Screens";
 import { useInputBoxContext } from "../../context/InputBoxContext";
+import { ChatroomType } from "../../enums";
 
 interface SelectFilesModalProps {
   handleGalleryProp?: () => void;
@@ -45,6 +46,8 @@ const SelectFilesModal = ({
     chatroomID,
     conversations,
     navigation,
+    isUserChatbot,
+    canUserCreatePoll,
   } = useInputBoxContext();
 
   return (
@@ -67,6 +70,7 @@ const SelectFilesModal = ({
           <View style={styles.modalViewParent}>
             <Pressable onPress={() => {}} style={[styles.modalView]}>
               <View style={styles.alignModalElements}>
+                {/* camera */}
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
@@ -95,6 +99,8 @@ const SelectFilesModal = ({
                     {CAMERA_TEXT}
                   </LMChatTextView>
                 </View>
+
+                {/* image/video */}
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => {
@@ -123,36 +129,46 @@ const SelectFilesModal = ({
                     {PHOTOS_AND_VIDEOS_TEXT}
                   </LMChatTextView>
                 </View>
-                <View style={styles.iconContainer}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setModalVisible(false);
-                      setTimeout(() => {
-                        if (handleDocumentProp) {
-                          handleDocumentProp();
-                        } else {
+
+                {/* doc */}
+                {(chatroomType == ChatroomType.DMCHATROOM && !isUserChatbot) ||
+                chatroomType == ChatroomType.OPENCHATROOM ||
+                chatroomType == ChatroomType.ANNOUNCEMENTROOM ? (
+                  <View style={styles.iconContainer}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setModalVisible(false);
+                        setTimeout(() => {
+                          if (handleDocumentProp) {
+                            handleDocumentProp();
+                          } else {
+                            handleDoc();
+                          }
                           handleDoc();
+                        }, 50);
+                      }}
+                      style={styles.docStyle}
+                    >
+                      <LMChatIcon
+                        assetPath={require("../../assets/images/select_doc_icon3x.png")}
+                        iconStyle={
+                          [
+                            styles.emoji,
+                            inputBoxStyles?.documentIconStyles,
+                          ] as ImageStyle
                         }
-                        handleDoc();
-                      }, 50);
-                    }}
-                    style={styles.docStyle}
-                  >
-                    <LMChatIcon
-                      assetPath={require("../../assets/images/select_doc_icon3x.png")}
-                      iconStyle={
-                        [
-                          styles.emoji,
-                          inputBoxStyles?.documentIconStyles,
-                        ] as ImageStyle
-                      }
-                    />
-                  </TouchableOpacity>
-                  <LMChatTextView textStyle={styles.iconText}>
-                    {DOCUMENTS_TEXT}
-                  </LMChatTextView>
-                </View>
-                {chatroomType !== 10 ? (
+                      />
+                    </TouchableOpacity>
+                    <LMChatTextView textStyle={styles.iconText}>
+                      {DOCUMENTS_TEXT}
+                    </LMChatTextView>
+                  </View>
+                ) : null}
+
+                {/* poll */}
+                {(chatroomType == ChatroomType.OPENCHATROOM ||
+                  chatroomType == ChatroomType.ANNOUNCEMENTROOM) &&
+                canUserCreatePoll ? (
                   <View style={styles.iconContainer}>
                     <TouchableOpacity
                       onPress={() => {

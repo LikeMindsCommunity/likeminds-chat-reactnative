@@ -3,6 +3,7 @@ import React from "react";
 import { LMChatIcon } from "../../uiComponents";
 import { styles } from "../InputBox/styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
+import { ChatroomType } from "../../enums";
 
 interface AddMoreFilesViewProps {
   handleGalleryProp?: () => void;
@@ -13,11 +14,21 @@ const AddMoreFilesView = ({
   handleGalleryProp,
   handleDocumentProp,
 }: AddMoreFilesViewProps) => {
-  const { isUploadScreen, isDoc, isGif, selectGallery, selectDoc } =
-    useInputBoxContext();
+  const {
+    isUploadScreen,
+    isDoc,
+    isGif,
+    selectGallery,
+    selectDoc,
+    isUserChatbot,
+    chatroomType,
+  } = useInputBoxContext();
   return (
     <>
-      {!!isUploadScreen && !isDoc && !isGif ? (
+      {!!isUploadScreen &&
+      !isDoc &&
+      !isGif &&
+      !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot) ? (
         <TouchableOpacity
           style={styles.addMoreButton}
           onPress={() => {
@@ -33,7 +44,10 @@ const AddMoreFilesView = ({
             iconStyle={styles.emoji}
           />
         </TouchableOpacity>
-      ) : !!isUploadScreen && !!isDoc && !isGif ? (
+      ) : !!isUploadScreen &&
+        !isDoc &&
+        !isGif &&
+        !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot) ? (
         <TouchableOpacity
           style={styles.addMoreButton}
           onPress={() => {

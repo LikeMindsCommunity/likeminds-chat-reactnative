@@ -450,7 +450,7 @@ const CommonAllMembers = ({
     const apiRes = await myClient?.checkDMLimit({
       uuid: uuid,
     });
-    const res: any = apiRes?.data;
+    const res = apiRes?.data;
     if (apiRes?.success === false) {
       dispatch({
         type: SHOW_TOAST,
@@ -492,7 +492,7 @@ const CommonAllMembers = ({
             }
           }
         } else {
-          const userDMLimit: any = res?.userDmLimit;
+          const userDMLimit = res?.userDmLimit;
           
           // to show alert only if API has valid response
           if (userDMLimit) {
