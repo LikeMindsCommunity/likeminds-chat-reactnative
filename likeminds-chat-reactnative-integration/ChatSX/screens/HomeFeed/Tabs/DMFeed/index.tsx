@@ -227,6 +227,7 @@ const DMFeedComponent = () => {
               inviteReceiver: item?.inviteReceiver,
               chatroomType: item?.type,
               muteStatus: item?.muteStatus,
+              item
             };
             return <HomeFeedItem {...homeFeedProps} />;
           }}

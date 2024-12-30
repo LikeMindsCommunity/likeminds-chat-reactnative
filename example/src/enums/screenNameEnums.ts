@@ -6,4 +6,6 @@ export enum ScreenName {
   CreatePollScreen = 'CreatePollScreen',
   ImageCropScreen = 'ImageCropScreen',
   VideoPlayer = 'VideoPlayer',
+  SearchInChatroom = 'SearchInChatroom',
+  ChatBotInitiateScreen = 'ChatBotInitiateScreen'
 }

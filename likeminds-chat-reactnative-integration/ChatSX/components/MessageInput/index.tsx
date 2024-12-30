@@ -1,7 +1,6 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import React, { useMemo } from "react";
+import { View, Text, TouchableOpacity, Image, SafeAreaView, Keyboard } from "react-native";
+import React, { useLayoutEffect, useMemo, useState } from "react";
 import { ChatroomChatRequestState, ChatroomType } from "../../enums";
-import InputBox from "../InputBox";
 import { styles } from "../../screens/ChatRoom/styles";
 import {
   ChatroomContextValues,
@@ -17,7 +16,8 @@ import {
   REJECT_BUTTON,
   REQUEST_SENT,
 } from "../../constants/Strings";
-import { CustomisableMethodsContextProvider } from "../../context/CustomisableMethodsContext";
+import { LMChatTextView } from "../../uiComponents";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils"
 
 interface HintMessages {
   messageForRightsDisabled?: string;
@@ -77,10 +77,26 @@ const MessageInput = ({
   const messageForMemberCanMessage = hintMessages?.messageForMemberCanMessage;
   const messageForAnnouncementRoom = hintMessages?.messageForAnnouncementRoom;
   const respondingDisabled = hintMessages?.respondingDisabled;
-  const canUnblock = useMemo(
-    () => filteredChatroomActions?.find((action) => action.id == 28),
-    [filteredChatroomActions]
-  );
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user)
+  }, [user, chatroomDBDetails]);
+
+  const [isKeyBoardFocused, setIsKeyBoardFocused] = useState(false);
+
+  useLayoutEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyBoardFocused(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setIsKeyBoardFocused(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
     <View
       style={{
@@ -279,6 +295,17 @@ const MessageInput = ({
           )}
         </View>
       ) : null}
+      <SafeAreaView style={{ justifyContent: 'center', alignItems: 'center' }}>
+        {
+          isOtherUserChatbot ? 
+          <LMChatTextView textStyle={{
+            fontSize: 13,
+            color: "#999999",
+          }}>
+            AI may make mistakes.
+          </LMChatTextView> : <></>
+        }
+      </SafeAreaView>
     </View>
   );
 };

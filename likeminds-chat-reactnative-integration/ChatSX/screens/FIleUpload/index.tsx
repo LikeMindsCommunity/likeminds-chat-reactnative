@@ -48,6 +48,7 @@ import VideoPlayer from "react-native-media-console";
 import { InputBoxContextProvider } from "../../context/InputBoxContext";
 import FileUploadHeader from "../../components/FileUploadHeader";
 import FileUploadView from "../../components/FileUploadView";
+import { splitFileName } from "../../utils/chatroomUtils";
 interface UploadResource {
   selectedImages: any;
   conversationID: any;
@@ -76,7 +77,7 @@ const FileUpload = ({
   const route = useRoute();
   const { backIconPath, imageCropIcon }: any = route.params;
 
-  const { chatroomType } = useChatroomContext();
+  const { chatroomType, user } = useChatroomContext();
 
   const selectedImageBorderColor =
     STYLES.$FILE_UPLOAD_STYLE?.selectedImageBorderColor;
@@ -84,7 +85,7 @@ const FileUpload = ({
   const myClient = Client.myClient;
   const video = useRef<any>(null);
 
-  const { chatroomID, previousMessage = "" }: any = route?.params;
+  const { chatroomID, previousMessage = "", limit }: any = route?.params;
   const {
     selectedFilesToUpload = [],
     selectedFileToView = {},
@@ -158,6 +159,7 @@ const FileUpload = ({
   }: UploadResource) => {
     LogBox.ignoreLogs(["new NativeEventEmitter"]);
     const s3 = new S3();
+    let attachments: any = [];
     for (let i = 0; i < selectedImages?.length; i++) {
       const item = selectedImages[i];
       const attachmentType = isRetry ? item?.type : item?.type?.split("/")[0];
@@ -179,8 +181,9 @@ const FileUpload = ({
           ? item.name
           : null;
 
-      const path = `files/collabcard/${chatroomID}/conversation/${conversationID}/${name}`;
-      const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${conversationID}/${thumbnailURL}`;
+      const fileInfo = splitFileName(name);
+      const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${fileInfo?.name}-${conversationID}.${fileInfo.extension}`;
+      const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`;
       let uriFinal: any;
 
       if (attachmentType === IMAGE_TEXT) {
@@ -248,8 +251,7 @@ const FileUpload = ({
           }
 
           const payload = {
-            conversationId: conversationID,
-            filesCount: selectedImages?.length,
+            id: conversationID,
             index: i + 1,
             meta:
               fileType === VIDEO_TEXT
@@ -277,9 +279,14 @@ const FileUpload = ({
                 : null,
             height: gifHeight ? gifHeight : null,
             width: gifWidth ? gifWidth : null,
+            localFilePath: item.uri,
+            awsFolderPath: path,
+            thumbnailAwsFolderPath: thumbnailURL ? thumbnailUrlPath : "",
+            thumbnailLocalFilePath: thumbnailURL,
+            fileUrl: awsResponse,
+            createdAt: conversationID,
+            updatedAt: conversationID,
           };
-
-          const uploadRes = await myClient?.putMultimedia(payload as any);
 
           LMChatAnalytics.track(
             Events.ATTACHMENT_UPLOADED,
@@ -290,6 +297,7 @@ const FileUpload = ({
               [Keys.TYPE, attachmentType],
             ])
           );
+          attachments.push(payload);
         }
       } catch (error) {
         dispatch({
@@ -330,6 +338,7 @@ const FileUpload = ({
     await myClient?.removeAttactmentUploadConversationByKey(
       conversationID?.toString()
     );
+    return attachments;
   };
 
   const handleFileUpload = async (conversationID: any, isRetry: any) => {
@@ -347,26 +356,24 @@ const FileUpload = ({
 
   return (
     <View style={styles.page}>
-    
-    <FileUploadHeader />
+      <FileUploadHeader />
 
-    <FileUploadView />
-
+      <FileUploadView />
 
       <View style={styles.bottomBar}>
         {len > 0 ? (
-            <InputBoxContextProvider
-              isUploadScreen={true}
-              isDoc={docItemType === PDF_TEXT ? true : false}
-              chatroomID={chatroomID}
-              previousMessage={previousMessage}
-              handleFileUpload={handleFileUpload}
-              isGif={isGif}
-              chatroomType={chatroomType}
-              metaData={conversationMetaData ? conversationMetaData : {}}
-            >
-              <InputBox />
-            </InputBoxContextProvider>
+          <InputBoxContextProvider
+            isUploadScreen={true}
+            isDoc={docItemType === PDF_TEXT ? true : false}
+            chatroomID={chatroomID}
+            previousMessage={previousMessage}
+            handleFileUpload={handleFileUpload}
+            isGif={isGif}
+            chatroomType={chatroomType}
+            metaData={conversationMetaData ? conversationMetaData : {}}
+          >
+            <InputBox />
+          </InputBoxContextProvider>
         ) : null}
       </View>
     </View>

@@ -90,7 +90,7 @@ const Swipeable = ({
   // this method handles onEnd callback of pan gesture
   const onEndPanGesture = () => {
     "worklet";
-    x.value = withSpring(0);
+    x.value = withTiming(0);
     pressed.value = false;
     setIsReplyBoxOpen(false);
   };

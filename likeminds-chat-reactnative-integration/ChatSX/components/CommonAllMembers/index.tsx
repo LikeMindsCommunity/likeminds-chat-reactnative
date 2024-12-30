@@ -450,7 +450,7 @@ const CommonAllMembers = ({
     const apiRes = await myClient?.checkDMLimit({
       uuid: uuid,
     });
-    const res = apiRes?.data;
+    const res: any = apiRes?.data;
     if (apiRes?.success === false) {
       dispatch({
         type: SHOW_TOAST,
@@ -492,8 +492,8 @@ const CommonAllMembers = ({
             }
           }
         } else {
-          const userDMLimit = res?.userDmLimit;
-
+          const userDMLimit: any = res?.userDmLimit;
+          
           // to show alert only if API has valid response
           if (userDMLimit) {
             Alert.alert(
@@ -566,39 +566,39 @@ const CommonAllMembers = ({
 
               <View style={styles.infoContainer}>
                 <Text
-                  style={[
-                    styles.title,
-                    userNameStyles?.color && {
-                      color: userNameStyles?.color,
-                    },
-                    userNameStyles?.fontSize
-                      ? {
-                          fontSize: userNameStyles?.fontSize,
-                        }
-                      : null,
-                    userNameStyles?.fontFamily && {
-                      fontFamily: userNameStyles?.fontFamily,
-                    },
-                  ]}
+                  style={
+                    [
+                      styles.title,
+                      userNameStyles?.color && {
+                        color: userNameStyles?.color,
+                      },
+                      userNameStyles?.fontSize && {
+                        fontSize: userNameStyles?.fontSize,
+                      },
+                      userNameStyles?.fontFamily && {
+                        fontFamily: userNameStyles?.fontFamily,
+                      },
+                    ] as TextStyle[]
+                  }
                   numberOfLines={1}
                 >
                   {item?.name}
                   {item?.customTitle ? (
                     <Text
-                      style={[
-                        styles.messageCustomTitle,
-                        userTitleStyles?.color && {
-                          color: userTitleStyles?.color,
-                        },
-                        userTitleStyles?.fontSize
-                          ? {
-                              fontSize: userTitleStyles?.fontSize,
-                            }
-                          : null,
-                        userTitleStyles?.fontFamily && {
-                          fontFamily: userTitleStyles?.fontFamily,
-                        },
-                      ]}
+                      style={
+                        [
+                          styles.messageCustomTitle,
+                          userTitleStyles?.color && {
+                            color: userTitleStyles?.color,
+                          },
+                          userTitleStyles?.fontSize && {
+                            fontSize: userTitleStyles?.fontSize,
+                          },
+                          userTitleStyles?.fontFamily && {
+                            fontFamily: userTitleStyles?.fontFamily,
+                          },
+                        ] as TextStyle[]
+                      }
                     >{` • ${item?.customTitle}`}</Text>
                   ) : null}
                 </Text>

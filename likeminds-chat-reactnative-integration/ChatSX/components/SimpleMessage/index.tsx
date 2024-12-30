@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   TextLayoutLine,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useMessageContext } from "../../context/MessageContext";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import STYLES from "../../constants/Styles";
@@ -20,6 +20,7 @@ import { useCustomComponentsContext } from "../../context/CustomComponentContext
 import { NavigateToProfileParams } from "../../callBacks/type";
 import { CallBack } from "../../callBacks/callBackClass";
 import MoreLess from "../MoreLess";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 interface SimpleMessageProps {
   onTapToUndoProp?: () => void;
@@ -40,7 +41,16 @@ const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
     handleOnPress,
   } = useMessageContext();
 
-  const { chatroomName } = useChatroomContext();
+  const {
+    chatroomName,
+    user: userFromContext,
+    chatroomDBDetails,
+  } = useChatroomContext();
+
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, userFromContext);
+  }, [user, chatroomDBDetails]);
+
   const { customMessageHeader, customMessageFooter, customStateMessage } =
     useCustomComponentsContext();
 
@@ -124,11 +134,25 @@ const SimpleMessage = ({ onTapToUndoProp }: SimpleMessageProps) => {
               linkTextColor={linkTextColor}
               taggingTextColor={taggingTextColor}
               showMoreTextStyle={showMoreTextStyle}
+              isOtherUserChatbot={isOtherUserChatbot}
             />
+            <Text>
+              {decode({
+                text: item?.answer,
+                enableClick: true,
+                chatroomName: chatroomName,
+                communityId: user?.sdkClientInfo?.community,
+                textStyles: textStyles,
+                linkTextColor: linkTextColor,
+                taggingTextColor: taggingTextColor,
+                boldText: isOtherUserChatbot,
+              })}
+            </Text>
             {customMessageFooter ? customMessageFooter : <MessageFooter />}
           </View>
           {(reactionArr.length > 0 || item?.answer?.split("").length > 100) &&
-          !isTypeSent ? (
+          !isTypeSent &&
+          !isOtherUserChatbot ? (
             <Pressable
               onLongPress={handleLongPress}
               delayLongPress={200}

@@ -213,7 +213,7 @@ export const styles = StyleSheet.create({
   },
   replyBoxClose: {
     position: "absolute",
-    right: Layout.normalize(10),
+    right: Layout.normalize(15),
     top: Layout.normalize(10),
     backgroundColor: STYLES.$COLORS.SELECTED_BLUE,
     padding: Layout.normalize(5),

@@ -5,11 +5,14 @@ import {
   Keyboard,
   TouchableOpacity,
   Image,
+  Platform,
+  SafeAreaView,
 } from "react-native";
 import React, {
   ReactNode,
   forwardRef,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -36,6 +39,7 @@ import Layout from "../../constants/Layout";
 import { VOICE_NOTE_TEXT } from "../../constants/Strings";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
@@ -84,7 +88,16 @@ const MessageListComponent = ({
     searchedConversation,
     handleLongPress,
     handleClick,
+    shimmerVisibleForChatbot,
+    user,
+    chatroomDBDetails,
   }: ChatroomContextValues = useChatroomContext();
+
+
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user);
+  }, [user, chatroomDBDetails])
+
 
   const {
     flatlistRef,
@@ -171,7 +184,7 @@ const MessageListComponent = ({
     */
   }
 
-  const { stateArr }: any = useAppSelector((state) => state.chatroom);
+  const { stateArr, shimmerVisible }: any = useAppSelector((state) => state.chatroom);
   const { uploadingFilesMessages }: any = useAppSelector(
     (state) => state.upload
   );
@@ -293,7 +306,7 @@ const MessageListComponent = ({
             data={conversations}
             keyExtractor={(item: any, index) => {
               const isArray = Array.isArray(item);
-              return isArray ? `${index}` : `${item?.id}`;
+              return isArray ? `${index}` : item?.id ? `${index}` : `${item?.id}`;
             }}
             extraData={{
               value: [
@@ -301,10 +314,68 @@ const MessageListComponent = ({
                 uploadingFilesMessages,
                 stateArr,
                 conversations,
+                shimmerVisible,
+                shimmerVisibleForChatbot
               ],
             }}
             estimatedItemSize={250}
             renderItem={({ item: value, index }: any) => {
+
+              // return shimmer component if message is just a shimmer
+              if (isOtherUserChatbot && value?.isShimmer) {
+                return (
+                  <>
+                    <View
+                      style={{
+                        width: 250,
+                        paddingLeft: 8,
+                        paddingVertical: 15,
+                        borderTopRightRadius: 12,
+                        borderTopLeftRadius: 12,
+                        borderBottomRightRadius: 12,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Image
+                        style={{ width: Layout.normalize(40), height: Layout.normalize(40), borderRadius: 100, marginRight: -10, backgroundColor: '#D0D0D0' }}
+                        source={chatroomDBDetails?.member?.imageUrl ? {uri: chatroomDBDetails?.member?.imageUrl } : require("../../assets/images/default_pic.png")}
+                      />
+                      <View>
+
+                      </View>
+                      <Image source={require("../../assets/images/tail_3x.png")}
+                        style={{
+                          height: 20, width: 20,
+                          alignSelf: 'flex-end', top: -5, left: 15
+                        }}
+                      />
+                      <View style={{
+                        padding: 10,
+                        backgroundColor: 'white',
+                        flexDirection: 'row',
+                        borderRadius: 14
+                      }}>
+                        <View style={{
+                          flexDirection: 'row',
+                          gap: 6
+                        }}>
+                          <ShimmerPlaceHolder
+                            style={{ width: 10, height: 10, borderRadius: 5 }}
+                          />
+                          <ShimmerPlaceHolder
+                            style={{ width: 10, height: 10, borderRadius: 5 }}
+                          />
+                          <ShimmerPlaceHolder
+                            style={{ width: 10, height: 10, borderRadius: 5 }}
+                          />
+                        </View>
+                      </View>
+                    </View>
+                  </>
+                )
+              }
+
               let hideDate = false;
               const uploadingFilesMessagesIDArr = Object.keys(
                 uploadingFilesMessages
@@ -339,8 +410,8 @@ const MessageListComponent = ({
               return (
                 <View>
                   {index < conversations?.length &&
-                  conversations[index]?.date !==
-                    conversations[index + 1]?.date && !hideDate ? (
+                    conversations[index]?.date !==
+                    conversations[index + 1]?.date && !hideDate && !(shimmerVisible || shimmerVisibleForChatbot) ? (
                     <View style={[styles.statusMessage]}>
                       <Text
                         style={{
@@ -395,9 +466,9 @@ const MessageListComponent = ({
                           ? selectedBackgroundColor
                             ? { backgroundColor: SELECTED_BACKGROUND_COLOR }
                             : {
-                                backgroundColor:
-                                  STYLES.$COLORS.SELECTED_CHAT_BUBBLE,
-                              }
+                              backgroundColor:
+                                STYLES.$COLORS.SELECTED_CHAT_BUBBLE,
+                            }
                           : null
                       }
                     >
@@ -421,22 +492,22 @@ const MessageListComponent = ({
             inverted
           />
           {isScrollingUp && (
-            <TouchableOpacity
-              style={[
-                styles.arrowButton,
-                {
-                  bottom: keyboardVisible
-                    ? Layout.normalize(55)
-                    : Layout.normalize(20),
-                },
-              ]}
-              onPress={scrollToBottomProp ? scrollToBottomProp : scrollToBottom}
-            >
-              <Image
-                source={require("../../assets/images/scrollDown.png")}
-                style={styles.arrowButtonImage}
-              />
-            </TouchableOpacity>
+            <SafeAreaView style={{zIndex: 10}}>
+              <TouchableOpacity
+                style={[
+                  styles.arrowButton,
+                  {
+                    bottom: Layout.normalize(-50)
+                  },
+                ]}
+                onPress={scrollToBottomProp ? scrollToBottomProp : scrollToBottom}
+              >
+                <Image
+                  source={require("../../assets/images/scrollDown.png")}
+                  style={styles.arrowButtonImage}
+                />
+              </TouchableOpacity>
+            </SafeAreaView>
           )}
         </>
       ) : (
@@ -493,7 +564,7 @@ const MessageListComponent = ({
               return (
                 <View>
                   {index < conversations?.length &&
-                  conversations[index]?.date !==
+                    conversations[index]?.date !==
                     conversations[index + 1]?.date && !hideDate ? (
                     <View style={[styles.statusMessage]}>
                       <Text
@@ -549,9 +620,9 @@ const MessageListComponent = ({
                           ? selectedBackgroundColor
                             ? { backgroundColor: SELECTED_BACKGROUND_COLOR }
                             : {
-                                backgroundColor:
-                                  STYLES.$COLORS.SELECTED_CHAT_BUBBLE,
-                              }
+                              backgroundColor:
+                                STYLES.$COLORS.SELECTED_CHAT_BUBBLE,
+                            }
                           : null
                       }
                     >

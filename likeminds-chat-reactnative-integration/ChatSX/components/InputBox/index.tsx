@@ -11,9 +11,7 @@ import EditBox from "../EditBox";
 import AddMoreFilesView from "../AddMoreFilesView";
 import InputBoxView from "../InputBoxView";
 import AddFilesView from "../AddFilesView";
-import RecordSendInputFabView, {
-  OnSendMessageProp,
-} from "../RecordSendInputFabView";
+import RecordSendInputFabView from "../RecordSendInputFabView";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import TextInputWrapper from "../TextInputWrapper";
 import InputWrapperLeftSection from "../InputWrapperLeftSection";

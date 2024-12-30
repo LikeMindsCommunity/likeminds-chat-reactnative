@@ -1,3 +1,4 @@
+import { chatSchema } from "../../assets/chatSchema";
 import {
   CLEAR_CHATROOM_CONVERSATION,
   CLEAR_CHATROOM_DETAILS,
@@ -38,6 +39,11 @@ import {
   CLEAR_SELECTED_MESSAGES,
   CLEAR_CHATROOM_TOPIC,
   SET_TEMP_STATE_MESSAGE,
+  SET_MESSAGE_ID,
+  SHOW_SHIMMER,
+  HIDE_SHIMMER,
+  ADD_SHIMMER_MESSAGE,
+  REMOVE_SHIMMER_MESSAGE,
 } from "../types/types";
 
 export interface ChatroomReducerState {
@@ -60,6 +66,8 @@ export interface ChatroomReducerState {
   chatroomCreator: string;
   currentChatroomTopic: any;
   temporaryStateMessage: any;
+  shimmerVisible: boolean;
+  messageId: string;
 }
 
 export const initialState: ChatroomReducerState = {
@@ -82,6 +90,8 @@ export const initialState: ChatroomReducerState = {
   chatroomCreator: "",
   currentChatroomTopic: {},
   temporaryStateMessage: {},
+  shimmerVisible: false,
+  messageId: ""
 };
 
 export function chatroomReducer(state = initialState, action: any) {
@@ -120,6 +130,21 @@ export function chatroomReducer(state = initialState, action: any) {
         conversations: newArr,
       };
     }
+    case ADD_SHIMMER_MESSAGE: {
+      let isShimmerPresent = state?.conversations?.findIndex(
+        message => message?.isShimmer == true
+      )
+      if (isShimmerPresent == -1) {
+        return {...state, conversations: [ { id: Date.now(), isShimmer: true }, ...state.conversations ]}
+      }
+      return { ...state }
+    }
+    case REMOVE_SHIMMER_MESSAGE: {
+      const filterConversation = state.conversations?.filter(
+        message => message?.isShimmer == undefined
+      )
+      return {...state, conversation: filterConversation }
+    }
     case ADD_STATE_MESSAGE: {
       const { conversation = {} } = action.body;
       return {
@@ -152,7 +177,11 @@ export function chatroomReducer(state = initialState, action: any) {
       return { ...state, chatroomDBDetails: chatroomDBDetails };
     }
     case GET_CONVERSATIONS_SUCCESS: {
-      const { conversations = [] } = action.body;
+      let { conversations = [], shimmer } = action.body;
+      // Append the shimmer message again after DB calls if conditions are true
+      if (state.shimmerVisible || shimmer) {
+        conversations = [ {id: Date.now(), isShimmer: true} , ...conversations]
+      }
       return { ...state, conversations: conversations };
     }
     case PAGINATED_CONVERSATIONS_END_SUCCESS: {
@@ -355,6 +384,16 @@ export function chatroomReducer(state = initialState, action: any) {
     case FILE_SENT: {
       const { status = "" } = action.body;
       return { ...state, fileSent: status };
+    }
+    case SET_MESSAGE_ID: {
+      const { id } = action.body;
+      return { ...state, messageId: id };
+    }
+    case SHOW_SHIMMER: {
+      return { ...state, shimmerVisible: true}
+    }
+    case HIDE_SHIMMER: {
+      return { ...state, shimmerVisible: false}
     }
     default:
       return state;

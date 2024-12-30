@@ -26,14 +26,14 @@ export class LMCoreCallbacks {
 
 // create a new class LMChatSdkCallbackImplementation which is an implementation of the abstract class provided by data layer
 export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
-  lmCoreCallbacks: LMCoreCallbacks;
+  lmCoreCallbacks?: LMCoreCallbacks;
   client: LMChatClient;
 
   onAccessTokenExpiredAndRefreshed(
     accessToken: string,
     refreshToken: string
   ): void {
-    this.lmCoreCallbacks.onAccessTokenExpiredAndRefreshed(
+    this?.lmCoreCallbacks?.onAccessTokenExpiredAndRefreshed(
       accessToken,
       refreshToken
     );
@@ -60,18 +60,20 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
         refreshToken: response.refreshToken,
       };
     } else {
-      const response = await this.lmCoreCallbacks.onRefreshTokenExpired();
-      await Client.myClient.setTokens(
-        response.accessToken,
-        response.refreshToken
-      );
+      const response = await this?.lmCoreCallbacks?.onRefreshTokenExpired();
+      if (response) {
+        await Client.myClient.setTokens(
+          response?.accessToken,
+          response?.refreshToken
+        );
+      }
       return {
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
+        accessToken: response?.accessToken,
+        refreshToken: response?.refreshToken,
       };
     }
   }
-  constructor(lmCoreCallbacks: LMCoreCallbacks, client: LMChatClient) {
+  constructor(client: LMChatClient, lmCoreCallbacks?: LMCoreCallbacks) {
     super();
     this.lmCoreCallbacks = lmCoreCallbacks;
     this.client = client;

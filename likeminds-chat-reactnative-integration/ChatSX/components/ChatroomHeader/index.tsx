@@ -7,7 +7,7 @@ import {
   Keyboard,
   StatusBar,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Client } from "../../client";
 import {
   ChatroomContextValues,
@@ -42,6 +42,7 @@ import { CallBack } from "../../../ChatSX/callBacks/callBackClass";
 import Layout from "../../../ChatSX/constants/Layout";
 import { SEARCH_IN_CHATROOM } from "../../constants/Screens";
 import { useNavigation } from "@react-navigation/native";
+import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 interface ChatroomHeaderProps {
   showChatroomIcon?: boolean;
@@ -100,6 +101,9 @@ const ChatroomHeader = ({
   const chatroomSubHeaderStyle = chatroomHeaderStyles?.chatroomSubHeaderStyle;
   const chatroomSelectedHeaderIcons =
     chatroomHeaderStyles?.chatroomSelectedHeaderIcons;
+  const isOtherUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user);
+  }, [chatroomDBDetails, user]);
 
   const dispatch = useAppDispatch();
 
@@ -133,9 +137,17 @@ const ChatroomHeader = ({
               source={
                 backIconPath
                   ? backIconPath
+                  : isOtherUserChatbot
+                  ? require("../../assets/images/chatbot_arrow3x.png")
                   : require("../../assets/images/back_arrow3x.png")
               }
-              style={backIconPath ? styles.backOptionalBtn : styles.backBtn}
+              style={
+                backIconPath
+                  ? styles.backOptionalBtn
+                  : isOtherUserChatbot
+                  ? styles.chatBotBackBtn
+                  : styles.backBtn
+              }
             />
           </TouchableOpacity>
           {!(Object.keys(chatroomDBDetails)?.length === 0) ? (
@@ -189,7 +201,7 @@ const ChatroomHeader = ({
                         fontFamily: chatroomNameHeaderStyle?.fontFamily
                           ? chatroomNameHeaderStyle?.fontFamily
                           : STYLES.$FONT_TYPES.BOLD,
-                        maxWidth: Layout.normalize(220)
+                        maxWidth: Layout.normalize(220),
                       }}
                     >
                       {chatroomName}
@@ -207,7 +219,7 @@ const ChatroomHeader = ({
                         fontFamily: chatroomSubHeaderStyle?.fontFamily
                           ? chatroomSubHeaderStyle?.fontFamily
                           : STYLES.$FONT_TYPES.LIGHT,
-                          marginBottom: 3,
+                        marginBottom: 3,
                       }}
                     >
                       {chatroomDetails?.participantCount != undefined
@@ -257,7 +269,7 @@ const ChatroomHeader = ({
               </TouchableOpacity>
             ) : null}
 
-            {chatroomDetails ? (
+            {chatroomDetails && !isOtherUserChatbot ? (
               <TouchableOpacity
                 onPress={() => {
                   setModalVisible(!modalVisible);
@@ -304,7 +316,11 @@ const ChatroomHeader = ({
             }}
           >
             <Image
-              source={require("../../assets/images/blue_back_arrow3x.png")}
+              source={
+                isOtherUserChatbot
+                  ? require("../../assets/images/chatbot_arrow3x.png")
+                  : require("../../assets/images/blue_back_arrow3x.png")
+              }
               style={[
                 styles.selectedBackBtn,
                 {
@@ -341,10 +357,9 @@ const ChatroomHeader = ({
         let isSelectedMessageEditable = false;
         const selectedMessagesLength = selectedMessages?.length;
         // check if selected message is user's own message to disable self report
-        let isOwnMessage = selectedMessages.some(message => {
+        let isOwnMessage = selectedMessages.some((message) => {
           return message?.member?.uuid == user?.uuid;
-        })
-
+        });
 
         //Logic to set isSelectedMessageEditable true/false, based on that we will show edit icon.
         if (selectedMessagesLength === 1) {
@@ -415,7 +430,8 @@ const ChatroomHeader = ({
             {len === 1 &&
               !isFirstMessageDeleted &&
               memberCanMessage &&
-              chatroomFollowStatus && (
+              chatroomFollowStatus &&
+              !isOtherUserChatbot && (
                 <TouchableOpacity
                   onPress={() => {
                     if (len > 0) {
@@ -531,6 +547,7 @@ const ChatroomHeader = ({
             ) : null}
 
             {isSelectedMessageEditable &&
+            !isOtherUserChatbot &&
             (chatroomType === ChatroomType.DMCHATROOM
               ? !!chatRequestState
               : true) ? ( // this condition checks in case of DM, chatRequestState != 0 && chatRequestState != null then only show edit Icon
@@ -560,7 +577,7 @@ const ChatroomHeader = ({
                 />
               </TouchableOpacity>
             ) : null}
-            {isDelete && (
+            {isDelete && !isOtherUserChatbot && (
               <TouchableOpacity
                 onPress={async () => {
                   setIsReact(false);
@@ -647,7 +664,10 @@ const ChatroomHeader = ({
                 />
               </TouchableOpacity>
             )}
-            {len === 1 && !isOwnMessage &&
+
+            {len === 1 &&
+              !isOtherUserChatbot &&
+              !isOwnMessage &&
               !isFirstMessageDeleted &&
               showThreeDotsOnSelectedHeader && (
                 <TouchableOpacity

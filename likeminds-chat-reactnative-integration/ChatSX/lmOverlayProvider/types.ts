@@ -10,8 +10,15 @@ export interface LMOverlayProviderProps {
   apiKey?: string;
   accessToken?: string;
   refreshToken?: string;
-  callbackClass: LMCoreCallbacks;
+  callbackClass?: LMCoreCallbacks;
   profileImageUrl?: string;
   lmChatInterface?: any;
   imageUrl?: string;
+}
+
+export interface LMChatBotOverlayProviderProps {
+  myClient: LMChatClient;
+  children: React.ReactNode;
+  lmChatInterface?: any;
+  callbackClass?: LMCoreCallbacks;
 }
