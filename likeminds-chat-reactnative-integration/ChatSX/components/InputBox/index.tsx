@@ -19,16 +19,7 @@ import TextInputWrapper from "../TextInputWrapper";
 import InputWrapperLeftSection from "../InputWrapperLeftSection";
 import InputWrapper from "../InputWrapper";
 
-interface MessageInputBoxProp {
-  onSendMessageProp?: ({
-    message,
-    metaData,
-    voiceNote,
-    isSendWhileVoiceNoteRecorderPlayerRunning,
-  }: OnSendMessageProp) => void;
-}
-
-const MessageInputBox = ({ onSendMessageProp }: MessageInputBoxProp) => {
+const MessageInputBox = () => {
   const { hideDMSentAlert, message, DMSentAlertModalVisible, onSend } =
     useInputBoxContext();
 
@@ -51,9 +42,7 @@ const MessageInputBox = ({ onSendMessageProp }: MessageInputBoxProp) => {
         </InputWrapperLeftSection>
 
         {/* Send message and send voice notes UI */}
-        <RecordSendInputFabView
-          onSendMessageProp={onSendMessageProp ? onSendMessageProp : undefined}
-        />
+        <RecordSendInputFabView />
       </InputWrapper>
 
       {/* More features modal like select Images, Docs etc. */}
@@ -62,7 +51,7 @@ const MessageInputBox = ({ onSendMessageProp }: MessageInputBoxProp) => {
       <SendDMRequestModal
         hideDMSentAlert={hideDMSentAlert}
         DMSentAlertModalVisible={DMSentAlertModalVisible}
-        onSend={onSendMessageProp ? onSendMessageProp : onSend}
+        onSend={onSend}
         message={message}
       />
     </View>

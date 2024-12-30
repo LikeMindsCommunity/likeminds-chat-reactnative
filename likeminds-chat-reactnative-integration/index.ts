@@ -51,6 +51,21 @@ import {
 } from "./ChatSX/context";
 import ChatroomTopic from "./ChatSX/components/ChatroomTopic";
 
+import SendDMRequestModal from "./ChatSX/customModals/SendDMRequest";
+import VoiceNoteRecordToast from "./ChatSX/components/VoiceNoteRecordToast";
+import SelectFilesModal from "./ChatSX/customModals/SelectFilesModal";
+import UserTaggingList from "./ChatSX/components/UserTaggingList";
+import ReplyBoxView from "./ChatSX/components/ReplyBoxView";
+import LinkPreviewInputView from "./ChatSX/components/LinkPreviewInputView";
+import EditBox from "./ChatSX/components/EditBox";
+import AddMoreFilesView from "./ChatSX/components/AddMoreFilesView";
+import InputBoxView from "./ChatSX/components/InputBoxView";
+import AddFilesView from "./ChatSX/components/AddFilesView";
+import RecordSendInputFabView from "./ChatSX/components/RecordSendInputFabView";
+import TextInputWrapper from "./ChatSX/components/TextInputWrapper";
+import InputWrapperLeftSection from "./ChatSX/components/InputWrapperLeftSection";
+import InputWrapper from "./ChatSX/components/InputWrapper";
+
 export {
   ChatRoom,
   ChatroomHeader,
@@ -100,4 +115,18 @@ export {
   CreatePollContextProvider,
   SearchInChatroomContextProvider,
   ChatroomTopic,
+  VoiceNoteRecordToast,
+  InputWrapper,
+  InputWrapperLeftSection,
+  UserTaggingList,
+  ReplyBoxView,
+  LinkPreviewInputView,
+  EditBox,
+  TextInputWrapper,
+  AddMoreFilesView,
+  InputBoxView,
+  AddFilesView,
+  RecordSendInputFabView,
+  SelectFilesModal,
+  SendDMRequestModal,
 };

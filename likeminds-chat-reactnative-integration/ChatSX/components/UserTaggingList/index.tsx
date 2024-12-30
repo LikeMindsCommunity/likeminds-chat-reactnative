@@ -16,6 +16,11 @@ interface UserTaggingListProps {
     userName,
     communityId,
     mentionUsername,
+  }: {
+    uuid: string;
+    userName: string;
+    communityId: string;
+    mentionUsername: string;
   }) => void;
 }
 
