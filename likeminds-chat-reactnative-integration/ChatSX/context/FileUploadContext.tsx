@@ -165,6 +165,7 @@ export const FileUploadContextProvider = ({
   }: UploadResource) => {
     LogBox.ignoreLogs(["new NativeEventEmitter"]);
     const s3 = new S3();
+    let attachments: any = [];
     for (let i = 0; i < selectedImages?.length; i++) {
       const item = selectedImages[i];
       const attachmentType = isRetry ? item?.type : item?.type?.split("/")[0];
@@ -286,7 +287,7 @@ export const FileUploadContextProvider = ({
             width: gifWidth ? gifWidth : null,
           };
 
-          const uploadRes = await myClient?.putMultimedia(payload as any);
+          attachments.push(payload)
 
           LMChatAnalytics.track(
             Events.ATTACHMENT_UPLOADED,
@@ -337,6 +338,7 @@ export const FileUploadContextProvider = ({
     await myClient?.removeAttactmentUploadConversationByKey(
       conversationID?.toString()
     );
+    return attachments;
   };
 
   const handleFileUpload = async (conversationID: any, isRetry: any) => {
