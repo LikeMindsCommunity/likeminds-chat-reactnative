@@ -346,7 +346,7 @@ function App(): React.JSX.Element {
                   <Stack.Screen name={'Homefeed'} component={HomeFeed} />
                   <Stack.Screen
                     name="SearchInChatroom"
-                    component={SearchInChatroomScreen}
+                    component={SearchInChatroom}
                     options={{
                       gestureEnabled: Platform.OS === 'ios' ? false : true,
                       headerShown: false,
