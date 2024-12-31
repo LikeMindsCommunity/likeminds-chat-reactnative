@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
   },
-  bottomBar: { position: "absolute", bottom: Layout.normalize(30) },
+  bottomBar: { position: "absolute", bottom: Layout.normalize(45) },
   bottomListOfImages: {
     height: Layout.normalize(50),
     alignSelf: "flex-end",
@@ -69,11 +69,11 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     width: Layout.window.width,
-    height: Layout.window.height / Layout.normalize(1.6),
+    height: Layout.window.height - Layout.normalize(120),
   },
   videoPlayer: {
     width: Layout.window.width,
-    height: Layout.window.height / Layout.normalize(1.6),
+    height: Layout.window.height - Layout.normalize(120),
   },
   videoIcon: {
     height: Layout.normalize(20),
