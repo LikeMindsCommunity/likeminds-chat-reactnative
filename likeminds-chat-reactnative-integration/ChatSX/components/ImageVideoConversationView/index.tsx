@@ -41,10 +41,17 @@ export const ImageVideoConversationView = () => {
     chatBubbleStyles?.imageVideoAttachmentsBorderRadius;
 
   let firstAttachment, secondAttachment, thirdAttachment, fourthAttachment;
-  firstAttachment = item?.attachments?.find( attachment => attachment?.index == 0 || attachment?.index == 1);
-  secondAttachment = item?.attachments?.find( attachment => attachment?.index == 1 || attachment?.index == 2);
-  thirdAttachment = item?.attachments?.find( attachment => attachment?.index == 2 || attachment?.index == 3);
-  fourthAttachment = item?.attachments?.find( attachment => attachment?.index == 3 || attachment?.index == 4);
+  if (item?.attachments?.find(attachment => attachment?.index == 0)) {
+    firstAttachment = item?.attachments?.find(attachment => attachment?.index == 0);
+    secondAttachment = item?.attachments?.find(attachment => attachment?.index == 1);
+    thirdAttachment = item?.attachments?.find(attachment => attachment?.index == 2);
+    fourthAttachment = item?.attachments?.find(attachment => attachment?.index == 3);
+  } else {
+    firstAttachment = item?.attachments?.find(attachment => attachment?.index == 1);
+    secondAttachment = item?.attachments?.find(attachment => attachment?.index == 2);
+    thirdAttachment = item?.attachments?.find(attachment => attachment?.index == 3);
+    fourthAttachment = item?.attachments?.find(attachment => attachment?.index == 4);
+  }
 
   const dispatch = useAppDispatch();
   const { selectedMessages, stateArr, isLongPress }: any = useAppSelector(
