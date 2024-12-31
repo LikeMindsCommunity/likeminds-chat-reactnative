@@ -79,12 +79,12 @@ const RecordSendInputFabView = ({
       isUploadScreen ||
       isRecordingLocked ||
       (chatroomType === ChatroomType.DMCHATROOM &&
-        chatRequestState === null) ? (
+        (chatRequestState === null || chatRequestState === undefined)) ? (
         <TouchableOpacity
           onPressOut={async () => {
             if (
               chatroomType === ChatroomType.DMCHATROOM && // if DM
-              chatRequestState === null &&
+              (chatRequestState === null || chatRequestState === undefined) &&
               isPrivateMember && // isPrivateMember = false when none of the member on both sides is CM.
               !!message
             ) {

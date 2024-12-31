@@ -1354,7 +1354,7 @@ export const InputBoxContextProvider = ({
       // condition for request DM for the first time
       if (
         chatroomType === ChatroomType.DMCHATROOM && // if DM
-        chatRequestState === null &&
+        (chatRequestState === null || chatRequestState === undefined) &&
         isPrivateMember // isPrivateMember = false when none of the member on both sides is CM.
       ) {
         const response = await myClient?.sendDMRequest({
@@ -1396,7 +1396,7 @@ export const InputBoxContextProvider = ({
         );
       } else if (
         chatroomType === ChatroomType.DMCHATROOM && // if DM
-        chatRequestState === null &&
+        (chatRequestState === null || chatRequestState === undefined) &&
         !isPrivateMember // isPrivateMember = false when none of the member on both sides is CM.
       ) {
         const response = await myClient?.sendDMRequest({

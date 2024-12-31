@@ -47,6 +47,7 @@ export function ChatroomScreen() {
     chatroomName,
     isSecret,
     refInput,
+    chatroomDBDetails,
 
     setIsEditable,
     handleFileUpload,
@@ -93,6 +94,7 @@ export function ChatroomScreen() {
         isSecret={isSecret}
         chatroomType={chatroomType}
         currentChatroomTopic={currentChatroomTopic}
+        isPrivateMember={chatroomDBDetails.isPrivateMember}
       >
         <MessageInput hintMessages={hintMessages}>
           <MessageInputBox />
