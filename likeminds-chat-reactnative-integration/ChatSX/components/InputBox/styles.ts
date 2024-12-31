@@ -85,6 +85,7 @@ export const styles = StyleSheet.create({
     padding: 0,
     marginBottom: Layout.normalize(2),
     overflow: "scroll",
+    width: "100%",
   },
   sendButton: {
     height: Layout.normalize(50),
