@@ -1,5 +1,5 @@
-import { View, Text } from "react-native";
-import React, { useState } from "react";
+import { Text } from "react-native";
+import React, { useEffect, useState } from "react";
 import { styles } from "./styles";
 import { decode } from "../../commonFuctions";
 
@@ -16,14 +16,28 @@ const MoreLess = ({
 }) => {
   const [showMore, setShowMore] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
+  const [isFirstRender , setIsFirstRender] = useState(true)
 
   const MAX_LINES = 3;
 
   const handleTextLayout = (event: { nativeEvent: { lines: any[] } }) => {
     if (event.nativeEvent.lines.length > MAX_LINES) {
-      setIsTruncated(true); // Determine if truncation is required
+        setIsTruncated(true); // Determine if truncation is required
+    } else if(event.nativeEvent.lines.length < MAX_LINES){
+        setIsTruncated(false); 
     }
   };
+
+  useEffect(()=>{
+    if (isFirstRender) {
+      setIsFirstRender(false)
+      return;
+    }else{
+      setShowMore(false)
+      setIsTruncated(false)
+    }
+  },[text])
+
   return (
     <>
       <Text

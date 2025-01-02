@@ -267,7 +267,9 @@ const InputBoxView = ({
             partTypes={[
               {
                 trigger: "@",
-                textStyle: inputBoxStyles?.partsTextStyle, // The mention style in the input
+                textStyle: inputBoxStyles?.partsTextStyle
+                  ? inputBoxStyles?.partsTextStyle
+                  : { color: "#0276fa" }, // The mention style in the input
               },
             ]}
             inputText={message}

@@ -1205,7 +1205,8 @@ export const InputBoxContextProvider = ({
     const isMessageTrimmed =
       !!conversation.trim() ||
       isVoiceResult ||
-      isSendWhileVoiceNoteRecorderPlayerRunning;
+      isSendWhileVoiceNoteRecorderPlayerRunning ||
+      metaData;
     // check if message is empty string or not
     if ((isMessageTrimmed && !isUploadScreen) || isUploadScreen) {
       const replyObj = chatSchema.reply;
