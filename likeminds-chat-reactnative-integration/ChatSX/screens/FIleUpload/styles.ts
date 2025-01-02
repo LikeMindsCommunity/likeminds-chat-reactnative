@@ -55,11 +55,10 @@ const styles = StyleSheet.create({
     padding: Layout.normalize(10),
   },
   selectedFileToView: {
-    flexGrow: 1,
     display: "flex",
     justifyContent: "center",
   },
-  bottomBar: { position: "absolute", bottom: Layout.normalize(50) },
+  bottomBar: { position: "absolute", bottom: Layout.normalize(50), zIndex: 10 },
   bottomListOfImages: {
     height: Layout.normalize(50),
     alignSelf: "flex-end",

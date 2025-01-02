@@ -20,7 +20,7 @@ const FileUploadBottomScrollView = () => {
   } = useFileUploadContext();
   const dispatch = useAppDispatch();
   return (
-    <>
+    <View style={{position:'absolute', bottom: 0}}>
       {!isGif && (
         <ScrollView
           contentContainerStyle={styles.bottomListOfImages}
@@ -90,7 +90,7 @@ const FileUploadBottomScrollView = () => {
             })}
         </ScrollView>
       )}
-    </>
+    </View>
   );
 };
 
