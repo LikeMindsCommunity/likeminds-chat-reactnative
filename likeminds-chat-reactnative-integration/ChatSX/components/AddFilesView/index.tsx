@@ -24,10 +24,6 @@ const AddFilesView = ({ handleFilesViewProp }: AddFilesViewProps) => {
   return (
     <>
       {!isUploadScreen &&
-      !(
-        chatRequestState === ChatroomType.OPENCHATROOM ||
-        chatRequestState === null
-      ) &&
       !isEditable &&
       !voiceNotes?.recordTime &&
       !isDeleteAnimation ? (
