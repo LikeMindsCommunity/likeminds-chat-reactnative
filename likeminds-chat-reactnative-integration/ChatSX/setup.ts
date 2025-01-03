@@ -5,7 +5,7 @@ import AudioPlayer from "./optionalDependecies/AudioPlayer";
 
 export const initMyClient = (filterStateMessage: ConversationState[]) => {
   const myClient = LMChatClient.setfilterStateConversation(filterStateMessage)
-    .setVersionCode(38)
+    .setVersionCode(39)
     .build();
 
   Client.setMyClient(myClient);

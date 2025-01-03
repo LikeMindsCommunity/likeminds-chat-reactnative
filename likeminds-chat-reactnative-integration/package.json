@@ -1,6 +1,6 @@
 {
   "name": "@likeminds.community/chat-rn-core",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "versionCode": "22",
   "versionName": "1.5.0",
   "description": "LikeMinds ReactNative Core SDK for chat",
@@ -20,7 +20,7 @@
   "homepage": "https://likeminds.community/",
   "license": "ISC",
   "dependencies": {
-    "@likeminds.community/chat-rn": "1.7.1",
+    "@likeminds.community/chat-rn": "1.8.0",
     "@react-native/babel-preset": "0.74.0",
     "diff": "5.1.0",
     "realm": "11.10.2"
