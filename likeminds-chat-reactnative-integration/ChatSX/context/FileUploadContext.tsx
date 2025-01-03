@@ -62,6 +62,7 @@ interface FileUploadContextValues {
   selectedFilesToUploadThumbnails: any;
   chatroomID: any;
   previousMessage: any;
+  chatroomDBDetails: any;
 }
 
 const FileUploadContext = createContext<FileUploadContextValues | undefined>(
@@ -369,6 +370,7 @@ export const FileUploadContextProvider = ({
     selectedFilesToUploadThumbnails,
     chatroomID,
     previousMessage,
+    chatroomDBDetails
   };
 
   return (

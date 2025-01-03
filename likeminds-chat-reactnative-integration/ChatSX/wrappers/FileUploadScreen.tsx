@@ -13,7 +13,7 @@ import FileUploadBottomScrollView from "../components/FileUploadBottomScrollView
 
 const FileUploadScreen = () => {
   const { chatroomType } = useChatroomContext();
-  const { docItemType, chatroomID, previousMessage, handleFileUpload, isGif } =
+  const { docItemType, chatroomID, previousMessage, handleFileUpload, isGif, chatroomDBDetails } =
     useFileUploadContext();
   return (
     <View style={styles.page}>
@@ -28,6 +28,8 @@ const FileUploadScreen = () => {
           handleFileUpload={handleFileUpload}
           isGif={isGif}
           chatroomType={chatroomType}
+          isPrivateMember={chatroomDBDetails.isPrivateMember}
+          chatRequestState={chatroomDBDetails.chatRequestState}
         >
           <MessageInputBox />
         </InputBoxContextProvider>

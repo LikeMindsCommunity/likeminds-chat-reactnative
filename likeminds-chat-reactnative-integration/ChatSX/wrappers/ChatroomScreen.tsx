@@ -95,6 +95,7 @@ export function ChatroomScreen() {
         chatroomType={chatroomType}
         currentChatroomTopic={currentChatroomTopic}
         isPrivateMember={chatroomDBDetails.isPrivateMember}
+        chatRequestState={chatroomDBDetails.chatRequestState}
       >
         <MessageInput hintMessages={hintMessages}>
           <MessageInputBox />
