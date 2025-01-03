@@ -17,7 +17,7 @@ import {
 import STYLES from "../../constants/Styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import Layout from "../../constants/Layout";
-import { ChatroomChatRequestState } from "../../enums";
+import { ChatroomChatRequestState, ChatroomType } from "../../enums";
 
 interface InputBoxViewwProps {
   handleStopRecordProp?: () => void;
@@ -61,6 +61,7 @@ const InputBoxView = ({
     setInputHeight,
     MAX_LENGTH,
     isUserChatbot,
+    chatroomType
   } = useInputBoxContext();
   return (
     <>
@@ -273,7 +274,7 @@ const InputBoxView = ({
             ]}
             inputText={message}
             maxLength={
-              chatRequestState === 0 || chatRequestState === null
+              chatroomType == ChatroomType.DMCHATROOM && (chatRequestState === 0 || chatRequestState === null)
                 ? MAX_LENGTH
                 : undefined
             }

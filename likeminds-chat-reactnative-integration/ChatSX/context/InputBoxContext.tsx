@@ -1784,7 +1784,7 @@ export const InputBoxContextProvider = ({
       setOgTagsState({});
       setShowLinkPreview(false);
     }
-    if (chatRequestState === 0 || chatRequestState === null) {
+    if ( chatroomType == ChatroomType.DMCHATROOM && (chatRequestState === 0 || chatRequestState === null)) {
       if (event.length >= MAX_LENGTH) {
         dispatch({
           type: SHOW_TOAST,
