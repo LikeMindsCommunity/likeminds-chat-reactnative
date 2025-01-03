@@ -6,9 +6,9 @@ import { Chatroom } from "@likeminds.community/chat-rn/dist/shared/responseModel
 import { Member } from "@likeminds.community/chat-rn/dist/shared/responseModels/Member";
 
 enum Roles {
-  Chatbot = 'chatbot',
-    Member = 'member',
-    Admin = 'admin',
+  Chatbot = "chatbot",
+  Member = "member",
+  Admin = "admin",
 }
 
 // This method is to create a temporary state message for updation of chatroom topic
@@ -92,14 +92,24 @@ export const getCurrentConversation = async (
   return newConversation;
 };
 
+export function sortAttachmentsBasedOnIndex(item) {
+  let sortedItems = JSON.parse(JSON.stringify(item));
+  sortedItems?.attachments?.sort((a, b) => a?.index - b?.index);
+  return sortedItems;
+}
 // function to get whether we're in a conversation with a chatbot
-export const isOtherUserAIChatbot = (chatroom: Chatroom, user: Member ) => {
-  if (chatroom == null || chatroom == undefined || user == null || user == undefined) {
+export const isOtherUserAIChatbot = (chatroom: Chatroom, user: Member) => {
+  if (
+    chatroom == null ||
+    chatroom == undefined ||
+    user == null ||
+    user == undefined
+  ) {
     return false;
   }
   let otherMember: Member | undefined;
   if (user?.uuid == chatroom?.member?.sdkClientInfo?.uuid) {
-    otherMember = chatroom?.chatroomWithUser
+    otherMember = chatroom?.chatroomWithUser;
   } else {
     otherMember = chatroom?.member;
   }
@@ -107,24 +117,24 @@ export const isOtherUserAIChatbot = (chatroom: Chatroom, user: Member ) => {
     return true;
   }
   return false;
-}
+};
 
 // function to split the filename into the name of the file and it's extension
 export function splitFileName(filename: string) {
   // Check if the filename contains a dot
-  if (!filename.includes('.')) {
+  if (!filename.includes(".")) {
     return {
       name: filename,
-      extension: ''
+      extension: "",
     };
   }
 
-  const lastDotIndex = filename.lastIndexOf('.');
+  const lastDotIndex = filename.lastIndexOf(".");
   const name = filename.substring(0, lastDotIndex);
   const extension = filename.substring(lastDotIndex + 1);
 
   return {
     name: name,
-    extension: extension
+    extension: extension,
   };
 }

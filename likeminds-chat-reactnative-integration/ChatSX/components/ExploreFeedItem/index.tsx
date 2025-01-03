@@ -178,9 +178,11 @@ const ExploreFeedItem: React.FC<Props> = ({
                     chatroomTitle?.color && {
                       color: chatroomTitle?.color,
                     },
-                    chatroomTitle?.fontSize && {
-                      fontSize: chatroomTitle?.fontSize,
-                    },
+                    chatroomTitle?.fontSize
+                      ? {
+                          fontSize: chatroomTitle?.fontSize,
+                        }
+                      : null,
                     chatroomTitle?.fontFamily && {
                       fontFamily: chatroomTitle?.fontFamily,
                     },
@@ -213,9 +215,11 @@ const ExploreFeedItem: React.FC<Props> = ({
                     chatroomSubTitle?.color && {
                       color: chatroomSubTitle?.color,
                     },
-                    chatroomSubTitle?.fontSize && {
-                      fontSize: chatroomSubTitle?.fontSize,
-                    },
+                    chatroomSubTitle?.fontSize
+                      ? {
+                          fontSize: chatroomSubTitle?.fontSize,
+                        }
+                      : null,
                     chatroomSubTitle?.fontFamily && {
                       fontFamily: chatroomSubTitle?.fontFamily,
                     },
@@ -238,9 +242,11 @@ const ExploreFeedItem: React.FC<Props> = ({
                     chatroomSubTitle?.color && {
                       color: chatroomSubTitle?.color,
                     },
-                    chatroomSubTitle?.fontSize && {
-                      fontSize: chatroomSubTitle?.fontSize,
-                    },
+                    chatroomSubTitle?.fontSize
+                      ? {
+                          fontSize: chatroomSubTitle?.fontSize,
+                        }
+                      : null,
                     chatroomSubTitle?.fontFamily && {
                       fontFamily: chatroomSubTitle?.fontFamily,
                     },
@@ -275,9 +281,11 @@ const ExploreFeedItem: React.FC<Props> = ({
                         joinButton?.color && {
                           color: joinButton?.color,
                         },
-                        joinButton?.fontSize && {
-                          fontSize: joinButton?.fontSize,
-                        },
+                        joinButton?.fontSize
+                          ? {
+                              fontSize: joinButton?.fontSize,
+                            }
+                          : null,
                         joinButton?.fontFamily && {
                           fontFamily: joinButton?.fontFamily,
                         },
@@ -319,9 +327,11 @@ const ExploreFeedItem: React.FC<Props> = ({
                         joinedButton?.color && {
                           color: joinedButton?.color,
                         },
-                        joinedButton?.fontSize && {
-                          fontSize: joinedButton?.fontSize,
-                        },
+                        joinedButton?.fontSize
+                          ? {
+                              fontSize: joinedButton?.fontSize,
+                            }
+                          : null,
                         joinedButton?.fontFamily && {
                           fontFamily: joinedButton?.fontFamily,
                         },
@@ -351,9 +361,11 @@ const ExploreFeedItem: React.FC<Props> = ({
                 chatroomDescription?.color && {
                   color: chatroomDescription?.color,
                 },
-                chatroomDescription?.fontSize && {
-                  fontSize: chatroomDescription?.fontSize,
-                },
+                chatroomDescription?.fontSize
+                  ? {
+                      fontSize: chatroomDescription?.fontSize,
+                    }
+                  : null,
                 chatroomDescription?.fontFamily && {
                   fontFamily: chatroomDescription?.fontFamily,
                 },

@@ -26,6 +26,8 @@ export const NO_DM_TEXT =
 export const DM_INFO =
   "Direct message is a feature where members can send private messages to other members and community managers.";
 export const NEW_MESSAGE_BTN_TEXT = "NEW MESSAGE";
+export const DM_BLOCKED_USER =
+  "You can not respond to a blocked connection. Unblock to send a message.";
 
 export const REQUEST_SENT =
   "Messaging would be enabled once your request is approved.";
@@ -114,6 +116,7 @@ export const QUESTION_WARNING = "Question Field cannot be empty";
 export const EXPIRY_TIME_WARNING = "Please select expiry time";
 export const POLLS_OPTIONS_WARNING = "Poll options can't be the same";
 export const EMPTY_OPTIONS_WARNING = "Empty options are not allowed";
+export const PAST_TIME_WARNING = "You can't create poll for the past time.";
 export const PLACEHOLDER_VALUE = "Ask a question";
 export const OPTION_TEXT = "Option";
 export const DATE_PLACEHOLDER = "DD-MM-YYYY hh:mm";

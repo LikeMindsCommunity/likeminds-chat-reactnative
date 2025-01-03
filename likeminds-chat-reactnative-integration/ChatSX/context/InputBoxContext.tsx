@@ -3,12 +3,12 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { Client } from "../client";
 import STYLES from "../constants/Styles";
-import { ChatroomContextValues, useChatroomContext } from "./ChatroomContext";
 import {
   LaunchActivityProps,
   VoiceNotesPlayerProps,
@@ -16,7 +16,6 @@ import {
 } from "../components/InputBox/models";
 import { useAppDispatch, useAppSelector } from "../store";
 import {
-  Easing,
   Keyboard,
   PermissionsAndroid,
   Platform,
@@ -32,6 +31,7 @@ import {
   getAllPdfThumbnail,
   getPdfThumbnail,
   getVideoThumbnail,
+  replaceLastMention,
 } from "../commonFuctions";
 import { check, PERMISSIONS, request } from "react-native-permissions";
 import {
@@ -50,6 +50,7 @@ import {
   replaceMentionValues,
 } from "../uiComponents/LMChatTextInput/utils";
 import {
+  ADD_SHIMMER_MESSAGE,
   CLEAR_SELECTED_FILE_TO_VIEW,
   CLEAR_SELECTED_FILES_TO_UPLOAD,
   CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
@@ -68,7 +69,9 @@ import {
   SET_EDIT_MESSAGE,
   SET_FILE_UPLOADING_MESSAGES,
   SET_IS_REPLY,
+  SET_MESSAGE_ID,
   SET_REPLY_MESSAGE,
+  SHOW_SHIMMER,
   SHOW_TOAST,
   STATUS_BAR_STYLE,
   UPDATE_CHAT_REQUEST_STATE,
@@ -80,6 +83,7 @@ import {
   ImagePickerResponse,
   launchCamera,
   launchImageLibrary,
+  MediaType,
 } from "react-native-image-picker";
 import { FILE_UPLOAD } from "../constants/Screens";
 import DocumentPicker from "react-native-document-picker";
@@ -101,6 +105,26 @@ import { generateAudioSet, generateVoiceNoteName } from "../audio";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
 import GIFPicker from "../optionalDependecies/Gif";
+import AudioRecorder from "../optionalDependecies/AudioRecorder";
+import {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+import {
+  Gesture,
+  GestureUpdateEvent,
+  PanGestureHandlerEventPayload,
+} from "react-native-gesture-handler";
+import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
+import { SyncConversationRequest } from "@likeminds.community/chat-rn";
+import AudioPlayer from "../optionalDependecies/AudioPlayer";
+import { useNavigation } from "@react-navigation/native";
+import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
+import { useChatroomContext } from "./ChatroomContext";
 
 export interface InputBoxContextProps {
   children: ReactNode;
@@ -108,7 +132,6 @@ export interface InputBoxContextProps {
   chatroomID?: any;
   chatRequestState?: any;
   chatroomType?: any;
-  navigation?: any;
   isUploadScreen?: boolean;
   isPrivateMember?: boolean;
   isDoc?: boolean;
@@ -122,10 +145,10 @@ export interface InputBoxContextProps {
   chatroomName?: any;
   currentChatroomTopic?: Conversation;
   isGif?: boolean;
+  metaData?: Record<string, any>;
 }
 
 export interface InputBoxContext {
-  isVoiceNoteIconPress: any;
   hideDMSentAlert: any;
   handleVideoThumbnail: any;
   handleImageAndVideoUpload: any;
@@ -180,14 +203,12 @@ export interface InputBoxContext {
   isDoc: any;
   isGif: any;
   voiceNotes: any;
-  isRecordingLocked: any;
   chatRequestState: any;
   inputHeight: any;
   setInputHeight: any;
   myRef: any;
   MAX_LENGTH: any;
   isPrivateMember: any;
-  isRecordingPermission: any;
   setIsVoiceNoteIconPress: any;
   modalVisible: any;
   navigation: any;
@@ -195,6 +216,44 @@ export interface InputBoxContext {
   conversations: any;
   setIsRecordingLocked: any;
   setVoiceNotes: any;
+  marginValue: any;
+  isVoiceResult: boolean;
+  isVoiceNotePlaying: boolean;
+  isVoiceNoteRecording: boolean;
+  isDraggable: boolean;
+  isLongPressedState: boolean;
+  isRecordingLocked: boolean;
+  stopRecording: boolean;
+  isDeleteAnimation: boolean;
+  isRecordingPermission: boolean;
+  isVoiceNoteIconPress: boolean;
+  micIconOpacity: any;
+  handleStopRecord: any;
+  clearVoiceRecord: any;
+  onPausePlay: any;
+  voiceNotesPlayer: any;
+  onResumePlay: any;
+  startPlay: any;
+  voiceNotesLink: any;
+  GIFPicker: any;
+  GiphyDialog: any;
+  AudioRecorder: any;
+  AudioPlayer: any;
+  composedGesture: any;
+  lockAnimatedStyles: any;
+  upChevronAnimatedStyles: any;
+  panStyle: any;
+  stopPlay: any;
+  stopRecord: any;
+  metaData: any;
+  onUserTaggingClicked: ({
+    uuid,
+    userName,
+    communityId,
+    mentionUsername,
+  }) => void;
+  isUserChatbot: boolean;
+  canUserCreatePoll: boolean;
 }
 
 const InputBoxContext = createContext<InputBoxContext | undefined>(undefined);
@@ -209,13 +268,17 @@ export const useInputBoxContext = () => {
   return context;
 };
 
+// to intialise audio recorder player
+const audioRecorderPlayerAttachment = AudioRecorder
+  ? new AudioRecorder.default()
+  : null;
+
 export const InputBoxContextProvider = ({
   children,
   replyChatID,
   chatroomID,
   chatRequestState,
   chatroomType,
-  navigation,
   isUploadScreen,
   isPrivateMember,
   isDoc,
@@ -229,9 +292,12 @@ export const InputBoxContextProvider = ({
   chatroomName,
   currentChatroomTopic,
   isGif,
+  metaData,
 }: InputBoxContextProps) => {
   const myClient = Client.myClient;
   const inputBoxStyles = STYLES.$INPUT_BOX_STYLE;
+
+  const navigation: any = useNavigation();
 
   const [isKeyBoardFocused, setIsKeyBoardFocused] = useState(false);
   const [message, setMessage] = useState(previousMessage);
@@ -253,11 +319,24 @@ export const InputBoxContextProvider = ({
     recordTime: "",
     name: "",
   });
+  const [voiceNotesPlayer, setVoiceNotesPlayer] =
+    useState<VoiceNotesPlayerProps>({
+      currentPositionSec: 0,
+      currentDurationSec: 0,
+      playTime: "",
+      duration: "",
+    });
+  const [voiceNotesLink, setVoiceNotesLink] = useState("");
   const [isVoiceResult, setIsVoiceResult] = useState(false);
+  const [isVoiceNotePlaying, setIsVoiceNotePlaying] = useState(false);
+  const [isVoiceNoteRecording, setIsVoiceNoteRecording] = useState(false);
+  const [isDraggable, setIsDraggable] = useState(true);
+  const [isLongPressedState, setIsLongPressedState] = useState(false);
   const [isRecordingLocked, setIsRecordingLocked] = useState(false);
+  const [stopRecording, setStopRecording] = useState(false);
+  const [isDeleteAnimation, setIsDeleteAnimation] = useState(false);
   const [isRecordingPermission, setIsRecordingPermission] = useState(false);
   const [isVoiceNoteIconPress, setIsVoiceNoteIconPress] = useState(false);
-
   const { chatroomDBDetails }: any = useAppSelector((state) => state.chatroom);
 
   const [ogTagsState, setOgTagsState] = useState<any>({});
@@ -265,6 +344,9 @@ export const InputBoxContextProvider = ({
   const [showLinkPreview, setShowLinkPreview] = useState(true);
   const [url, setUrl] = useState("");
   const [closedPreview, setClosedPreview] = useState(false);
+
+  const { memberRights, setMessageSentByUserId, setShimmerVisibleForChatbot } =
+    useChatroomContext();
 
   const MAX_FILE_SIZE = 104857600; // 100MB in bytes
   const MAX_LENGTH = 300;
@@ -292,7 +374,9 @@ export const InputBoxContextProvider = ({
     conversations = [],
     selectedMessages = [],
   }: any = useAppSelector((state) => state.chatroom);
-  const { user, community }: any = useAppSelector((state) => state.homefeed);
+  const { myChatrooms, user, community }: any = useAppSelector(
+    (state) => state.homefeed
+  );
   const {
     chatroomDetails,
     isReply,
@@ -301,9 +385,21 @@ export const InputBoxContextProvider = ({
     fileSent,
   }: any = useAppSelector((state) => state.chatroom);
 
+  const { uploadingFilesMessages }: any = useAppSelector(
+    (state) => state.upload
+  );
   let isGroupTag = false;
 
   const dispatch = useAppDispatch();
+
+  const isUserChatbot = useMemo(() => {
+    return isOtherUserAIChatbot(chatroomDBDetails, user);
+  }, [user, chatroomDBDetails]);
+  const canUserCreatePoll = useMemo(() => {
+    return memberRights?.find((item) => item?.id == 2) ? true : false;
+  }, [user, memberRights]);
+
+  const conversationArrayLength = conversations.length;
 
   AWS.config.update({
     region: REGION, // Replace with your AWS region, e.g., 'us-east-1'
@@ -313,6 +409,182 @@ export const InputBoxContextProvider = ({
   });
 
   const s3 = new S3();
+
+  // Animation
+
+  const pressed = useSharedValue(false);
+  const x = useSharedValue(0);
+  const y = useSharedValue(0);
+  const lockOffset = useSharedValue(4);
+  const upChevronOffset = useSharedValue(3);
+  const micIconOpacity = useSharedValue(1); // Initial opacity value
+  const isLongPressed = useSharedValue(false);
+
+  // lock icon animation styles
+  const lockAnimatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: lockOffset.value }],
+  }));
+
+  // up chevron animated styles
+  const upChevronAnimatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: upChevronOffset.value }],
+  }));
+
+  // recorder mic icon animation effect
+  useEffect(() => {
+    micIconOpacity.value = withRepeat(
+      withTiming(0, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+      -1, // Infinite repetition (-1)
+      true // Reverse the animation direction after each iteration
+    );
+  }, []);
+
+  // lock icon animation useEffect
+  useEffect(() => {
+    lockOffset.value = withRepeat(
+      withTiming(-lockOffset.value, { duration: 800 }),
+      -1, // Infinite repetition (-1)
+      true // Reverse the animation direction after each iteration
+    );
+  }, []);
+
+  // up chevron animation useEffect
+  useEffect(() => {
+    upChevronOffset.value = withRepeat(
+      withTiming(-upChevronOffset.value, { duration: 400 }),
+      -1,
+      true
+    );
+  }, []);
+
+  // to hide delete animation
+  useEffect(() => {
+    if (isDeleteAnimation) {
+      setTimeout(() => {
+        setIsDeleteAnimation(false);
+        setIsVoiceResult(false);
+      }, 2200);
+    }
+  }, [isDeleteAnimation]);
+
+  // to stop the recorder
+  useEffect(() => {
+    setTimeout(async () => {
+      if (!isLongPressedState && isVoiceNoteRecording && !isRecordingLocked) {
+        await stopRecord();
+        setIsVoiceResult(true);
+      }
+    }, 300);
+  }, [isLongPressedState, isRecordingLocked]);
+
+  // to start Recorder
+  useEffect(() => {
+    if (isLongPressedState && !isVoiceNoteRecording) {
+      Vibration.vibrate(0.5 * 100);
+      startRecord();
+    }
+  }, [isLongPressedState]);
+
+  // long press gesture
+  const longPressGesture = Gesture.LongPress()
+    .runOnJS(true)
+    .minDuration(250)
+    .onStart(() => {
+      isLongPressed.value = true;
+      setIsLongPressedState(true);
+    });
+
+  // this method handles onUpdate callback of pan gesture
+  const onUpdatePanGesture = (
+    event: GestureUpdateEvent<PanGestureHandlerEventPayload>
+  ) => {
+    "worklet";
+    if (isLongPressed.value) {
+      if (Math.abs(x.value) >= 120) {
+        x.value = withSpring(0);
+        if (isDraggable) {
+          stopRecord();
+          setIsDraggable(false);
+          setIsDeleteAnimation(true);
+          clearVoiceRecord();
+          setIsDraggable(true);
+          isLongPressed.value = false;
+        }
+        pressed.value = false;
+        isLongPressed.value = false;
+      } else if (Math.abs(y.value) >= 100) {
+        y.value = withSpring(0);
+        if (isDraggable) {
+          setIsDraggable(false);
+          setIsDraggable(true);
+          setIsRecordingLocked(true);
+          setIsLongPressedState(false);
+          isLongPressed.value = false;
+        }
+      } else if (Math.abs(x.value) > 5) {
+        x.value = event.translationX;
+      } else if (Math.abs(y.value) > 5) {
+        y.value = event.translationY;
+      } else {
+        x.value = event.translationX;
+        y.value = event.translationY;
+      }
+    }
+  };
+
+  // this method handles onEnd callback of pan gesture
+  const onEndPanGesture = () => {
+    "worklet";
+    if (
+      (Math.abs(x.value) > 5 && Math.abs(x.value) < 120) ||
+      (Math.abs(y.value) > 5 && Math.abs(y.value) < 100)
+    ) {
+      setIsRecordingLocked(false);
+      handleStopRecord();
+    }
+    x.value = withSpring(0);
+    y.value = withSpring(0);
+    pressed.value = false;
+    isLongPressed.value = false;
+    setIsLongPressedState(false);
+  };
+
+  // draggle mic pan gesture on x-axis and y-axis
+  const panGesture = Gesture.Pan()
+    .runOnJS(true)
+    .enabled(isDraggable)
+    .onUpdate(onUpdatePanGesture)
+    .onEnd(onEndPanGesture)
+    .onFinalize(() => {
+      "worklet";
+      pressed.value = false;
+      isLongPressed.value = false;
+      setIsLongPressedState(false);
+      setIsDraggable(true);
+    })
+    .onTouchesCancelled(() => {
+      setIsDraggable(true);
+    })
+    .simultaneousWithExternalGesture(longPressGesture);
+
+  const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture);
+
+  // draggle mic panGesture styles
+  const panStyle = useAnimatedStyle((): DefaultStyle => {
+    return {
+      transform: [
+        {
+          translateX: x.value,
+        },
+        {
+          translateY: y.value,
+        },
+        { scale: withTiming(isLongPressed.value ? 1.5 : 1) },
+      ],
+    };
+  }, [x, y]);
+
+  // Animation stop
 
   // to ask audio recording permission
   useEffect(() => {
@@ -369,6 +641,14 @@ export const InputBoxContextProvider = ({
       setInputHeight(25);
     }
   }, [fileSent]);
+
+  // this useEffect is to stop audio player when going out of chatroom, if any audio is running
+  useEffect(() => {
+    return () => {
+      stopRecord();
+      stopPlay();
+    };
+  }, []);
 
   // to clear message on ChatScreen InputBox when fileSent from UploadScreen
   useEffect(() => {
@@ -468,14 +748,18 @@ export const InputBoxContextProvider = ({
 
   //select Images and videoes From Gallery
   const selectGallery = async () => {
+    let limit =
+      chatroomType == ChatroomType.DMCHATROOM && isUserChatbot ? 1 : 0;
+    let mediaType: MediaType =
+      chatroomType == 10 && isUserChatbot ? "photo" : "mixed";
     const options: LaunchActivityProps = {
-      mediaType: "mixed",
-      selectionLimit: 0,
+      mediaType,
+      selectionLimit: limit,
     };
-
     navigation.navigate(FILE_UPLOAD, {
       chatroomID: chatroomID,
       previousMessage: message, // to keep message on uploadScreen InputBox
+      limit,
     });
     await launchImageLibrary(options, async (response: ImagePickerResponse) => {
       if (response?.didCancel) {
@@ -486,7 +770,6 @@ export const InputBoxContextProvider = ({
         return;
       } else {
         const selectedImages: Asset[] | undefined = response.assets; // selectedImages can be anything images or videos or both
-
         if (!selectedImages) {
           return;
         }
@@ -597,10 +880,6 @@ export const InputBoxContextProvider = ({
         mediaType: "photo",
         selectionLimit: 0,
       };
-      navigation.navigate(FILE_UPLOAD, {
-        chatroomID: chatroomID,
-        previousMessage: message, // to keep message on uploadScreen InputBox
-      });
       await launchCamera(options, async (response: ImagePickerResponse) => {
         if (response?.didCancel) {
           if (selectedFilesToUpload.length === 0) {
@@ -630,6 +909,10 @@ export const InputBoxContextProvider = ({
           }
           await handleImageAndVideoUpload(selectedImages);
         }
+      });
+      navigation.navigate(FILE_UPLOAD, {
+        chatroomID: chatroomID,
+        previousMessage: message, // to keep message on uploadScreen InputBox
       });
     } catch (error) {
       if (selectedFilesToUpload.length === 0) {
@@ -717,34 +1000,66 @@ export const InputBoxContextProvider = ({
 
   // function handles the selection of images and videos
   const handleGallery = async () => {
-    if (isIOS) {
-      selectGallery();
-    } else {
-      const res = await requestStoragePermission();
-      if (res === true) {
-        selectGallery();
-      }
-    }
+    selectGallery();
+
+    // TODO in future for handling permissions
+    // if (isIOS) {
+    //   selectGallery();
+    // } else {
+    //   const res = await requestStoragePermission();
+    //   if (res === true) {
+    //     selectGallery();
+    //   }
+    // }
   };
 
   // function handles the slection of documents
   const handleDoc = async () => {
-    if (isIOS) {
-      selectDoc();
-    } else {
-      const res = await requestStoragePermission();
-      if (res === true) {
-        selectDoc();
-      }
-    }
+    selectDoc();
+
+    // TODO in future for handling permissions
+    // if (isIOS) {
+    //   selectDoc();
+    // } else {
+    //   const res = await requestStoragePermission();
+    //   if (res === true) {
+    //     selectDoc();
+    //   }
+    // }
   };
+
+  async function syncConversationAPI(
+    page: number,
+    maxTimeStamp: number,
+    minTimeStamp: number,
+    conversationId?: string
+  ) {
+    const res = myClient?.syncConversation(
+      SyncConversationRequest.builder()
+        .setChatroomId(chatroomID)
+        .setPage(page)
+        .setMinTimestamp(minTimeStamp)
+        .setMaxTimestamp(maxTimeStamp)
+        .setPageSize(500)
+        .setConversationId(conversationId)
+        .build()
+    );
+    return res;
+  }
 
   // this method is trigerred whenever user presses the send button
   const onSend = async (
     conversation: string,
+    metaData?: Record<string, any>,
     voiceNote?: any,
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
+    if (isUserChatbot) {
+      setShimmerVisibleForChatbot(true);
+      dispatch({
+        type: SHOW_SHIMMER,
+      });
+    }
     setClosedPreview(true);
     setShowLinkPreview(false);
     setMessage("");
@@ -779,10 +1094,8 @@ export const InputBoxContextProvider = ({
       voiceNote?.length > 0 ? voiceNote : selectedVoiceNoteFilesToUpload;
     const attachmentsCount =
       filesToUpload > 0 ? filesToUpload : voiceNotesToUpload?.length; //if any
-
     let dummySelectedFileArr: any = []; //if any
     let dummyAttachmentsArr: any = []; //if any
-
     // for making data for `images`, `videos` and `pdf` key
     if (attachmentsCount > 0) {
       for (let i = 0; i < attachmentsCount; i++) {
@@ -810,7 +1123,6 @@ export const InputBoxContextProvider = ({
         }
       }
     }
-
     // for making data for `attachments` key
     if (attachmentsCount > 0) {
       for (let i = 0; i < attachmentsCount; i++) {
@@ -874,7 +1186,6 @@ export const InputBoxContextProvider = ({
         }
       }
     }
-
     const conversationText = replaceMentionValues(
       conversation,
       ({ id, name }) => {
@@ -891,12 +1202,11 @@ export const InputBoxContextProvider = ({
         }
       }
     );
-
     const isMessageTrimmed =
       !!conversation.trim() ||
       isVoiceResult ||
-      isSendWhileVoiceNoteRecorderPlayerRunning;
-
+      isSendWhileVoiceNoteRecorderPlayerRunning ||
+      metaData;
     // check if message is empty string or not
     if ((isMessageTrimmed && !isUploadScreen) || isUploadScreen) {
       const replyObj = chatSchema.reply;
@@ -904,6 +1214,7 @@ export const InputBoxContextProvider = ({
         replyObj.replyConversation = replyMessage?.id?.toString();
         replyObj.replyConversationObject = replyMessage;
         replyObj.member.name = user?.name;
+        replyObj.createdEpoch = Date.now();
         replyObj.member.id = user?.id?.toString();
         replyObj.member.sdkClientInfo = user?.sdkClientInfo;
         replyObj.member.uuid = user?.uuid;
@@ -939,6 +1250,7 @@ export const InputBoxContextProvider = ({
       }
       const obj = chatSchema.normal;
       obj.member.name = user?.name;
+      obj.createdEpoch = Date.now();
       obj.member.id = user?.id?.toString();
       obj.member.sdkClientInfo = user?.sdkClientInfo;
       obj.member.uuid = user?.uuid;
@@ -963,22 +1275,31 @@ export const InputBoxContextProvider = ({
       obj.images = dummySelectedFileArr;
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
+      obj.widget =
+        Object.keys(metaData ?? {}).length > 0
+          ? {
+              metadata: metaData,
+              parentEntityId: "",
+              parentEntityType: "",
+              createdAt: ID,
+              updatedAt: ID,
+            }
+          : null;
+      obj.widgetId =
+        Object.keys(metaData ?? {}).length > 0 ? ID?.toString() : "";
       if (!closedOnce || !closedPreview) {
         obj.ogTags = ogTagsState;
       }
-
       dispatch({
         type: UPDATE_CONVERSATIONS,
         body: isReply
           ? { obj: { ...replyObj, isInProgress: SUCCESS } }
           : { obj: { ...obj, isInProgress: SUCCESS } },
       });
-
       dispatch({
         type: MESSAGE_SENT,
         body: isReply ? { id: replyObj?.id } : { id: obj?.id },
       });
-
       if (
         chatroomType !== ChatroomType.DMCHATROOM && // if not DM
         chatRequestState !== null // if not first DM message sent to an user
@@ -1008,7 +1329,6 @@ export const InputBoxContextProvider = ({
           }
         }
       }
-
       if (isUploadScreen) {
         dispatch({
           type: CLEAR_SELECTED_FILES_TO_UPLOAD,
@@ -1017,30 +1337,41 @@ export const InputBoxContextProvider = ({
           type: CLEAR_SELECTED_FILE_TO_VIEW,
         });
       }
-
       if (isReply) {
         dispatch({ type: SET_IS_REPLY, body: { isReply: false } });
         dispatch({ type: SET_REPLY_MESSAGE, body: { replyMessage: "" } });
       }
-
       // -- Code for local message handling ended
       // condition for request DM for the first time
       if (
         chatroomType === ChatroomType.DMCHATROOM && // if DM
-        chatRequestState === null &&
+        (chatRequestState === null || chatRequestState === undefined) &&
         isPrivateMember // isPrivateMember = false when none of the member on both sides is CM.
       ) {
         const response = await myClient?.sendDMRequest({
-          chatroomId: parseInt(chatroomID),
+          chatroomId: chatroomID,
           chatRequestState: ChatroomChatRequestState.INITIATED,
           text: conversation?.trim(),
         });
-
+        const val = await syncConversationAPI(
+          page,
+          Math.floor(Date.now() * 1000),
+          0
+        );
+        const conversationData = val?.data?.conversationsData;
+        let matchingObject = conversationData.find(
+          (obj) => obj.answer === conversation
+        );
+        matchingObject.member = user;
+        // saving the first message to localDB
+        await myClient?.saveNewConversation(
+          chatroomID?.toString(),
+          matchingObject
+        );
         dispatch({
           type: SHOW_TOAST,
           body: { isToast: true, msg: "Direct messaging request sent" },
         });
-
         //dispatching redux action for local handling of chatRequestState
         dispatch({
           type: UPDATE_CHAT_REQUEST_STATE,
@@ -1056,15 +1387,29 @@ export const InputBoxContextProvider = ({
         );
       } else if (
         chatroomType === ChatroomType.DMCHATROOM && // if DM
-        chatRequestState === null &&
+        (chatRequestState === null || chatRequestState === undefined) &&
         !isPrivateMember // isPrivateMember = false when none of the member on both sides is CM.
       ) {
         const response = await myClient?.sendDMRequest({
-          chatroomId: parseInt(chatroomID),
+          chatroomId: chatroomID,
           chatRequestState: ChatroomChatRequestState.ACCEPTED,
           text: conversation?.trim(),
         });
-
+        const val = await syncConversationAPI(
+          page,
+          Math.floor(Date.now() * 1000),
+          0
+        );
+        const conversationData = val?.data?.conversationsData;
+        let matchingObject = conversationData.find(
+          (obj) => obj.answer === conversation
+        );
+        matchingObject.member = user;
+        // saving the first message to localDB
+        await myClient?.saveNewConversation(
+          chatroomID?.toString(),
+          matchingObject
+        );
         dispatch({
           type: UPDATE_CHAT_REQUEST_STATE,
           body: { chatRequestState: ChatroomChatRequestState.ACCEPTED },
@@ -1079,17 +1424,80 @@ export const InputBoxContextProvider = ({
         );
       } else {
         if (!isUploadScreen) {
-          const payload: any = {
+          if (isUserChatbot) {
+            dispatch({
+              type: ADD_SHIMMER_MESSAGE,
+            });
+          }
+          let attachments;
+          if (attachmentsCount > 0) {
+            // start uploading
+            dispatch({
+              type: SET_FILE_UPLOADING_MESSAGES,
+              body: {
+                message: isReply
+                  ? {
+                      ...replyObj,
+                      id: ID,
+                      temporaryId: ID,
+                      isInProgress: SUCCESS,
+                    }
+                  : {
+                      ...obj,
+                      id: ID,
+                      temporaryId: ID,
+                      isInProgress: SUCCESS,
+                    },
+                ID: ID,
+              },
+            });
+
+            const message = isReply
+              ? {
+                  ...replyObj,
+                  id: ID,
+                  temporaryId: ID,
+                  isInProgress: SUCCESS,
+                }
+              : {
+                  ...obj,
+                  id: ID,
+                  temporaryId: ID,
+                  isInProgress: SUCCESS,
+                };
+
+            await myClient?.saveAttachmentUploadConversation(
+              ID.toString(),
+              JSON.stringify(message)
+            );
+
+            if (voiceNotesToUpload?.length > 0) {
+              attachments = await handleFileUpload(
+                ID,
+                false,
+                true,
+                voiceNotesToUpload
+              );
+            } else {
+              attachments = await handleFileUpload(ID, false);
+            }
+          }
+          let payload: any = {
             chatroomId: chatroomID,
-            hasFiles: false,
+            hasFiles: attachments?.length > 0 ? true : false,
             text: conversationText?.trim(),
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
+            attachments,
+            triggerBot: isUserChatbot ? true : false,
           };
 
+          if (metaData) {
+            payload = { ...payload, metadata: metaData };
+          }
           if (
-            Object.keys(ogTagsState).length !== 0 &&
+            Object.keys(ogTagsState || {}).length !== 0 &&
             url &&
             (!closedOnce || !closedPreview)
           ) {
@@ -1097,11 +1505,22 @@ export const InputBoxContextProvider = ({
           } else if (url && (!closedOnce || !closedPreview)) {
             payload.shareLink = url;
           }
-
-          const response: any = await dispatch(onConversationsCreate(payload));
+          const response: any = await dispatch(
+            onConversationsCreate(payload) as any
+          );
 
           if (response) {
-            await myClient?.replaceSavedConversation(response?.conversation);
+            setMessageSentByUserId(response?.conversation?.id ?? "");
+            dispatch({
+              type: SET_MESSAGE_ID,
+              body: {
+                id: response?.conversation?.id,
+              },
+            });
+            await myClient?.replaceSavedConversation(
+              response?.conversation,
+              response?.widgets
+            );
           }
 
           //Handling conversation failed case
@@ -1117,74 +1536,72 @@ export const InputBoxContextProvider = ({
               type: EMPTY_BLOCK_DELETION,
               body: {},
             });
-          } else if (response && attachmentsCount > 0) {
-            // start uploading
-
-            dispatch({
-              type: SET_FILE_UPLOADING_MESSAGES,
-              body: {
-                message: isReply
-                  ? {
-                      ...replyObj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    }
-                  : {
-                      ...obj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    },
-                ID: response?.id,
-              },
-            });
-
-            const id = response?.id;
-            const message = isReply
-              ? {
-                  ...replyObj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                }
-              : {
-                  ...obj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                };
-
-            await myClient?.saveAttachmentUploadConversation(
-              id.toString(),
-              JSON.stringify(message)
-            );
-
-            if (voiceNotesToUpload?.length > 0) {
-              await handleFileUpload(
-                response?.id,
-                false,
-                true,
-                voiceNotesToUpload
-              );
-            } else {
-              await handleFileUpload(response?.id, false);
-            }
           }
         } else {
+          if (isUserChatbot) {
+            dispatch({
+              type: ADD_SHIMMER_MESSAGE,
+            });
+          }
           dispatch({
             type: FILE_SENT,
             body: { status: !fileSent },
           });
           navigation.goBack();
-          const payload: any = {
+          // start uploading
+          dispatch({
+            type: SET_FILE_UPLOADING_MESSAGES,
+            body: {
+              message: isReply
+                ? {
+                    ...replyObj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  }
+                : {
+                    ...obj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  },
+              ID: ID,
+            },
+          });
+
+          const message = isReply
+            ? {
+                ...replyObj,
+                id: ID,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              }
+            : {
+                ...obj,
+                id: ID,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              };
+
+          await myClient?.saveAttachmentUploadConversation(
+            ID.toString(),
+            JSON.stringify(message)
+          );
+          const attachments = await handleFileUpload(ID, false);
+          let payload: any = {
             chatroomId: chatroomID,
-            hasFiles: false,
+            hasFiles: attachments?.length > 0 ? true : false,
             text: conversationText?.trim(),
             temporaryId: ID?.toString(),
             attachmentCount: attachmentsCount,
             repliedConversationId: replyMessage?.id,
+            attachments,
+            triggerBot: isUserChatbot ? true : false,
           };
+
+          if (metaData) {
+            payload = { ...payload, metadata: metaData };
+          }
 
           if (
             Object.keys(ogTagsState).length !== 0 &&
@@ -1195,10 +1612,24 @@ export const InputBoxContextProvider = ({
           } else if (url && (!closedOnce || !closedPreview)) {
             payload.shareLink = url;
           }
+          const response: any = await dispatch(
+            onConversationsCreate(payload) as any
+          );
 
-          const response: any = await dispatch(onConversationsCreate(payload));
+          if (response) {
+            setMessageSentByUserId(response?.conversation?.id ?? "");
+            dispatch({
+              type: SET_MESSAGE_ID,
+              body: {
+                id: response?.conversation?.id,
+              },
+            });
+          }
 
-          await myClient?.replaceSavedConversation(response?.conversation);
+          await myClient?.replaceSavedConversation(
+            response?.conversation,
+            response?.widgets
+          );
 
           if (response === undefined) {
             dispatch({
@@ -1208,49 +1639,6 @@ export const InputBoxContextProvider = ({
                 msg: "Message not sent. Please check your internet connection",
               },
             });
-          } else if (response) {
-            // start uploading
-            dispatch({
-              type: SET_FILE_UPLOADING_MESSAGES,
-              body: {
-                message: isReply
-                  ? {
-                      ...replyObj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    }
-                  : {
-                      ...obj,
-                      id: response?.id,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    },
-                ID: response?.id,
-              },
-            });
-
-            const id = response?.id;
-            const message = isReply
-              ? {
-                  ...replyObj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                }
-              : {
-                  ...obj,
-                  id: response?.id,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                };
-
-            await myClient?.saveAttachmentUploadConversation(
-              id?.toString(),
-              JSON.stringify(message)
-            );
-
-            await handleFileUpload(response?.id, false);
           }
           dispatch({
             type: STATUS_BAR_STYLE,
@@ -1283,7 +1671,6 @@ export const InputBoxContextProvider = ({
         ])
       );
     }
-
     dispatch({ type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD });
     setIsRecordingLocked(false);
     setOgTagsState({});
@@ -1356,6 +1743,8 @@ export const InputBoxContextProvider = ({
     const ogTags = decodeUrlResponse?.data?.ogTags;
     if (ogTags !== undefined) {
       setOgTagsState(ogTags);
+    } else if (ogTags === undefined) {
+      setOgTagsState({});
     }
   }
 
@@ -1369,7 +1758,6 @@ export const InputBoxContextProvider = ({
             clearTimeout(debounceLinkPreviewTimeout);
             const timeoutId = setTimeout(() => {
               for (let i = 0; i < parts.length; i++) {
-                setShowLinkPreview(true);
                 if (LINK_PREVIEW_REGEX.test(parts[i]) && !closedPreview) {
                   setShowLinkPreview(true);
                   setUrl(parts[i]);
@@ -1386,7 +1774,10 @@ export const InputBoxContextProvider = ({
       setOgTagsState({});
       setShowLinkPreview(false);
     }
-    if (chatRequestState === 0 || chatRequestState === null) {
+    if (
+      chatroomType == ChatroomType.DMCHATROOM &&
+      (chatRequestState === 0 || chatRequestState === null)
+    ) {
       if (event.length >= MAX_LENGTH) {
         dispatch({
           type: SHOW_TOAST,
@@ -1414,7 +1805,10 @@ export const InputBoxContextProvider = ({
       clearTimeout(debounceTimeout);
 
       const len = newMentions.length;
-      if (len > 0) {
+      if (
+        len > 0 &&
+        !(chatroomType === ChatroomType.DMCHATROOM && isUploadScreen)
+      ) {
         const timeoutID = setTimeout(async () => {
           setPage(1);
           const res = await taggingAPI({
@@ -1548,6 +1942,224 @@ export const InputBoxContextProvider = ({
     );
   };
 
+  // this function is for adding tagged user in the input text.
+  const onUserTaggingClicked = ({
+    uuid,
+    userName,
+    communityId,
+    mentionUsername,
+  }: {
+    uuid: string;
+    userName: string;
+    communityId: string;
+    mentionUsername: string;
+  }) => {
+    LMChatAnalytics.track(
+      Events.USER_TAGS_SOMEONE,
+      new Map<string, string>([
+        [Keys.COMMUNITY_ID, communityId?.toString()],
+        [Keys.CHATROOM_NAME, chatroomName?.toString()],
+        [Keys.TAGGED_USER_ID, uuid?.toString()],
+        [Keys.TAGGED_USER_NAME, userName?.toString()],
+      ])
+    );
+    const res = replaceLastMention(
+      message,
+      taggedUserName,
+      mentionUsername,
+      uuid ? `user_profile/${uuid}` : uuid
+    );
+    setMessage(res);
+    setUserTaggingList([]);
+    setGroupTags([]);
+    setIsUserTagging(false);
+  };
+
+  // Audio and play section
+
+  // to stop recorder after 15 min
+  useEffect(() => {
+    (async function stopRecorder() {
+      if (isVoiceNoteRecording) {
+        await handleStopRecord();
+      }
+    })();
+  }, [stopRecording]);
+
+  // to start audio recording
+  const startRecord = async () => {
+    if (!isVoiceNoteRecording) {
+      const audioSet = generateAudioSet();
+
+      const name = generateVoiceNoteName();
+      const path =
+        Platform.OS === "android"
+          ? `${ReactNativeBlobUtil.fs.dirs.CacheDir}/${name}.mp3`
+          : `${name}.m4a`;
+
+      const result = await audioRecorderPlayerAttachment?.startRecorder(
+        path,
+        audioSet
+      );
+      setIsVoiceNoteRecording(true);
+      setVoiceNotesLink(result);
+      audioRecorderPlayerAttachment?.addRecordBackListener((e) => {
+        const seconds = Math.floor(e.currentPosition / 1000);
+        if (seconds >= 900) {
+          setStopRecording(!stopRecording);
+        }
+        setVoiceNotes({
+          recordSecs: e.currentPosition,
+          recordTime: audioRecorderPlayerAttachment
+            ?.mmssss(Math.floor(e.currentPosition))
+            .slice(0, 5),
+          name: name,
+        });
+        return;
+      });
+    }
+  };
+
+  // to stop audio recording
+  const stopRecord = async () => {
+    if (isVoiceNoteRecording) {
+      await audioRecorderPlayerAttachment?.stopRecorder();
+      audioRecorderPlayerAttachment?.removeRecordBackListener();
+
+      // if isVoiceResult is true we show audio player instead of audio recorder
+      const voiceNote = {
+        uri: voiceNotesLink,
+        type: VOICE_NOTE_TEXT,
+        name: `${voiceNotes.name}.${isIOS ? "m4a" : "mp3"}`,
+        duration: Math.floor(voiceNotes.recordSecs / 1000),
+      };
+      dispatch({
+        type: SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
+        body: {
+          audio: [voiceNote],
+        },
+      });
+
+      setIsVoiceNoteRecording(false);
+
+      LMChatAnalytics.track(
+        Events.VOICE_NOTE_RECORDED,
+        new Map<string, string>([
+          [Keys.CHATROOM_TYPE, chatroomType?.toString()],
+          [Keys.CHATROOM_ID, chatroomID?.toString()],
+        ])
+      );
+    }
+  };
+
+  const handleStopRecord = async () => {
+    // to give some time for initiating the start recorder, then only stop it
+    setTimeout(async () => {
+      await stopRecord();
+      setIsVoiceResult(true);
+      setIsRecordingLocked(false);
+    }, 500);
+  };
+
+  // to reset all the recording data we had previously
+  const clearVoiceRecord = async () => {
+    if (isVoiceNoteRecording) {
+      await stopRecord();
+    } else if (isVoiceNotePlaying) {
+      await stopPlay();
+    }
+    setVoiceNotes({
+      recordSecs: 0,
+      recordTime: "",
+      name: "",
+    });
+    setVoiceNotesPlayer({
+      currentPositionSec: 0,
+      currentDurationSec: 0,
+      playTime: "",
+      duration: "",
+    });
+    setVoiceNotesLink("");
+    setIsRecordingLocked(false);
+
+    dispatch({
+      type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
+    });
+
+    // if isVoiceResult is false we show audio recorder instead of audio player
+    setIsVoiceResult(false);
+
+    LMChatAnalytics.track(
+      Events.VOICE_NOTE_CANCELED,
+      new Map<string, string>([
+        [Keys.CHATROOM_TYPE, chatroomType?.toString()],
+        [Keys.CHATROOM_ID, chatroomID?.toString()],
+      ])
+    );
+  };
+
+  // to start playing audio recording
+  const startPlay = async (path: string) => {
+    await audioRecorderPlayerAttachment?.startPlayer(path);
+    audioRecorderPlayerAttachment?.addPlayBackListener((e) => {
+      const playTime = audioRecorderPlayerAttachment?.mmssss(
+        Math.floor(e.currentPosition)
+      );
+      const duration = audioRecorderPlayerAttachment?.mmssss(
+        Math.floor(e.duration)
+      );
+      setVoiceNotesPlayer({
+        currentPositionSec: e.currentPosition,
+        currentDurationSec: e.duration,
+        playTime: audioRecorderPlayerAttachment
+          ?.mmssss(Math.floor(e.currentPosition))
+          .slice(0, 5),
+        duration: audioRecorderPlayerAttachment
+          ?.mmssss(Math.floor(e.duration))
+          .slice(0, 5),
+      });
+
+      // to reset the player after audio player completed it duration
+      if (playTime === duration) {
+        setIsVoiceNotePlaying(false);
+        setVoiceNotesPlayer({
+          currentPositionSec: 0,
+          currentDurationSec: 0,
+          playTime: "",
+          duration: "",
+        });
+      }
+      return;
+    });
+
+    LMChatAnalytics.track(
+      Events.VOICE_NOTE_PREVIEWED,
+      new Map<string, string>([
+        [Keys.CHATROOM_TYPE, chatroomType?.toString()],
+        [Keys.CHATROOM_ID, chatroomID?.toString()],
+      ])
+    );
+    setIsVoiceNotePlaying(true);
+  };
+
+  // to stop playing audio recording
+  const stopPlay = async () => {
+    await audioRecorderPlayerAttachment?.stopPlayer();
+    setIsVoiceNotePlaying(false);
+  };
+
+  // to pause playing audio recording
+  const onPausePlay = async () => {
+    await audioRecorderPlayerAttachment?.pausePlayer();
+    setIsVoiceNotePlaying(false);
+  };
+
+  // to resume playing audio recording
+  const onResumePlay = async () => {
+    await audioRecorderPlayerAttachment?.resumePlayer();
+    setIsVoiceNotePlaying(true);
+  };
+
   const askPermission = async () => {
     if (!isIOS) {
       const permission = await requestAudioRecordPermission();
@@ -1567,6 +2179,14 @@ export const InputBoxContextProvider = ({
       }, 2000);
     }
   }, [isVoiceNoteIconPress]);
+
+  const marginValue = isKeyBoardFocused
+    ? Platform.OS === "android"
+      ? 5
+      : 5
+    : isIOS
+    ? 20
+    : 5;
 
   const contextValues: InputBoxContext = {
     isVoiceNoteIconPress,
@@ -1639,6 +2259,38 @@ export const InputBoxContextProvider = ({
     setIsRecordingLocked,
     voiceNotes,
     setVoiceNotes,
+    marginValue,
+    isVoiceResult,
+    isVoiceNotePlaying,
+    isVoiceNoteRecording,
+    isDraggable,
+    isLongPressedState,
+    stopRecording,
+    isDeleteAnimation,
+
+    micIconOpacity,
+    handleStopRecord,
+    clearVoiceRecord,
+    onPausePlay,
+    voiceNotesPlayer,
+    onResumePlay,
+    startPlay,
+    voiceNotesLink,
+    GIFPicker,
+    GiphyDialog,
+
+    AudioRecorder,
+    AudioPlayer,
+    composedGesture,
+    lockAnimatedStyles,
+    upChevronAnimatedStyles,
+    panStyle,
+    stopPlay,
+    stopRecord,
+    metaData,
+    onUserTaggingClicked,
+    isUserChatbot,
+    canUserCreatePoll,
   };
 
   return (

@@ -38,6 +38,7 @@ import ChatroomTopic from "../ChatroomTopic";
 import Layout from "../../constants/Layout";
 import { VOICE_NOTE_TEXT } from "../../constants/Strings";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
+import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
 import { isOtherUserAIChatbot } from "../../utils/chatroomUtils";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
@@ -46,18 +47,21 @@ interface MessageList {
   onTapToUndo?: () => void;
   scrollToBottom?: () => void;
   showChatroomTopic?: boolean;
+  customWidgetMessageView?: (message: Conversation) => React.ReactElement;
 }
 
 const MessageList = ({
   onTapToUndo,
   scrollToBottom,
   showChatroomTopic,
+  customWidgetMessageView
 }: MessageList) => {
   return (
     <MessageListComponent
       onTapToUndo={onTapToUndo}
       scrollToBottomProp={scrollToBottom}
       showChatroomTopic={showChatroomTopic}
+      customWidgetMessageView={customWidgetMessageView}
     />
   );
 };
@@ -66,12 +70,14 @@ interface MessageListComponent {
   onTapToUndo?: () => void;
   scrollToBottomProp?: () => void;
   showChatroomTopic?: boolean;
+  customWidgetMessageView?: (message: Conversation) => React.ReactElement;
 }
 
 const MessageListComponent = ({
   onTapToUndo,
   scrollToBottomProp,
   showChatroomTopic,
+  customWidgetMessageView,
 }: MessageListComponent) => {
   const {
     conversations,
@@ -472,6 +478,7 @@ const MessageListComponent = ({
                         isStateIncluded={isStateIncluded}
                         index={index}
                         onTapToUndoProp={onTapToUndo}
+                        customWidgetMessageView={customWidgetMessageView}
                       />
                     </Pressable>
                   </Swipeable>
@@ -625,6 +632,7 @@ const MessageListComponent = ({
                         isStateIncluded={isStateIncluded}
                         index={index}
                         onTapToUndoProp={onTapToUndo}
+                        customWidgetMessageView={customWidgetMessageView}
                       />
                     </Pressable>
                   </Swipeable>

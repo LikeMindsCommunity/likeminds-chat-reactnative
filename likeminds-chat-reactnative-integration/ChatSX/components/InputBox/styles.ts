@@ -34,6 +34,8 @@ export const styles = StyleSheet.create({
   },
   emojiButton: {
     padding: Layout.normalize(10),
+    position: "absolute",
+    right: 5,
   },
 
   emoji: {
@@ -66,7 +68,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: Layout.normalize(10),
     paddingLeft: 0,
-    width: "70%",
+    width: "58%",
   },
   voiceNotesInputParent: {
     display: "flex",
@@ -77,13 +79,13 @@ export const styles = StyleSheet.create({
     width: "88%",
   },
   input: {
-    flexGrow: 1,
     fontSize: STYLES.$FONT_SIZES.LARGE,
     fontFamily: STYLES.$FONT_TYPES.LIGHT,
     maxHeight: Layout.normalize(120),
     padding: 0,
     marginBottom: Layout.normalize(2),
     overflow: "scroll",
+    width: "100%",
   },
   sendButton: {
     height: Layout.normalize(50),

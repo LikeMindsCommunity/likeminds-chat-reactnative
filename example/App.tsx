@@ -5,7 +5,6 @@
  * @format
  */
 
-
 import React, {useEffect, useState} from 'react';
 import {
   KeyboardAvoidingView,
@@ -17,8 +16,8 @@ import {
 import {NavigationContainer, StackActions} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {navigationRef} from './RootNavigation';
-import messaging, { firebase } from "@react-native-firebase/messaging";
-import notifee, { EventType } from "@notifee/react-native";
+import messaging, {firebase} from '@react-native-firebase/messaging';
+import notifee, {EventType} from '@notifee/react-native';
 import {
   CarouselScreen,
   CreatePollScreen,
@@ -46,7 +45,6 @@ import {
   Token,
   getRoute,
 } from '@likeminds.community/chat-rn-core';
-import ChatroomScreenWrapper from './screens/Chatroom/ChatroomScreenWrapper';
 import {setStyles} from './styles';
 import {
   ADD_PARTICIPANTS,
@@ -56,8 +54,6 @@ import {
   REPORT,
   VIEW_PARTICIPANTS,
 } from '@likeminds.community/chat-rn-core/ChatSX/constants/Screens';
-import FileUploadScreen from './screens/FileUpload';
-import FileUploadScreenWrapper from './screens/FileUpload/FileUploadWrapper';
 import {useQuery} from '@realm/react';
 import {Credentials} from './login/credentials';
 import {LoginSchemaRO} from './login/loginSchemaRO';
@@ -66,10 +62,11 @@ import {
   ConversationState,
   InitUserWithUuid,
 } from '@likeminds.community/chat-rn';
-import SearchInChatroomScreen from './screens/SearchInChatroom';
 import {ScreenName} from './src/enums/screenNameEnums';
 import {LMCoreCallbacks} from '@likeminds.community/chat-rn-core/ChatSX/setupChat';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import FileUploadScreenWrapper from '@likeminds.community/chat-rn-core/ChatSX/wrappers/FileUploadWrapper';
+import ChatroomScreenWrapper from '@likeminds.community/chat-rn-core/ChatSX/wrappers/ChatroomScreenWrapper';
 
 const Stack = createNativeStackNavigator();
 
@@ -95,7 +92,7 @@ class CustomCallbacks implements LMChatCallbacks, LMChatroomCallbacks {
 const lmChatInterface = new CustomCallbacks();
 
 function App(): React.JSX.Element {
-  const [FCMToken,setFCMToken] = useState("");
+  const [FCMToken, setFCMToken] = useState('');
   const chatroomId = '';
   const profileImageUrl = '';
   const [users, setUsers] = useState<any>();
@@ -191,17 +188,16 @@ function App(): React.JSX.Element {
   );
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
       const val = await getNotification(remoteMessage);
       return val;
     });
 
-    notifee.onForegroundEvent(async ({ type, detail }) => {
+    notifee.onForegroundEvent(async ({type, detail}) => {
       if (detail?.notification?.data?.route != undefined) {
         const navigation = navigationRef?.current || navigationRef;
         let currentRoute = navigation?.getCurrentRoute();
         let routes = await getRoute(detail?.notification?.data?.route);
-
 
         if (type === EventType.PRESS) {
           if (!!navigation) {
@@ -215,7 +211,7 @@ function App(): React.JSX.Element {
                 setTimeout(() => {
                   navigation.navigate(
                     routes?.route as never,
-                    routes?.params as never
+                    routes?.params as never,
                   );
                 }, 1000);
               }
@@ -223,18 +219,17 @@ function App(): React.JSX.Element {
               setTimeout(() => {
                 navigation.navigate(
                   routes?.route as never,
-                  routes?.params as never
+                  routes?.params as never,
                 );
-              },5000)
+              }, 5000);
             }
           }
         }
       }
     });
 
-    return unsubscribe
-  },[])
-  
+    return unsubscribe;
+  }, []);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
@@ -257,7 +252,7 @@ function App(): React.JSX.Element {
                     <Stack.Screen name={'Homefeed'} component={HomeFeed} />
                     <Stack.Screen
                       name="SearchInChatroom"
-                      component={SearchInChatroomScreen}
+                      component={SearchInChatroom}
                       options={{
                         gestureEnabled: Platform.OS === 'ios' ? false : true,
                         headerShown: false,
@@ -351,7 +346,7 @@ function App(): React.JSX.Element {
                   <Stack.Screen name={'Homefeed'} component={HomeFeed} />
                   <Stack.Screen
                     name="SearchInChatroom"
-                    component={SearchInChatroomScreen}
+                    component={SearchInChatroom}
                     options={{
                       gestureEnabled: Platform.OS === 'ios' ? false : true,
                       headerShown: false,

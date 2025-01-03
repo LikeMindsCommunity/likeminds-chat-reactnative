@@ -229,8 +229,14 @@ export function chatroomReducer(state = initialState, action: any) {
     }
     case ON_CONVERSATIONS_CREATE_SUCCESS: {
       const data = action.body;
-      const { conversation = [] } = data;
-      if (conversation?.hasFiles || !!conversation?.replyConversation || conversation == undefined || Array.isArray(conversation) && conversation.length == 0) {
+      const { conversation = [], widgets } = data;
+
+      if (
+        conversation?.hasFiles ||
+        !!conversation?.replyConversation ||
+        conversation == undefined ||
+        (Array.isArray(conversation) && conversation.length == 0)
+      ) {
         return { ...state };
       }
 
@@ -248,7 +254,14 @@ export function chatroomReducer(state = initialState, action: any) {
 
       //replacing the value from the index that matches temporaryID
       if (index !== -1) {
-        conversationArr[index] = conversation;
+        if (conversation.widgetId) {
+          conversationArr[index] = {
+            ...conversation,
+            widget: widgets[conversation.widgetId],
+          };
+        } else {
+          conversationArr[index] = conversation;
+        }
       }
       return {
         ...state,

@@ -155,4 +155,8 @@ export const styles = StyleSheet.create({
     justifyContent: "flex-end",
     marginTop: Layout.normalize(3),
   },
+  showMoreText: {
+    color: STYLES.$COLORS.MSG,
+    fontFamily: STYLES.$FONT_TYPES.MEDIUM,
+  },
 });
