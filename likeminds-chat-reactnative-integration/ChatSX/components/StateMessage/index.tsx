@@ -1,5 +1,5 @@
 import { View, Text, Pressable, TextStyle } from "react-native";
-import React from "react";
+import React, { useMemo } from "react";
 import { useAppSelector } from "../../store";
 import { useMessageContext } from "../../context/MessageContext";
 import { useChatroomContext } from "../../context/ChatroomContext";
@@ -22,12 +22,15 @@ const StateMessage = ({ onTapToUndoProp }: StateMessage) => {
     conversationCreator,
     chatroomWithUserUuid,
     chatroomWithUserMemberId,
+    currentUserUuid,
 
     answerTrimming,
   } = useMessageContext();
 
-  const { onTapToUndo, chatroomType, chatroomName } = useChatroomContext();
 
+  const { onTapToUndo, chatroomType, chatroomName, chatroomDBDetails, chatroomDetails, filteredChatroomActions } = useChatroomContext();
+  
+  
   const chatBubbleStyles = STYLES.$CHAT_BUBBLE_STYLE;
 
   //styling props
@@ -49,7 +52,7 @@ const StateMessage = ({ onTapToUndoProp }: StateMessage) => {
       {item?.state === 19 &&
       conversations[0]?.state === 19 &&
       conversations[0]?.id === item?.id &&
-      (chatroomWithUser ? chatroomWithUser?.id == userIdStringified : null) ? (
+      (chatroomDBDetails ? chatroomDBDetails?.chatRequestedBy?.id == user?.id : null) ? (
         <Pressable
           onPress={() => {
             onTapToUndoProp ? onTapToUndoProp() : onTapToUndo();

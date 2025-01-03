@@ -28,6 +28,10 @@ const REGEX_USER_SPLITTING = /(<<.+?\|route:\/\/[^>]+>>)/gu;
 export const REGEX_USER_TAGGING =
   /<<(?<name>[^<>|]+)\|route:\/\/(?<route>[^?]+(\?.+)?)>>/g;
 
+const COPY_REGEX_USER_SPLITTING = /(<<.+?\|route:\/\/[^>]+>>)/gu;
+const COPY_REGEX_USER_TAGGING =
+  /<<(?<name>[^<>|]+)\|route:\/\/(?<route>[^?]+(\?.+)?)>>/g;
+
 export const SHOW_LIST_REGEX = /[?&]show_list=([^&]+)/;
 
 export const EXTRACT_PATH_FROM_ROUTE_QUERY = /\/([^/].*)/;
@@ -67,7 +71,7 @@ function detectLinks(
   linkTextColor?: string
 ) {
   const regex =
-    /((?:https?:\/\/)?(?:www\.)?(?:\w+\.)+\w+(?:\/\S*)?|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/i;
+    /((?:https?:\/\/www\.|https?:\/\/|www\.)\w+\.\w{2,}(?:\/\S*)?|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/i;
 
   const parts = message.split(regex);
   if (parts?.length > 0) {
@@ -375,7 +379,6 @@ export const decodeTaggingRoute = ({
   return decodedText;
 };
 
-
 // this method is used to decode notifications
 export const decodeForNotifications = (text: string | undefined) => {
   if (!text) {
@@ -413,23 +416,24 @@ export function decodeStr(text: string | undefined) {
   if (!text) {
     return;
   }
+
   const arr: any[] = [];
-  const parts = text.split(REGEX_USER_SPLITTING);
+  const parts = text.split(COPY_REGEX_USER_SPLITTING);
 
   if (parts) {
     for (const matchResult of parts) {
-      const keyValue = matchResult.match(REGEX_USER_TAGGING);
-      let memberName;
-      if (keyValue) {
-        memberName = keyValue[1];
+      const match = COPY_REGEX_USER_TAGGING.exec(matchResult);
+      if (match && match.groups) {
+        const memberName = match.groups.name;
         arr.push({ key: memberName, route: true });
-      } else if (matchResult) {
+      } else {
         arr.push({ key: matchResult, route: null });
       }
     }
-    let str: string = "";
+
+    let str = "";
     arr.forEach((val) => {
-      str = str + val.key;
+      str += val.key;
     });
     return str;
   } else {
@@ -842,20 +846,20 @@ export const formatSearchDate = (date: Date): string => {
   inputDate.setHours(0, 0, 0, 0);
 
   if (inputDate.getTime() === today.getTime()) {
-    return 'Today';
+    return "Today";
   }
 
   if (inputDate.getTime() === yesterday.getTime()) {
-    return 'Yesterday';
+    return "Yesterday";
   }
 
   if (inputDate < today) {
-    const day = inputDate.getDate().toString().padStart(2, '0');
-    const month = (inputDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = inputDate.getDate().toString().padStart(2, "0");
+    const month = (inputDate.getMonth() + 1).toString().padStart(2, "0");
     const year = inputDate.getFullYear();
 
     return `${day}/${month}/${year}`;
   }
 
-  return '';
+  return "";
 };

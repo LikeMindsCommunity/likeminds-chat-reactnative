@@ -7,6 +7,7 @@ import React, {
   TextStyle,
 } from "react-native";
 import defaultStyles from "../constants/defaultStyles";
+import { LINK_PREVIEW_REGEX } from "../../constants/Regex";
 
 const REGEX_USER_SPLITTING = /(<<.+?\|route:\/\/[^>]+>>)/gu;
 export const REGEX_USER_TAGGING =
@@ -17,10 +18,8 @@ export const SHOW_LIST_REGEX = /[?&]show_list=([^&]+)/;
 export const EXTRACT_PATH_FROM_ROUTE_QUERY = /\/([^/].*)/;
 
 function detectLinks(message: string, isLongPress?: boolean) {
-  const regex =
-    /((?:https?:\/\/)?(?:www\.)?(?:\w+\.)+\w+(?:\/\S*)?|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/i;
-
-  let parts = message.split(regex);
+  
+  let parts = message.split(LINK_PREVIEW_REGEX);
   let i = 0;
   if (parts?.length > 0) {
     return (
@@ -28,7 +27,7 @@ function detectLinks(message: string, isLongPress?: boolean) {
         {parts?.map((val: any, index: any) => (
           <Text key={val + index}>
             {/* key should be unique so we are passing `val(abc) + index(number) = abc2` to make it unique */}
-            {regex.test(val) ? (
+            {LINK_PREVIEW_REGEX.test(val) ? (
               <Text
                 onPress={async () => {
                   if (!!!isLongPress) {

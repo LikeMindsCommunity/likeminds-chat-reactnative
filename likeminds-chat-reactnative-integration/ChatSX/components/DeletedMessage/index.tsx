@@ -1,4 +1,4 @@
-import { View, Text, TextStyle, TouchableOpacity } from "react-native";
+import { View, Text, TextStyle } from "react-native";
 import React from "react";
 import { ChatroomType } from "../../enums";
 import { useMessageContext } from "../../context/MessageContext";

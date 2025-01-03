@@ -7,6 +7,7 @@ import { useAppSelector } from "../../store";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import STYLES from "../../constants/Styles";
 import { useMessageContext } from "../../context/MessageContext";
+import MoreLess from "../MoreLess";
 
 const MessageText = () => {
   const { item } = useMessageContext();
@@ -20,17 +21,19 @@ const MessageText = () => {
   const textStyles = chatBubbleStyles?.textStyles;
   const linkTextColor = chatBubbleStyles?.linkTextColor;
   const taggingTextColor = chatBubbleStyles?.taggingTextColor;
+  const showMoreTextStyle = STYLES.$CHAT_BUBBLE_STYLE.showMoreTextStyle;
   return (
     <View style={styles.messageText as any}>
-      {decode({
-        text: isGif ? generateGifString(item?.answer) : item?.answer,
-        enableClick: true,
-        chatroomName: chatroomName,
-        communityId: user?.sdkClientInfo?.community,
-        textStyles: textStyles,
-        linkTextColor: linkTextColor,
-        taggingTextColor: taggingTextColor,
-      })}
+      <MoreLess
+        text={isGif ? generateGifString(item?.answer) : item?.answer}
+        enableClick={true}
+        chatroomName={chatroomName}
+        communityId={user?.sdkClientInfo?.community}
+        textStyles={textStyles}
+        linkTextColor={linkTextColor}
+        taggingTextColor={taggingTextColor}
+        showMoreTextStyle={showMoreTextStyle}
+      />
     </View>
   );
 };

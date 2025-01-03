@@ -4,5 +4,5 @@ export const VALID_URI_REGEX = /^(https):\/\/[^ "]+$/; // this regex helps us to
 export const REGEX_TO_EXTRACT_PATH = /route:\/\/(.*?)\?/;
 export const REGEX_TO_EXTRACT_PARAMS = /[?&]([^=#]+)=([^&#]*)/g;
 export const LINK_PREVIEW_REGEX =
-  /((?:https?:\/\/)?(?:www\.)?(?:\w+\.)+\w+(?:\/\S*)?|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/i;
+  /((?:https?:\/\/www\.|https?:\/\/|www\.)\w+\.\w{2,}(?:\/\S*)?|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/i;
 export const URL_REGEX = /(https?:\/\/[^\s]+)/gi;

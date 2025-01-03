@@ -1,5 +1,5 @@
 import { Image, TouchableOpacity, View } from "react-native";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useMemo } from "react";
 import { styles } from "./styles";
 import STYLES from "../../constants/Styles";
 import ReplyConversations from "../ReplyConversations";
@@ -17,6 +17,7 @@ import SimpleMessage from "../SimpleMessage";
 import { NavigateToProfileParams } from "../../callBacks/type";
 import { CallBack } from "../../callBacks/callBackClass";
 import { useCustomComponentsContext } from "../../context/CustomComponentContextProvider";
+import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
 
 interface Messages {
   item: any;
@@ -24,6 +25,7 @@ interface Messages {
   isStateIncluded: boolean;
   isIncluded: boolean;
   onTapToUndoProp?: () => void;
+  customWidgetMessageView?: (message: Conversation) => React.ReactElement;
 }
 
 const Messages = ({
@@ -32,6 +34,7 @@ const Messages = ({
   isStateIncluded,
   isIncluded,
   onTapToUndoProp,
+  customWidgetMessageView,
 }: Messages) => {
   return (
     <MessageContextProvider
@@ -40,20 +43,27 @@ const Messages = ({
       isStateIncluded={isStateIncluded}
       isIncluded={isIncluded}
     >
-      <MessagesComponent onTapToUndoProp={onTapToUndoProp} />
+      <MessagesComponent
+        onTapToUndoProp={onTapToUndoProp}
+        customWidgetMessageView={customWidgetMessageView}
+      />
     </MessageContextProvider>
   );
 };
 
 interface MessagesComponentProps {
   onTapToUndoProp?: () => void;
+  customWidgetMessageView?: (message: Conversation) => React.ReactElement;
 }
 
 interface CustomReactionList {
   customReactionList?: ReactNode;
 }
 
-const MessagesComponent = ({ onTapToUndoProp }: MessagesComponentProps) => {
+const MessagesComponent = ({
+  onTapToUndoProp,
+  customWidgetMessageView,
+}: MessagesComponentProps) => {
   const {
     item,
     isIncluded,
@@ -89,6 +99,22 @@ const MessagesComponent = ({ onTapToUndoProp }: MessagesComponentProps) => {
     ? selectedMessageBackgroundColor
     : STYLES.$COLORS.SELECTED_BLUE;
   // styling props ended
+
+  const showCustomMessageViewWidget = useMemo(() => {
+    if (item?.widget && item?.widgetId) {
+      const widget = item.widget;
+      if (widget) {
+        return true;
+      } else {
+        false;
+      }
+    } else {
+      return false;
+    }
+  }, [item]);
+  if (showCustomMessageViewWidget) {
+    return customWidgetMessageView ? customWidgetMessageView(item) : null;
+  }
 
   return (
     <View>

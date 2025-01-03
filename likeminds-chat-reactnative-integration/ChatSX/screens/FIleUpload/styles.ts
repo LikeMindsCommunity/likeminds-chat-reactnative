@@ -55,11 +55,10 @@ const styles = StyleSheet.create({
     padding: Layout.normalize(10),
   },
   selectedFileToView: {
-    flexGrow: 1,
     display: "flex",
     justifyContent: "center",
   },
-  bottomBar: { position: "absolute", bottom: Layout.normalize(30) },
+  bottomBar: { position: "absolute", bottom: Layout.normalize(50), zIndex: 10 },
   bottomListOfImages: {
     height: Layout.normalize(50),
     alignSelf: "flex-end",
@@ -69,11 +68,11 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     width: Layout.window.width,
-    height: Layout.window.height / Layout.normalize(1.6),
+    height: Layout.window.height - Layout.normalize(125),
   },
   videoPlayer: {
     width: Layout.window.width,
-    height: Layout.window.height / Layout.normalize(1.6),
+    height: Layout.window.height - Layout.normalize(125),
   },
   videoIcon: {
     height: Layout.normalize(20),

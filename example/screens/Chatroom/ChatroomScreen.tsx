@@ -7,12 +7,17 @@ import {
   useChatroomContext,
   useMessageListContext,
   useExploreFeedContext,
-  ChatroomTopic
+  ChatroomTopic,
 } from '@likeminds.community/chat-rn-core';
 import {ReactionList} from '../../customisableComponents/ReactionList';
 import ChatroomTabNavigator from '../../src/ChatroomTabNavigator';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Text, View} from 'react-native';
+import {Conversation} from '@likeminds.community/chat-rn/dist/shared/responseModels/Conversation';
+import {InputBoxContextProvider} from '@likeminds.community/chat-rn-core/ChatSX/context/InputBoxContext';
+import {ChatroomContextValues} from '@likeminds.community/chat-rn-core/ChatSX/context/ChatroomContext';
+import MessageInputBox from './MessageInputBox';
 
 interface HintMessages {
   messageForRightsDisabled?: string;
@@ -57,6 +62,23 @@ export function ChatroomScreen() {
     unblockMember,
   } = useChatroomContext();
   const {scrollToBottom} = useMessageListContext();
+
+  const {
+    chatroomID,
+    chatroomWithUser,
+    currentChatroomTopic,
+    chatroomType,
+    replyChatID,
+    isEditable,
+    chatroomName,
+    isSecret,
+    refInput,
+    chatroomDBDetails,
+    chatRequestState,
+
+    setIsEditable,
+    handleFileUpload,
+  }: ChatroomContextValues = useChatroomContext();
 
   const customSetChatroomTopic = async () => {
     console.log('before custom chatroom topic');
@@ -136,6 +158,7 @@ export function ChatroomScreen() {
 
   const navigation = useNavigation<StackNavigationProp<any>>();
 
+
   return (
     <ChatRoom
       showViewParticipants={showViewParticipants}
@@ -159,8 +182,11 @@ export function ChatroomScreen() {
       blockMember={customBlockMember}
       unblockMember={customUnBlockMember}>
       {/* ChatroomHeader */}
-      <ChatroomHeader showThreeDotsOnHeader={true} showThreeDotsOnSelectedHeader={true} />
-      
+      <ChatroomHeader
+        showThreeDotsOnHeader={true}
+        showThreeDotsOnSelectedHeader={true}
+      />
+
       {/* Chtroom Topic */}
       <ChatroomTopic />
 
@@ -172,12 +198,27 @@ export function ChatroomScreen() {
       />
 
       {/* Input Box Flow */}
-      <MessageInput
-        joinSecretChatroomProp={customJoinSecretChatroom}
-        showJoinAlertProp={customShowJoinAlert}
-        showRejectAlertProp={customShowRejectAlert}
-        hintMessages={hintMessages}
-      />
+      <InputBoxContextProvider
+        chatroomName={chatroomName}
+        chatroomWithUser={chatroomWithUser}
+        replyChatID={replyChatID}
+        chatroomID={chatroomID}
+        isUploadScreen={false}
+        myRef={refInput}
+        handleFileUpload={handleFileUpload}
+        isEditable={isEditable}
+        setIsEditable={(value: boolean) => {
+          setIsEditable(value);
+        }}
+        isSecret={isSecret}
+        chatroomType={chatroomType}
+        currentChatroomTopic={currentChatroomTopic}
+        isPrivateMember={chatroomDBDetails.isPrivateMember}
+        chatRequestState={chatRequestState}>
+        <MessageInput hintMessages={hintMessages}>
+          <MessageInputBox />
+        </MessageInput>
+      </InputBoxContextProvider>
     </ChatRoom>
   );
 }

@@ -1,7 +1,6 @@
-import { View, Text, TouchableOpacity, Image, Keyboard, Platform, SafeAreaView } from "react-native";
+import { View, Text, TouchableOpacity, Image, SafeAreaView, Keyboard } from "react-native";
 import React, { useLayoutEffect, useMemo, useState } from "react";
-import { ChatroomType } from "../../enums";
-import InputBox from "../InputBox";
+import { ChatroomChatRequestState, ChatroomType } from "../../enums";
 import { styles } from "../../screens/ChatRoom/styles";
 import {
   ChatroomContextValues,
@@ -12,14 +11,13 @@ import STYLES from "../../constants/Styles";
 import {
   APPROVE_BUTTON,
   COMMUNITY_MANAGER_DISABLED_CHAT,
+  DM_BLOCKED_USER,
   DM_REQUEST_SENT_MESSAGE,
   REJECT_BUTTON,
   REQUEST_SENT,
 } from "../../constants/Strings";
-import { CustomisableMethodsContextProvider } from "../../context/CustomisableMethodsContext";
 import { LMChatTextView } from "../../uiComponents";
 import { isOtherUserAIChatbot } from "../../utils/chatroomUtils"
-import Layout from "../../constants/Layout";
 
 interface HintMessages {
   messageForRightsDisabled?: string;
@@ -29,17 +27,21 @@ interface HintMessages {
 }
 
 interface MessageInput {
-  joinSecretChatroomProp: () => void;
-  showJoinAlertProp: () => void;
-  showRejectAlertProp: () => void;
+  children: React.ReactNode;
+  joinSecretChatroomProp?: () => void;
+  showJoinAlertProp?: () => void;
+  showRejectAlertProp?: () => void;
   hintMessages?: HintMessages;
+  conversationMetaData?: Record<string, any>;
 }
 
 const MessageInput = ({
+  children,
   joinSecretChatroomProp,
   showJoinAlertProp,
   showRejectAlertProp,
   hintMessages,
+  conversationMetaData,
 }: MessageInput) => {
   const {
     navigation,
@@ -61,6 +63,7 @@ const MessageInput = ({
     previousRoute,
     isSecret,
     refInput,
+    filteredChatroomActions,
 
     setIsEditable,
     joinSecretChatroom,
@@ -137,23 +140,7 @@ const MessageInput = ({
             !(user.state !== 1 && chatroomDBDetails?.type === 7) &&
               chatroomFollowStatus &&
               memberRights[3]?.isSelected === true ? (
-              <InputBox
-                chatroomName={chatroomName}
-                chatroomWithUser={chatroomWithUser}
-                replyChatID={replyChatID}
-                chatroomID={chatroomID}
-                navigation={navigation}
-                isUploadScreen={false}
-                myRef={refInput}
-                handleFileUpload={handleFileUpload}
-                isEditable={isEditable}
-                setIsEditable={(value: boolean) => {
-                  setIsEditable(value);
-                }}
-                isSecret={isSecret}
-                chatroomType={chatroomType}
-                currentChatroomTopic={currentChatroomTopic}
-              />
+              <>{children}</>
             ) : //case to block normal users from messaging in an Announcement Room
             user.state !== 1 && chatroomDBDetails?.type === 7 ? (
               <View style={styles.disabledInput}>
@@ -244,7 +231,7 @@ const MessageInput = ({
       ) : chatroomType === ChatroomType.DMCHATROOM &&
         memberRights?.length > 0 ? (
         <View>
-          {chatRequestState === 0 &&
+          {chatRequestState === ChatroomChatRequestState.INITIATED &&
           (chatroomDBDetails?.chatRequestedBy
             ? chatroomDBDetails?.chatRequestedBy?.id !== user?.id?.toString()
             : null) ? (
@@ -285,27 +272,22 @@ const MessageInput = ({
               </Text>
             </View>
           ) : showDM === true &&
-            (chatRequestState === 0 || chatRequestState === 2) ? (
-            <View style={styles.disabledInput}>
-              <Text style={styles.disabledInputText}>{REQUEST_SENT}</Text>
-            </View>
-          ) : (showDM === true && chatRequestState === 1) ||
+            (chatRequestState === ChatroomChatRequestState.INITIATED ||
+              chatRequestState === ChatroomChatRequestState.REJECTED) ? (
+            chatRequestState === ChatroomChatRequestState.REJECTED &&
+            chatroomDBDetails?.chatRequestedBy?.id == user?.id?.toString() ? (
+              <View style={styles.disabledInput}>
+                <Text style={styles.disabledInputText}>{DM_BLOCKED_USER}</Text>
+              </View>
+            ) : (
+              <View style={styles.disabledInput}>
+                <Text style={styles.disabledInputText}>{REQUEST_SENT}</Text>
+              </View>
+            )
+          ) : (showDM === true &&
+              chatRequestState === ChatroomChatRequestState.ACCEPTED) ||
             chatRequestState === null ? (
-            <InputBox
-              replyChatID={replyChatID}
-              chatroomID={chatroomID}
-              chatRequestState={chatRequestState}
-              chatroomType={chatroomType}
-              navigation={navigation}
-              isUploadScreen={false}
-              isPrivateMember={chatroomDBDetails?.isPrivateMember}
-              myRef={refInput}
-              handleFileUpload={handleFileUpload}
-              isEditable={isEditable}
-              setIsEditable={(value: boolean) => {
-                setIsEditable(value);
-              }}
-            />
+            <>{children}</>
           ) : (
             <View style={styles.disabledInput}>
               <Text style={styles.disabledInputText}>Loading...</Text>

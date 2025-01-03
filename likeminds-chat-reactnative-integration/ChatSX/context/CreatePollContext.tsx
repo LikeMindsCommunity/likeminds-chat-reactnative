@@ -15,6 +15,7 @@ import {
   DATE_TEXT,
   EMPTY_OPTIONS_WARNING,
   EXPIRY_TIME_WARNING,
+  PAST_TIME_WARNING,
   POLLS_OPTIONS_WARNING,
   QUESTION_WARNING,
   TIME_TEXT,
@@ -140,7 +141,11 @@ export const CreatePollContextProvider = ({
         setShow(true); // to show the picker again in time mode
       } else {
         const selectedTime = selectedValue || newDate;
-        setTime(selectedTime);
+        if ((event?.nativeEvent?.timestamp >= Date.now())) {
+          setTime(selectedTime);
+        } else {
+          setTime(newDate)
+        }
         setShow(false);
         setMode(DATE_TEXT);
       }
@@ -257,8 +262,23 @@ export const CreatePollContextProvider = ({
         });
         return;
       }
-      const tempPollOptionsMap: any = {};
+
       let shouldBreak = false;
+      optionsArray.forEach((element: any) => {
+        const value = element?.text?.trim()
+        if(!value){
+          dispatch({
+            type: SHOW_TOAST,
+            body: { isToast: true, msg: EMPTY_OPTIONS_WARNING },
+          });
+          shouldBreak = true;
+          return;
+        }
+      });
+      if (shouldBreak) {
+        return;
+      }
+      const tempPollOptionsMap: any = {};
       const polls = optionsArray.map((item: any) => {
         if (tempPollOptionsMap[item?.text] !== undefined) {
           dispatch({
@@ -280,8 +300,17 @@ export const CreatePollContextProvider = ({
           };
         }
       });
+      
       if (shouldBreak) {
         return;
+      }
+
+      if(time < new Date()){
+        dispatch({
+          type: SHOW_TOAST,
+          body: { isToast: true, msg: PAST_TIME_WARNING },
+        });
+        return
       }
 
       const payload: any = {

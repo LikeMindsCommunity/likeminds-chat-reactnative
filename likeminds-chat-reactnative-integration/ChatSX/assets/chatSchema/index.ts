@@ -1,4 +1,4 @@
-export const chatSchema = {
+export const chatSchema: any = {
   normal: {
     answer: "5",
     attachmentCount: 0,
@@ -42,6 +42,8 @@ export const chatSchema = {
     reactions: [],
     state: 0,
     ogTags: {},
+    widget: null,
+    widgetId: "",
   },
   reply: {
     answer: "Hey",
@@ -124,9 +126,13 @@ export const chatSchema = {
       },
       reactions: [],
       state: 0,
+      widget: null,
+      widgetId: "",
     },
     state: 0,
     ogTags: {},
+    widget: null,
+    widgetId: "",
   },
 };
 
@@ -208,4 +214,6 @@ export const convertToChatroomTopicSchema = (item) => ({
   deletedByMember: undefined,
   community: [],
   chatroom: [],
+  widget: item.widget,
+  widgetId: item.widgetId
 });

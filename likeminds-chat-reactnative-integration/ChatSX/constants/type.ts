@@ -201,6 +201,7 @@ export interface ChatBubbleStyles {
     backgroundColor?: string;
   };
   imageVideoAttachmentsBorderRadius?: number;
+  showMoreTextStyle?: TextStyle;
 }
 
 export interface ReactionListStyles {
@@ -225,12 +226,12 @@ export interface InputBoxStyles {
   placeholderText?: string;
   inputTextStyle?: {
     flexGrow?: number;
-    fontSize?: string;
+    fontSize?: number;
     fontFamily?: string;
     maxHeight?: number;
     padding?: number;
     marginBottom?: number;
-    overflow?: string;
+    overflow?: "visible" | "hidden" | "scroll" | undefined;
   };
   sendIconStyles?: {
     width?: number;

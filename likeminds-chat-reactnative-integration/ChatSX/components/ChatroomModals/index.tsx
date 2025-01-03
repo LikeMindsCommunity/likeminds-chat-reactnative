@@ -15,7 +15,7 @@ const ChatroomModals = () => {
   const {chatroomDBDetails, user} = useChatroomContext();
   const isOtherUserChatbot = useMemo(() => isOtherUserAIChatbot(chatroomDBDetails, user), [user, chatroomDBDetails])
   return (
-    <View>
+    <View style={{position: 'absolute', zIndex: 10}}>
       {/* Chatroom Action Modal */}
       <ChatroomActionModal />
 
