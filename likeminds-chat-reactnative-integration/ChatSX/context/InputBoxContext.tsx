@@ -1244,16 +1244,6 @@ export const InputBoxContextProvider = ({
         replyObj.images = dummySelectedFileArr;
         replyObj.videos = dummySelectedFileArr;
         replyObj.pdf = dummySelectedFileArr;
-        replyObj.widgetId = replyMessage.widgetId ? ID?.toString() : "";
-        replyObj.widget = replyMessage.widgetId
-          ? {
-              metadata: replyMessage?.widget,
-              parentEntityId: "",
-              parentEntityType: "",
-              createdAt: ID,
-              updatedAt: ID,
-            }
-          : {};
         if (!closedOnce || !closedPreview) {
           replyObj.ogTags = ogTagsState;
         }
@@ -1294,7 +1284,7 @@ export const InputBoxContextProvider = ({
               createdAt: ID,
               updatedAt: ID,
             }
-          : {};
+          : null;
       obj.widgetId =
         Object.keys(metaData ?? {}).length > 0 ? ID?.toString() : "";
       if (!closedOnce || !closedPreview) {
@@ -1784,7 +1774,10 @@ export const InputBoxContextProvider = ({
       setOgTagsState({});
       setShowLinkPreview(false);
     }
-    if ( chatroomType == ChatroomType.DMCHATROOM && (chatRequestState === 0 || chatRequestState === null)) {
+    if (
+      chatroomType == ChatroomType.DMCHATROOM &&
+      (chatRequestState === 0 || chatRequestState === null)
+    ) {
       if (event.length >= MAX_LENGTH) {
         dispatch({
           type: SHOW_TOAST,

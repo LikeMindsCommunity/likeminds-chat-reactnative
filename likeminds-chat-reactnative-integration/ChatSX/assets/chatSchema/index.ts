@@ -1,4 +1,4 @@
-export const chatSchema = {
+export const chatSchema: any = {
   normal: {
     answer: "5",
     attachmentCount: 0,
@@ -42,7 +42,7 @@ export const chatSchema = {
     reactions: [],
     state: 0,
     ogTags: {},
-    widget: {},
+    widget: null,
     widgetId: "",
   },
   reply: {
@@ -126,12 +126,12 @@ export const chatSchema = {
       },
       reactions: [],
       state: 0,
-      widget: {},
+      widget: null,
       widgetId: "",
     },
     state: 0,
     ogTags: {},
-    widget: {},
+    widget: null,
     widgetId: "",
   },
 };

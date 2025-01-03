@@ -73,6 +73,8 @@ export function ChatroomScreen() {
     chatroomName,
     isSecret,
     refInput,
+    chatroomDBDetails,
+    chatRequestState,
 
     setIsEditable,
     handleFileUpload,
@@ -156,14 +158,6 @@ export function ChatroomScreen() {
 
   const navigation = useNavigation<StackNavigationProp<any>>();
 
-  const customWidgetMessageView = (message: Conversation) => {
-    return (
-      <View>
-        <Text>{message.answer}</Text>
-        <Text>{'Yayy!'}</Text>
-      </View>
-    );
-  };
 
   return (
     <ChatRoom
@@ -201,7 +195,6 @@ export function ChatroomScreen() {
         onTapToUndo={customOnTapToUndo}
         scrollToBottom={customScrollToBottom}
         showChatroomTopic={showChatroomTopic}
-        customWidgetMessageView={customWidgetMessageView}
       />
 
       {/* Input Box Flow */}
@@ -219,7 +212,9 @@ export function ChatroomScreen() {
         }}
         isSecret={isSecret}
         chatroomType={chatroomType}
-        currentChatroomTopic={currentChatroomTopic}>
+        currentChatroomTopic={currentChatroomTopic}
+        isPrivateMember={chatroomDBDetails.isPrivateMember}
+        chatRequestState={chatRequestState}>
         <MessageInput hintMessages={hintMessages}>
           <MessageInputBox />
         </MessageInput>

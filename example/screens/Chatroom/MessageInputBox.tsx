@@ -27,7 +27,6 @@ import {
   SET_REPLY_MESSAGE,
 } from '@likeminds.community/chat-rn-core/ChatSX/store/types/types';
 import {Keyboard, StyleSheet, View} from 'react-native';
-import {CustomWidgetTestComponent} from './CustomWidgetTestComponent';
 
 const MessageInputBox = () => {
   const {
@@ -176,7 +175,6 @@ const MessageInputBox = () => {
                 console.log('handleGifProp 2');
               }}
             />
-            <CustomWidgetTestComponent />
             <AddFilesView
               handleFilesViewProp={() => {
                 console.log('handleFilesViewProp 1');

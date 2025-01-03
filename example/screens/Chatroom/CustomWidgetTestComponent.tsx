@@ -30,7 +30,6 @@ export const CustomWidgetTestComponent = () => {
   return (
     <>
       {!isUploadScreen &&
-      !(chatRequestState === 0 || chatRequestState === null) &&
       !isEditable &&
       !voiceNotes?.recordTime &&
       !isDeleteAnimation ? (
