@@ -4,6 +4,7 @@ import {
   LMSDKCallbacks,
 } from "@likeminds.community/chat-rn";
 import { Client } from "./client";
+import { Themes } from "../ChatSX/enums/Themes";
 
 // create a class by LMChatCoreCallbacks and take two functions in its contructors, assign these two functions to the class's functions
 export class LMCoreCallbacks {
@@ -77,5 +78,17 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
     super();
     this.lmCoreCallbacks = lmCoreCallbacks;
     this.client = client;
+  }
+}
+
+export class SdkTheme {
+  private static _theme: Themes
+
+  static setSdkTheme(theme: Themes): void {
+    this._theme = theme
+  }
+
+  static get sdkTheme(): Themes {
+    return this._theme;
   }
 }
