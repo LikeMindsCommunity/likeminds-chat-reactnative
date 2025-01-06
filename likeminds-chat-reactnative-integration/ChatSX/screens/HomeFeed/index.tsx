@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from "react";
+import React, { useState, useLayoutEffect, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -32,14 +32,16 @@ import { Events, Keys } from "../../enums";
 import { Credentials } from "../../credentials";
 import { Client } from "../../client";
 import Layout from "../../constants/Layout";
+import { Themes } from "../../enums/Themes";
 
 interface Props {
   navigation: any;
+  theme: Themes
 }
 
 const Tab = createMaterialTopTabNavigator();
 
-const HomeFeed = ({ navigation }: Props) => {
+const HomeFeed = ({ navigation, theme }: Props) => {
   const myClient = Client.myClient;
   const [isLoading, setIsLoading] = useState(false);
   const [communityId, setCommunityId] = useState("");
@@ -63,6 +65,17 @@ const HomeFeed = ({ navigation }: Props) => {
 
   const INITIAL_SYNC_PAGE = 1;
 
+  const headerTitle = useMemo(() => {
+    switch (theme) {
+      case Themes.COMMUNITY:
+        return "Community"
+      case Themes.COMMUNITY_HYBRID:
+        return "Community"
+      case Themes.NETWORKING:
+        return "Networking"
+    }
+  }, [])
+
   const chatrooms = [...invitedChatrooms, ...myChatrooms];
   const setOptions = () => {
     navigation.setOptions({
@@ -77,7 +90,7 @@ const HomeFeed = ({ navigation }: Props) => {
               fontFamily: STYLES.$FONT_TYPES.BOLD,
             }}
           >
-            Community
+            {headerTitle}
           </Text>
         </TouchableOpacity>
       ),
@@ -107,8 +120,8 @@ const HomeFeed = ({ navigation }: Props) => {
                   Platform.OS === "ios"
                     ? Layout.normalize(3)
                     : Platform.OS === "android"
-                    ? 0
-                    : 0,
+                      ? 0
+                      : 0,
               }}
             >
               {user?.name ? getNameInitials(user?.name) : ""}
@@ -263,61 +276,82 @@ const HomeFeed = ({ navigation }: Props) => {
     <Text style={styles.font}>{route.title}</Text>
   );
 
-  return (
-    <View style={styles.page}>
-      {hideDMTab === false ? (
-        <Tab.Navigator
-          screenOptions={{
-            tabBarLabelStyle: styles.font,
-            tabBarIndicatorStyle: { backgroundColor: STYLES.$COLORS.PRIMARY },
-          }}
-        >
-          <Tab.Screen
-            name={GROUP_FEED}
-            options={{
-              tabBarLabel: ({ focused }) => (
-                <Text
-                  style={[
-                    styles.font,
-                    {
-                      color: focused
-                        ? STYLES.$COLORS.PRIMARY
-                        : STYLES.$COLORS.MSG,
-                    },
-                  ]}
-                >
-                  Groups
-                </Text>
-              ),
-            }}
-            component={GroupFeed}
-          />
-          <Tab.Screen
-            name={DM_FEED}
-            options={{
-              tabBarLabel: ({ focused }) => (
-                <Text
-                  style={[
-                    styles.font,
-                    {
-                      color: focused
-                        ? STYLES.$COLORS.PRIMARY
-                        : STYLES.$COLORS.MSG,
-                    },
-                  ]}
-                >
-                  DMs
-                </Text>
-              ),
-            }}
-            component={DMFeed}
-          />
-        </Tab.Navigator>
-      ) : hideDMTab === true ? (
+  if (theme == Themes.COMMUNITY) {
+    return (
+      <View style={styles.page}>
         <GroupFeed />
-      ) : null}
-    </View>
-  );
+      </View>
+    )
+  }
+
+  if (theme == Themes.NETWORKING) {
+    return (
+      <View style={styles.page}>
+        <DMFeed />
+      </View>
+    )
+  }
+
+  if (theme == Themes.COMMUNITY_HYBRID) {
+    return (
+      <View style={styles.page}>
+        {hideDMTab === false ? (
+          <Tab.Navigator
+            screenOptions={{
+              tabBarLabelStyle: styles.font,
+              tabBarIndicatorStyle: { backgroundColor: STYLES.$COLORS.PRIMARY },
+            }}
+          >
+            <Tab.Screen
+              name={GROUP_FEED}
+              options={{
+                tabBarLabel: ({ focused }) => (
+                  <Text
+                    style={[
+                      styles.font,
+                      {
+                        color: focused
+                          ? STYLES.$COLORS.PRIMARY
+                          : STYLES.$COLORS.MSG,
+                      },
+                    ]}
+                  >
+                    Groups
+                  </Text>
+                ),
+              }}
+              component={GroupFeed}
+            />
+            <Tab.Screen
+              name={DM_FEED}
+              options={{
+                tabBarLabel: ({ focused }) => (
+                  <Text
+                    style={[
+                      styles.font,
+                      {
+                        color: focused
+                          ? STYLES.$COLORS.PRIMARY
+                          : STYLES.$COLORS.MSG,
+                      },
+                    ]}
+                  >
+                    DMs
+                  </Text>
+                ),
+              }}
+              component={DMFeed}
+            />
+          </Tab.Navigator>
+        ) : hideDMTab === true ? (
+          <GroupFeed />
+        ) : null}
+      </View>
+    );
+  }
+
+  return null
+
 };
 
 export default HomeFeed;
