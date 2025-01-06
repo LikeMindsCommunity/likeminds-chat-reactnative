@@ -48,6 +48,7 @@ export interface HomeFeedReducerState {
   statusBarStyle: string;
   groupFeedChatrooms: any[];
   dmFeedChatrooms: any[];
+  fetchingDmFeedChatrooms: boolean;
 }
 
 export const initialState: HomeFeedReducerState = {
@@ -66,6 +67,7 @@ export const initialState: HomeFeedReducerState = {
   statusBarStyle: Styles.$STATUS_BAR_STYLE.default,
   groupFeedChatrooms: [] as any,
   dmFeedChatrooms: [] as any,
+  fetchingDmFeedChatrooms: true
 };
 
 export function homefeedReducer(state = initialState, action: any) {
@@ -95,6 +97,7 @@ export function homefeedReducer(state = initialState, action: any) {
       const { dmFeedChatrooms = {} } = action.body;
       return {
         ...state,
+        fetchingDmFeedChatrooms: false,
         dmFeedChatrooms: dmFeedChatrooms,
       };
     }
