@@ -207,7 +207,7 @@ const InputBoxView = ({
         >
           {!isUploadScreen &&
           !(
-            chatRequestState === ChatroomChatRequestState.INITIATED
+            chatRequestState === ChatroomChatRequestState.INITIATED || ( chatroomType == ChatroomType.DMCHATROOM && chatRequestState == null)
           ) &&
           !isEditable &&
           !voiceNotes?.recordTime &&
