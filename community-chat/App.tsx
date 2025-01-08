@@ -48,6 +48,7 @@ import {
   LMChatNetworkingFeedScreenWrapper,
   LMChatCommunityFeedScreenWrapper,
   LMChatHybridFeedScreenWrapper,
+  ScreenName
 } from '@likeminds.community/chat-rn-core';
 import {setStyles} from './styles';
 import {
@@ -66,7 +67,6 @@ import {
   ConversationState,
   InitUserWithUuid,
 } from '@likeminds.community/chat-rn';
-import {ScreenName} from './src/enums/screenNameEnums';
 import {LMCoreCallbacks} from '@likeminds.community/chat-rn-core/ChatSX/setupChat';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import FileUploadScreenWrapper from '@likeminds.community/chat-rn-core/ChatSX/wrappers/FileUploadWrapper';
@@ -254,10 +254,10 @@ function App(): React.JSX.Element {
                 theme={Themes.COMMUNITY}
                 >
                 <NavigationContainer ref={navigationRef} independent={true}>
-                  <Stack.Navigator initialRouteName={'Homefeed'}>
-                    <Stack.Screen name={'Homefeed'} component={LMChatCommunityFeedScreenWrapper} />
+                  <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
+                    <Stack.Screen name={ScreenName.HomeFeed} component={LMChatHybridFeedScreenWrapper} />
                     <Stack.Screen
-                      name="SearchInChatroom"
+                      name={ScreenName.SearchInChatroom}
                       component={SearchInChatroom}
                       options={{
                         gestureEnabled: Platform.OS === 'ios' ? false : true,
@@ -265,7 +265,7 @@ function App(): React.JSX.Element {
                       }}
                     />
                     <Stack.Screen
-                      name={'ExploreFeed'}
+                      name={ScreenName.ExploreFeed}
                       component={ExploreFeed}
                       initialParams={{
                         backIconPath: '',
@@ -320,18 +320,18 @@ function App(): React.JSX.Element {
                       name={ScreenName.ImageCropScreen}
                       component={ImageCropScreen}
                     />
-                    <Stack.Screen name={REPORT} component={ReportScreen} />
-                    <Stack.Screen name={IMAGE_SCREEN} component={ImageScreen} />
+                    <Stack.Screen name={ScreenName.Report} component={ReportScreen} />
+                    <Stack.Screen name={ScreenName.ImageScreen} component={ImageScreen} />
                     <Stack.Screen
-                      name={VIEW_PARTICIPANTS}
+                      name={ScreenName.ViewParticipants}
                       component={ViewParticipants}
                     />
                     <Stack.Screen
-                      name={ADD_PARTICIPANTS}
+                      name={ScreenName.AddParticipants}
                       component={AddParticipants}
                     />
                     <Stack.Screen
-                      name={DM_ALL_MEMBERS}
+                      name={ScreenName.DmAllMembers}
                       component={DmAllMembers}
                     />
                   </Stack.Navigator>
@@ -350,10 +350,10 @@ function App(): React.JSX.Element {
               theme={Themes.COMMUNITY}
               >
               <NavigationContainer ref={navigationRef} independent={true}>
-                <Stack.Navigator initialRouteName={'Homefeed'}>
-                  <Stack.Screen name={'Homefeed'} component={LMChatCommunityFeedScreenWrapper} />
+                <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
+                  <Stack.Screen name={ScreenName.HomeFeed} component={LMChatHybridFeedScreenWrapper} />
                   <Stack.Screen
-                    name="SearchInChatroom"
+                    name={ScreenName.SearchInChatroom}
                     component={SearchInChatroom}
                     options={{
                       gestureEnabled: Platform.OS === 'ios' ? false : true,
@@ -361,7 +361,7 @@ function App(): React.JSX.Element {
                     }}
                   />
                   <Stack.Screen
-                    name={'ExploreFeed'}
+                    name={ScreenName.ExploreFeed}
                     component={ExploreFeed}
                     initialParams={{
                       backIconPath: '',
@@ -373,7 +373,7 @@ function App(): React.JSX.Element {
                     }}
                   />
                   <Stack.Screen
-                    name="Chatroom"
+                    name={ScreenName.Chatroom}
                     component={ChatroomScreenWrapper}
                     options={{
                       gestureEnabled: Platform.OS === 'ios' ? false : true,
@@ -383,17 +383,17 @@ function App(): React.JSX.Element {
                     options={{
                       gestureEnabled: Platform.OS === 'ios' ? false : true,
                     }}
-                    name={'FileUpload'}
+                    name={ScreenName.FileUpload}
                     component={FileUploadScreenWrapper}
                     initialParams={{
                       backIconPath: '', // add your back icon path here
                       imageCropIcon: '', // add your image crop icon path here
                     }}
                   />
-                  <Stack.Screen name={'VideoPlayer'} component={VideoPlayer} />
+                  <Stack.Screen name={ScreenName.VideoPlayer} component={VideoPlayer} />
                   <Stack.Screen
                     options={{gestureEnabled: false}}
-                    name={'CarouselScreen'}
+                    name={ScreenName.CarouselScreen}
                     component={CarouselScreen}
                     initialParams={{
                       backIconPath: '', // add your back icon path here
@@ -401,30 +401,30 @@ function App(): React.JSX.Element {
                   />
                   <Stack.Screen
                     options={{gestureEnabled: false}}
-                    name={'PollResult'}
+                    name={ScreenName.PollResult}
                     component={PollResult}
                   />
                   <Stack.Screen
-                    name={'CreatePollScreen'}
+                    name={ScreenName.CreatePollScreen}
                     component={CreatePollScreen}
                   />
                   <Stack.Screen
                     options={{headerShown: false}}
-                    name={'ImageCropScreen'}
+                    name={ScreenName.ImageCropScreen}
                     component={ImageCropScreen}
                   />
-                  <Stack.Screen name={REPORT} component={ReportScreen} />
-                  <Stack.Screen name={IMAGE_SCREEN} component={ImageScreen} />
+                  <Stack.Screen name={ScreenName.Report} component={ReportScreen} />
+                  <Stack.Screen name={ScreenName.ImageScreen} component={ImageScreen} />
                   <Stack.Screen
-                    name={VIEW_PARTICIPANTS}
+                    name={ScreenName.ViewParticipants}
                     component={ViewParticipants}
                   />
                   <Stack.Screen
-                    name={ADD_PARTICIPANTS}
+                    name={ScreenName.AddParticipants}
                     component={AddParticipants}
                   />
                   <Stack.Screen
-                    name={DM_ALL_MEMBERS}
+                    name={ScreenName.DmAllMembers}
                     component={DmAllMembers}
                   />
                 </Stack.Navigator>
