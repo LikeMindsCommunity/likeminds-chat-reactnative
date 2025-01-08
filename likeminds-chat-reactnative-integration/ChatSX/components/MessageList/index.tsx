@@ -306,7 +306,7 @@ const MessageListComponent = ({
             data={conversations}
             keyExtractor={(item: any, index) => {
               const isArray = Array.isArray(item);
-              return isArray ? `${index}` : item?.id ? `${index}` : `${item?.id}`;
+              return isArray ? `${index}` : item?.id ? `${item?.id}` : `${index}`;
             }}
             extraData={{
               value: [
