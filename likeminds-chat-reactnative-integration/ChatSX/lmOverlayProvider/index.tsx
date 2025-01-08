@@ -52,7 +52,6 @@ export const LMOverlayProvider = ({
 
   useEffect(() => {
     SdkTheme.setSdkTheme(theme);
-    console.log(SdkTheme.sdkTheme);
   }, [theme])
 
   return (
