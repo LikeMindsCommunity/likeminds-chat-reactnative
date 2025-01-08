@@ -11,6 +11,9 @@ import { getNotification, getRoute } from '@likeminds.community/chat-rn-core';
 import { navigationRef } from './RootNavigation';
 import notifee, { EventType } from "@notifee/react-native";
 import { StackActions } from '@react-navigation/native';
+if(__DEV__) {
+  require("./reactotronConfig")
+}
 
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   getNotification(remoteMessage)

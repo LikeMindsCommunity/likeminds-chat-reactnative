@@ -44,6 +44,10 @@ import {
   getNotification,
   Token,
   getRoute,
+  Themes,
+  LMChatNetworkingFeedScreenWrapper,
+  LMChatCommunityFeedScreenWrapper,
+  LMChatHybridFeedScreenWrapper,
 } from '@likeminds.community/chat-rn-core';
 import {setStyles} from './styles';
 import {
@@ -246,10 +250,12 @@ function App(): React.JSX.Element {
                 apiKey={apiKey}
                 profileImageUrl={profileImageUrl}
                 lmChatInterface={lmChatInterface}
-                callbackClass={callbackClass}>
+                callbackClass={callbackClass}
+                theme={Themes.COMMUNITY_HYBRID}
+                >
                 <NavigationContainer ref={navigationRef} independent={true}>
                   <Stack.Navigator initialRouteName={'Homefeed'}>
-                    <Stack.Screen name={'Homefeed'} component={HomeFeed} />
+                    <Stack.Screen name={'Homefeed'} component={LMChatHybridFeedScreenWrapper} />
                     <Stack.Screen
                       name="SearchInChatroom"
                       component={SearchInChatroom}
@@ -340,10 +346,12 @@ function App(): React.JSX.Element {
               apiKey={apiKey}
               profileImageUrl={profileImageUrl}
               lmChatInterface={lmChatInterface}
-              callbackClass={callbackClass}>
+              callbackClass={callbackClass}
+              theme={Themes.COMMUNITY_HYBRID}
+              >
               <NavigationContainer ref={navigationRef} independent={true}>
                 <Stack.Navigator initialRouteName={'Homefeed'}>
-                  <Stack.Screen name={'Homefeed'} component={HomeFeed} />
+                  <Stack.Screen name={'Homefeed'} component={LMChatHybridFeedScreenWrapper} />
                   <Stack.Screen
                     name="SearchInChatroom"
                     component={SearchInChatroom}
