@@ -62,7 +62,6 @@ import {
   ConversationState,
   InitUserWithUuid,
 } from '@likeminds.community/chat-rn';
-import SearchInChatroomScreen from './screens/SearchInChatroom';
 import { ScreenName } from './src/enums/screenNameEnums';
 import { LMCoreCallbacks } from '@likeminds.community/chat-rn-core/ChatSX/setupChat';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -188,9 +187,9 @@ function App(): React.JSX.Element {
                   myClient={myClient}
                   >
                   <Stack.Navigator>
-                    <Stack.Screen name='name' component={HomeScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name='home' component={HomeScreen} options={{ headerShown: false }} />
                     <Stack.Screen name={ScreenName.ChatBotInitiateScreen} component={LMChatbotInitializationScreen} options={{ headerShown: false }} />
-                    <Stack.Screen name="Chatroom" component={ChatroomScreenWrapper} options={{
+                    <Stack.Screen name={ScreenName.Chatroom} component={ChatroomScreenWrapper} options={{
                       gestureEnabled: Platform.OS === 'ios' ? false : true,
                     }} />
                     <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper} />
@@ -211,7 +210,7 @@ function App(): React.JSX.Element {
                     lmChatInterface={lmChatInterface}
                     callbackClass={callbackClass}>
                     <Stack.Navigator>
-                      <Stack.Screen name='name' component={HomeScreen} options={{ headerShown: false }} />
+                      <Stack.Screen name='home' component={HomeScreen} options={{ headerShown: false }} />
                       <Stack.Screen name={ScreenName.ChatBotInitiateScreen} component={LMChatbotInitializationScreen} options={{ headerShown: false }} />
                       <Stack.Screen name={ScreenName.Chatroom} component={ChatroomScreenWrapper} />
                       <Stack.Screen name={ScreenName.FileUpload} component={FileUploadScreenWrapper} />
