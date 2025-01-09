@@ -299,6 +299,10 @@ function App(): React.JSX.Element {
                       name={ScreenName.ImageCropScreen}
                       component={ImageCropScreen}
                     />
+                    <Stack.Screen
+                      name={ScreenName.DmAllMembers}
+                      component={DmAllMembers}
+                    />
                     <Stack.Screen name={ScreenName.Report} component={ReportScreen} />
                     <Stack.Screen name={ScreenName.ImageScreen} component={ImageScreen} />
                   </Stack.Navigator>
@@ -358,6 +362,10 @@ function App(): React.JSX.Element {
                     options={{headerShown: false}}
                     name={ScreenName.ImageCropScreen}
                     component={ImageCropScreen}
+                  />
+                  <Stack.Screen
+                    name={ScreenName.DmAllMembers}
+                    component={DmAllMembers}
                   />
                   <Stack.Screen name={ScreenName.Report} component={ReportScreen} />
                   <Stack.Screen name={ScreenName.ImageScreen} component={ImageScreen} />
