@@ -255,7 +255,7 @@ function App(): React.JSX.Element {
                 >
                 <NavigationContainer ref={navigationRef} independent={true}>
                   <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
-                    <Stack.Screen name={ScreenName.HomeFeed} component={LMChatHybridFeedScreenWrapper} />
+                    <Stack.Screen name={ScreenName.HomeFeed} component={LMChatCommunityFeedScreenWrapper} />
                     <Stack.Screen
                       name={ScreenName.SearchInChatroom}
                       component={SearchInChatroom}
@@ -351,7 +351,7 @@ function App(): React.JSX.Element {
               >
               <NavigationContainer ref={navigationRef} independent={true}>
                 <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
-                  <Stack.Screen name={ScreenName.HomeFeed} component={LMChatHybridFeedScreenWrapper} />
+                  <Stack.Screen name={ScreenName.HomeFeed} component={LMChatCommunityFeedScreenWrapper} />
                   <Stack.Screen
                     name={ScreenName.SearchInChatroom}
                     component={SearchInChatroom}

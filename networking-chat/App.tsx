@@ -255,25 +255,13 @@ function App(): React.JSX.Element {
                 >
                 <NavigationContainer ref={navigationRef} independent={true}>
                   <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
-                    <Stack.Screen name={ScreenName.HomeFeed} component={LMChatHybridFeedScreenWrapper} />
+                    <Stack.Screen name={ScreenName.HomeFeed} component={LMChatNetworkingFeedScreenWrapper} />
                     <Stack.Screen
                       name={ScreenName.SearchInChatroom}
                       component={SearchInChatroom}
                       options={{
                         gestureEnabled: Platform.OS === 'ios' ? false : true,
                         headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name={ScreenName.ExploreFeed}
-                      component={ExploreFeed}
-                      initialParams={{
-                        backIconPath: '',
-                        filterIconPath: '',
-                        participantsIconPath: '',
-                        totalMessagesIconPath: '',
-                        joinButtonPath: '',
-                        joinedButtonPath: '',
                       }}
                     />
                     <Stack.Screen
@@ -307,33 +295,12 @@ function App(): React.JSX.Element {
                       }}
                     />
                     <Stack.Screen
-                      options={{gestureEnabled: false}}
-                      name={ScreenName.PollResult}
-                      component={PollResult}
-                    />
-                    <Stack.Screen
-                      name={ScreenName.CreatePollScreen}
-                      component={CreatePollScreen}
-                    />
-                    <Stack.Screen
                       options={{headerShown: false}}
                       name={ScreenName.ImageCropScreen}
                       component={ImageCropScreen}
                     />
                     <Stack.Screen name={ScreenName.Report} component={ReportScreen} />
                     <Stack.Screen name={ScreenName.ImageScreen} component={ImageScreen} />
-                    <Stack.Screen
-                      name={ScreenName.ViewParticipants}
-                      component={ViewParticipants}
-                    />
-                    <Stack.Screen
-                      name={ScreenName.AddParticipants}
-                      component={AddParticipants}
-                    />
-                    <Stack.Screen
-                      name={ScreenName.DmAllMembers}
-                      component={DmAllMembers}
-                    />
                   </Stack.Navigator>
                 </NavigationContainer>
               </LMOverlayProvider>
@@ -351,25 +318,13 @@ function App(): React.JSX.Element {
               >
               <NavigationContainer ref={navigationRef} independent={true}>
                 <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
-                  <Stack.Screen name={ScreenName.HomeFeed} component={LMChatHybridFeedScreenWrapper} />
+                  <Stack.Screen name={ScreenName.HomeFeed} component={LMChatNetworkingFeedScreenWrapper} />
                   <Stack.Screen
                     name={ScreenName.SearchInChatroom}
                     component={SearchInChatroom}
                     options={{
                       gestureEnabled: Platform.OS === 'ios' ? false : true,
                       headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name={ScreenName.ExploreFeed}
-                    component={ExploreFeed}
-                    initialParams={{
-                      backIconPath: '',
-                      filterIconPath: '',
-                      participantsIconPath: '',
-                      totalMessagesIconPath: '',
-                      joinButtonPath: '',
-                      joinedButtonPath: '',
                     }}
                   />
                   <Stack.Screen
@@ -400,33 +355,12 @@ function App(): React.JSX.Element {
                     }}
                   />
                   <Stack.Screen
-                    options={{gestureEnabled: false}}
-                    name={ScreenName.PollResult}
-                    component={PollResult}
-                  />
-                  <Stack.Screen
-                    name={ScreenName.CreatePollScreen}
-                    component={CreatePollScreen}
-                  />
-                  <Stack.Screen
                     options={{headerShown: false}}
                     name={ScreenName.ImageCropScreen}
                     component={ImageCropScreen}
                   />
                   <Stack.Screen name={ScreenName.Report} component={ReportScreen} />
                   <Stack.Screen name={ScreenName.ImageScreen} component={ImageScreen} />
-                  <Stack.Screen
-                    name={ScreenName.ViewParticipants}
-                    component={ViewParticipants}
-                  />
-                  <Stack.Screen
-                    name={ScreenName.AddParticipants}
-                    component={AddParticipants}
-                  />
-                  <Stack.Screen
-                    name={ScreenName.DmAllMembers}
-                    component={DmAllMembers}
-                  />
                 </Stack.Navigator>
               </NavigationContainer>
             </LMOverlayProvider>
