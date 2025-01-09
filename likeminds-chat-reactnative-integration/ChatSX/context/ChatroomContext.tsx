@@ -840,8 +840,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     if ((chatroomType == ChatroomType.OPENCHATROOM ||
       chatroomType == ChatroomType.ANNOUNCEMENTROOM) &&
       selectedMessages?.length == 1 &&
-      (SdkTheme.sdkTheme == Themes.COMMUNITY ||
-        SdkTheme.sdkTheme == Themes.COMMUNITY_HYBRID)
+      (SdkTheme.sdkTheme == Themes.COMMUNITY_HYBRID)
     ) {
       callAPI();
     }
