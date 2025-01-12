@@ -916,7 +916,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         .setChatroomId(chatroomID?.toString())
         .setLimit(PAGE_SIZE)
         .build();
-      const conversationsFromRealm = await myClient?.getConversations(payload);
+      let conversationsFromRealm = await myClient?.getConversations(payload);
+      // if uploadingFilesMessages is not empty then add those messages to the conversation list
+      if (Object.keys(uploadingFilesMessages)?.length > 0) {
+        conversationsFromRealm = [...Object.values(uploadingFilesMessages), ...conversationsFromRealm]
+      }
       dispatch({
         type: GET_CONVERSATIONS_SUCCESS,
         body: { conversations: conversationsFromRealm, shimmer: flagForShimmer },
