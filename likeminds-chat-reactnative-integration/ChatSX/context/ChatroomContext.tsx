@@ -613,6 +613,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   // this useLayoutEffect calls API's before printing UI Layout
   useLayoutEffect(() => {
+    // if FileUpload Screen is opened then don't call API's
+    if (route.name == "FileUpload") {
+      return;
+    }
     dispatch({
       type: CLEAR_CHATROOM_CONVERSATION,
       body: { conversations: [] },
@@ -704,6 +708,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   //this useEffect fetch chatroom details only after initiate API got fetched if `navigation from Notification` else fetch chatroom details
   useEffect(() => {
+    // if FileUpload Screen is opened then don't call API's
+    if (route.name == "FileUpload") {
+      return;
+    }
     const invokeFunction = async () => {
       if (navigationFromNotification) {
         if (appState.match(/active|foreground/)) {
@@ -919,6 +927,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   //useffect includes firebase realtime listener
   useEffect(() => {
+    // if FileUpload Screen is opened then don't call API's
+    if (route.name == "FileUpload") {
+      return;
+    }
     const query = ref(db, `/collabcards/${chatroomID}`);
     return onValue(query, async (snapshot: DataSnapshot) => {
       if (snapshot.exists()) {
