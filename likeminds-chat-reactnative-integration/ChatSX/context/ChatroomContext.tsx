@@ -110,6 +110,7 @@ import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseModels/Attachment";
 import { SdkTheme } from "../setupChat";
 import { Themes } from "../enums/Themes";
+import { ScreenName } from "../enums/ScreenNameEnums"
 
 interface UploadResource {
   selectedImages: any;
@@ -614,7 +615,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   // this useLayoutEffect calls API's before printing UI Layout
   useLayoutEffect(() => {
     // if FileUpload Screen is opened then don't call API's
-    if (route.name == "FileUpload") {
+    if (route.name == ScreenName.FileUpload) {
       return;
     }
     dispatch({
@@ -709,7 +710,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   //this useEffect fetch chatroom details only after initiate API got fetched if `navigation from Notification` else fetch chatroom details
   useEffect(() => {
     // if FileUpload Screen is opened then don't call API's
-    if (route.name == "FileUpload") {
+    if (route.name == ScreenName.FileUpload) {
       return;
     }
     const invokeFunction = async () => {
@@ -932,7 +933,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   //useffect includes firebase realtime listener
   useEffect(() => {
     // if FileUpload Screen is opened then don't call API's
-    if (route.name == "FileUpload") {
+    if (route.name == ScreenName.FileUpload) {
       return;
     }
     const query = ref(db, `/collabcards/${chatroomID}`);
