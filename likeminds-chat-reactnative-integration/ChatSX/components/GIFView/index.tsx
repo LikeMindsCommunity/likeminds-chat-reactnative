@@ -25,7 +25,7 @@ import {
 
 const GIFView = () => {
   const [isGifPlaying, setIsGifPlaying] = useState(false);
-  const [GifLoading, setGifLoading] = useState(false);
+  const [isGifLoading, setIsGifLoading] = useState(false);
   const { isIncluded, item, handleLongPress } = useMessageContext();
   const { navigation, handleFileUpload } = useChatroomContext();
   const dispatch = useAppDispatch();
@@ -146,11 +146,11 @@ const GIFView = () => {
           source={{
             uri: firstAttachment?.url,
           }}
-          onLoadStart={() => setGifLoading(true)}
-          onLoadEnd={() => setGifLoading(false)}
+          onLoadStart={() => setIsGifLoading(true)}
+          onLoadEnd={() => setIsGifLoading(false)}
           style={styles.singleImg}
           /> 
-          {GifLoading && <ActivityIndicator style={{
+          {isGifLoading && <ActivityIndicator style={{
             position: 'absolute', zIndex: 10, alignSelf: 'center', top: '40%'
           }} size="large" color={STYLES.$COLORS.SECONDARY} />}
         </TouchableWithoutFeedback>
