@@ -9,7 +9,8 @@ const FileUploadView = () => {
   const { itemType, selectedFileToView, video, docItemType, isGif } =
     useFileUploadContext();
   return (
-    <View style={styles.selectedFileToView}>
+    <View style={{...styles.selectedFileToView, flex: 1
+    }}>
       {itemType === IMAGE_TEXT ? (
         <Image
           source={{ uri: selectedFileToView?.uri }}

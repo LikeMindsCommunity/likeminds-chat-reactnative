@@ -3,7 +3,7 @@ import React from "react";
 import { LMChatIcon } from "../../uiComponents";
 import { styles } from "../InputBox/styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
-import { ChatroomType } from "../../enums";
+import { ChatroomChatRequestState, ChatroomType } from "../../enums";
 import Layout from "../../constants/Layout";
 
 interface AddFilesViewProps {
@@ -20,13 +20,14 @@ const AddFilesView = ({ handleFilesViewProp }: AddFilesViewProps) => {
     isDeleteAnimation,
     setModalVisible,
     inputBoxStyles,
+    chatroomType
   } = useInputBoxContext();
   return (
     <>
       {!isUploadScreen &&
       !isEditable &&
       !voiceNotes?.recordTime &&
-      !isDeleteAnimation ? (
+      !isDeleteAnimation && !(chatroomType == ChatroomType.DMCHATROOM && chatRequestState == null) ? (
         <TouchableOpacity
           style={[styles.emojiButton]}
           onPress={() => {

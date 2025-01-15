@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, SafeAreaView } from "react-native";
 import React, { Children } from "react";
 import styles from "../../screens/FIleUpload/styles";
 import { useFileUploadContext } from "../../context/FileUploadContext";
@@ -10,7 +10,7 @@ const FileUploadMessageInput = ({
 }) => {
   const { len } = useFileUploadContext();
   return (
-    <View style={styles.bottomBar}>{len > 0 ? <>{children}</> : null}</View>
+    <SafeAreaView>{len > 0 ? <>{children}</> : null}</SafeAreaView>
   );
 };
 

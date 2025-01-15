@@ -149,6 +149,11 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
         type: SET_INITIAL_DMFEED_CHATROOM,
         body: { dmFeedChatrooms: existingChatrooms },
       });
+    } else {
+      dispatch({
+        type: SET_INITIAL_DMFEED_CHATROOM,
+        body: { dmFeedChatrooms: [] }
+      })
     }
   };
 

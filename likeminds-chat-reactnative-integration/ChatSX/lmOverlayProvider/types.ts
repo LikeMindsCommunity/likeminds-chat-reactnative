@@ -1,6 +1,7 @@
 import { LMChatClient } from "@likeminds.community/chat-rn";
 import React from "react";
 import { LMCoreCallbacks } from "../setupChat";
+import { Themes } from "../enums/Themes";
 
 export interface LMOverlayProviderProps {
   myClient: LMChatClient;
@@ -14,6 +15,7 @@ export interface LMOverlayProviderProps {
   profileImageUrl?: string;
   lmChatInterface?: any;
   imageUrl?: string;
+  theme: Themes
 }
 
 export interface LMChatBotOverlayProviderProps {

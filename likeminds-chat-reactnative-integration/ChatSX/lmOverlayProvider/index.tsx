@@ -3,7 +3,7 @@ import { LMChatBotOverlayProviderProps, LMOverlayProviderProps } from "./types";
 import { LMChatBotProvider, LMChatProvider } from "../lmChatProvider";
 import { StyleSheet, View } from "react-native";
 import { ContextProvider } from "../contextStore";
-import { LMSDKCallbacksImplementations } from "../setupChat";
+import { LMSDKCallbacksImplementations, SdkTheme } from "../setupChat";
 
 export const LMChatBotOverlayProvider = ({
   myClient,
@@ -42,12 +42,18 @@ export const LMOverlayProvider = ({
   profileImageUrl,
   lmChatInterface,
   imageUrl,
+  theme
 }: LMOverlayProviderProps) => {
   useEffect(() => {
     myClient.setLMSDKCallbacks(
       new LMSDKCallbacksImplementations(myClient, callbackClass)
     );
   }, [callbackClass, myClient]);
+
+  useEffect(() => {
+    SdkTheme.setSdkTheme(theme);
+  }, [theme])
+
   return (
     <ContextProvider>
       <LMChatProvider
