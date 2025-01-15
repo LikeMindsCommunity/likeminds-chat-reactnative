@@ -145,7 +145,7 @@ export const MessageContextProvider = ({
   const conversationCreator = item?.member?.sdkClientInfo?.uuid;
   const chatroomWithUserUuid = user?.sdkClientInfo?.uuid;
   const chatroomWithUserMemberId = user?.id;
-  const currentUserUuid = Credentials.userUniqueId;
+  const currentUserUuid = user?.sdkClientInfo?.uuid;
 
   // Method to trim the initial DM connection message based on loggedInMember id
   const answerTrimming = (answer: string) => {

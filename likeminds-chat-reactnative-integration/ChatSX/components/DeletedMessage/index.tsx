@@ -1,10 +1,11 @@
-import { View, Text, TextStyle } from "react-native";
-import React from "react";
+import { View, Text, TextStyle, TouchableOpacity, Image } from "react-native";
+import React, { useMemo } from "react";
 import { ChatroomType } from "../../enums";
 import { useMessageContext } from "../../context/MessageContext";
 import { useChatroomContext } from "../../context/ChatroomContext";
 import { styles } from "../Messages/styles";
 import STYLES from "../../constants/Styles";
+import { CallBack } from "../../callBacks/callBackClass";
 
 const DeletedMessage = () => {
   const {
@@ -15,9 +16,15 @@ const DeletedMessage = () => {
     currentUserUuid,
     isIncluded,
     isItemIncludedInStateArr,
+    item
   } = useMessageContext();
 
   const { chatroomType } = useChatroomContext();
+
+  const isOwnMessage = useMemo(() => currentUserUuid === item?.member?.sdkClientInfo?.uuid,
+    [currentUserUuid, item])
+
+  const lmChatInterface = CallBack.lmChatInterface
 
   const chatBubbleStyles = STYLES.$CHAT_BUBBLE_STYLE;
 
@@ -37,6 +44,42 @@ const DeletedMessage = () => {
 
   return (
     <View style={styles.messageParent}>
+      {!isOwnMessage ? <View
+        style={[
+          styles.typeReceived,
+          receivedMessageBackgroundColor
+            ? {
+              borderBottomColor: receivedMessageBackgroundColor,
+              borderRightColor: receivedMessageBackgroundColor,
+            }
+            : null,
+          isIncluded
+            ? {
+              borderBottomColor: SELECTED_BACKGROUND_COLOR,
+              borderRightColor: SELECTED_BACKGROUND_COLOR,
+            }
+            : null,
+        ]}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            const params = {
+              taggedUserId: null,
+              member: item?.member,
+            };
+            lmChatInterface.navigateToProfile(params);
+          }}
+        >
+          <Image
+            source={
+              item?.member?.imageUrl
+                ? { uri: item?.member?.imageUrl }
+                : require("../../assets/images/default_pic.png")
+            }
+            style={styles.chatroomTopicAvatar}
+          />
+        </TouchableOpacity>
+      </View> : null}
       {chatroomType !== ChatroomType.DMCHATROOM ? (
         currentUserUuid === conversationDeletor ? (
           <View
@@ -116,15 +159,15 @@ const DeletedMessage = () => {
                 styles.typeSent,
                 sentMessageBackgroundColor
                   ? {
-                      borderBottomColor: sentMessageBackgroundColor,
-                      borderLeftColor: sentMessageBackgroundColor,
-                    }
+                    borderBottomColor: sentMessageBackgroundColor,
+                    borderLeftColor: sentMessageBackgroundColor,
+                  }
                   : null,
                 isIncluded
                   ? {
-                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
-                      borderLeftColor: SELECTED_BACKGROUND_COLOR,
-                    }
+                    borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                    borderLeftColor: SELECTED_BACKGROUND_COLOR,
+                  }
                   : null,
               ]}
             />
@@ -134,15 +177,15 @@ const DeletedMessage = () => {
                 styles.typeReceived,
                 receivedMessageBackgroundColor
                   ? {
-                      borderBottomColor: receivedMessageBackgroundColor,
-                      borderRightColor: receivedMessageBackgroundColor,
-                    }
+                    borderBottomColor: receivedMessageBackgroundColor,
+                    borderRightColor: receivedMessageBackgroundColor,
+                  }
                   : null,
                 isIncluded
                   ? {
-                      borderBottomColor: SELECTED_BACKGROUND_COLOR,
-                      borderRightColor: SELECTED_BACKGROUND_COLOR,
-                    }
+                    borderBottomColor: SELECTED_BACKGROUND_COLOR,
+                    borderRightColor: SELECTED_BACKGROUND_COLOR,
+                  }
                   : null,
               ]}
             ></View>
