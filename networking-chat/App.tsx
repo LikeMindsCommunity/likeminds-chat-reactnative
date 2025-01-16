@@ -45,9 +45,7 @@ import {
   Token,
   getRoute,
   Themes,
-  LMChatNetworkingFeedScreenWrapper,
-  LMChatCommunityFeedScreenWrapper,
-  LMChatHybridFeedScreenWrapper,
+  LMChatNetworkChatroomsScreen,
   ScreenName
 } from '@likeminds.community/chat-rn-core';
 import {setStyles} from './styles';
@@ -254,8 +252,8 @@ function App(): React.JSX.Element {
                 theme={Themes.NETWORKING}
                 >
                 <NavigationContainer ref={navigationRef} independent={true}>
-                  <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
-                    <Stack.Screen name={ScreenName.HomeFeed} component={LMChatNetworkingFeedScreenWrapper} />
+                  <Stack.Navigator initialRouteName={ScreenName.NetworkChatrooms}>
+                    <Stack.Screen name={ScreenName.NetworkChatrooms} component={LMChatNetworkChatroomsScreen} />
                     <Stack.Screen
                       name={ScreenName.SearchInChatroom}
                       component={SearchInChatroom}
@@ -321,8 +319,8 @@ function App(): React.JSX.Element {
               theme={Themes.NETWORKING}
               >
               <NavigationContainer ref={navigationRef} independent={true}>
-                <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
-                  <Stack.Screen name={ScreenName.HomeFeed} component={LMChatNetworkingFeedScreenWrapper} />
+                <Stack.Navigator initialRouteName={ScreenName.NetworkChatrooms}>
+                  <Stack.Screen name={ScreenName.NetworkChatrooms} component={LMChatNetworkChatroomsScreen} />
                   <Stack.Screen
                     name={ScreenName.SearchInChatroom}
                     component={SearchInChatroom}

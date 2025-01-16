@@ -45,20 +45,12 @@ import {
   Token,
   getRoute,
   Themes,
-  LMChatNetworkingFeedScreenWrapper,
-  LMChatCommunityFeedScreenWrapper,
-  LMChatHybridFeedScreenWrapper,
+  LMChatCommunityChatroomsScreen,
+  LMChatHybridChatroomsScreen,
+  LMChatNetworkChatroomsScreen,
   ScreenName
 } from '@likeminds.community/chat-rn-core';
 import {setStyles} from './styles';
-import {
-  ADD_PARTICIPANTS,
-  DM_ALL_MEMBERS,
-  EXPLORE_FEED,
-  IMAGE_SCREEN,
-  REPORT,
-  VIEW_PARTICIPANTS,
-} from '@likeminds.community/chat-rn-core/ChatSX/constants/Screens';
 import {useQuery} from '@realm/react';
 import {Credentials} from './login/credentials';
 import {LoginSchemaRO} from './login/loginSchemaRO';
@@ -254,8 +246,8 @@ function App(): React.JSX.Element {
                 theme={Themes.COMMUNITY_HYBRID}
                 >
                 <NavigationContainer ref={navigationRef} independent={true}>
-                  <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
-                    <Stack.Screen name={ScreenName.HomeFeed} component={LMChatHybridFeedScreenWrapper} />
+                  <Stack.Navigator initialRouteName={ScreenName.CommunityHybridChatrooms}>
+                    <Stack.Screen name={ScreenName.CommunityHybridChatrooms} component={LMChatHybridChatroomsScreen} />
                     <Stack.Screen
                       name={ScreenName.SearchInChatroom}
                       component={SearchInChatroom}
@@ -350,8 +342,8 @@ function App(): React.JSX.Element {
               theme={Themes.COMMUNITY_HYBRID}
               >
               <NavigationContainer ref={navigationRef} independent={true}>
-                <Stack.Navigator initialRouteName={ScreenName.HomeFeed}>
-                  <Stack.Screen name={ScreenName.HomeFeed} component={LMChatHybridFeedScreenWrapper} />
+                <Stack.Navigator initialRouteName={ScreenName.CommunityHybridChatrooms}>
+                  <Stack.Screen name={ScreenName.CommunityHybridChatrooms} component={LMChatHybridChatroomsScreen} />
                   <Stack.Screen
                     name={ScreenName.SearchInChatroom}
                     component={SearchInChatroom}
