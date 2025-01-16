@@ -45,9 +45,7 @@ import {
   Token,
   getRoute,
   Themes,
-  LMChatCommunityChatroomsScreen,
-  LMChatHybridChatroomsScreen,
-  LMChatNetworkChatroomsScreen,
+  CommunityHybridChatScreen,
   ScreenName
 } from '@likeminds.community/chat-rn-core';
 import {setStyles} from './styles';
@@ -246,8 +244,8 @@ function App(): React.JSX.Element {
                 theme={Themes.COMMUNITY_HYBRID}
                 >
                 <NavigationContainer ref={navigationRef} independent={true}>
-                  <Stack.Navigator initialRouteName={ScreenName.CommunityHybridChatrooms}>
-                    <Stack.Screen name={ScreenName.CommunityHybridChatrooms} component={LMChatHybridChatroomsScreen} />
+                  <Stack.Navigator initialRouteName={ScreenName.CommunityHybridChatScreen}>
+                    <Stack.Screen name={ScreenName.CommunityHybridChatScreen} component={CommunityHybridChatScreen} />
                     <Stack.Screen
                       name={ScreenName.SearchInChatroom}
                       component={SearchInChatroom}
@@ -342,8 +340,8 @@ function App(): React.JSX.Element {
               theme={Themes.COMMUNITY_HYBRID}
               >
               <NavigationContainer ref={navigationRef} independent={true}>
-                <Stack.Navigator initialRouteName={ScreenName.CommunityHybridChatrooms}>
-                  <Stack.Screen name={ScreenName.CommunityHybridChatrooms} component={LMChatHybridChatroomsScreen} />
+                <Stack.Navigator initialRouteName={ScreenName.CommunityHybridChatScreen}>
+                  <Stack.Screen name={ScreenName.CommunityHybridChatScreen} component={CommunityHybridChatScreen} />
                   <Stack.Screen
                     name={ScreenName.SearchInChatroom}
                     component={SearchInChatroom}

@@ -45,7 +45,7 @@ import {
   Token,
   getRoute,
   Themes,
-  LMChatCommunityChatroomsScreen,
+  CommunityChatScreen,
   ScreenName
 } from '@likeminds.community/chat-rn-core';
 import {setStyles} from './styles';
@@ -252,8 +252,8 @@ function App(): React.JSX.Element {
                 theme={Themes.COMMUNITY}
                 >
                 <NavigationContainer ref={navigationRef} independent={true}>
-                  <Stack.Navigator initialRouteName={ScreenName.CommunityChatrooms}>
-                    <Stack.Screen name={ScreenName.CommunityChatrooms} component={LMChatCommunityChatroomsScreen} />
+                  <Stack.Navigator initialRouteName={ScreenName.CommunityChatScreen}>
+                    <Stack.Screen name={ScreenName.CommunityChatScreen} component={CommunityChatScreen} />
                     <Stack.Screen
                       name={ScreenName.SearchInChatroom}
                       component={SearchInChatroom}
@@ -348,8 +348,8 @@ function App(): React.JSX.Element {
               theme={Themes.COMMUNITY}
               >
               <NavigationContainer ref={navigationRef} independent={true}>
-                <Stack.Navigator initialRouteName={ScreenName.CommunityChatrooms}>
-                  <Stack.Screen name={ScreenName.CommunityChatrooms} component={LMChatCommunityChatroomsScreen} />
+                <Stack.Navigator initialRouteName={ScreenName.CommunityChatScreen}>
+                  <Stack.Screen name={ScreenName.CommunityChatScreen} component={CommunityChatScreen} />
                   <Stack.Screen
                     name={ScreenName.SearchInChatroom}
                     component={SearchInChatroom}
