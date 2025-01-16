@@ -72,9 +72,9 @@ import InputWrapperLeftSection from "./ChatSX/components/InputWrapperLeftSection
 import InputWrapper from "./ChatSX/components/InputWrapper";
 import { ScreenName } from "./ChatSX/enums/ScreenNameEnums";
 import { Themes } from "./ChatSX/enums/Themes"
-import { LMChatCommunityFeedScreenWrapper } from "./ChatSX/wrappers/LMChatCommunityFeedScreenWrapper"
-import { LMChatNetworkingFeedScreenWrapper } from "./ChatSX/wrappers/LMChatNetworkingFeedScreenWrapper"
-import { LMChatHybridFeedScreenWrapper } from "./ChatSX/wrappers/LMChatHybridFeedScreenWrapper"
+import { LMChatCommunityFeedScreenWrapper as LMChatCommunityChatroomsScreen} from "./ChatSX/wrappers/LMChatCommunityFeedScreenWrapper"
+import { LMChatNetworkingFeedScreenWrapper as LMChatNetworkChatroomsScreen} from "./ChatSX/wrappers/LMChatNetworkingFeedScreenWrapper"
+import { LMChatHybridFeedScreenWrapper as LMChatHybridChatroomsScreen} from "./ChatSX/wrappers/LMChatHybridFeedScreenWrapper"
 
 export {
   ChatRoom,
@@ -143,8 +143,8 @@ export {
   LMChatbotInitializationScreen,
   LMChatAIButton,
   ScreenName,
-  LMChatCommunityFeedScreenWrapper,
-  LMChatHybridFeedScreenWrapper,
-  LMChatNetworkingFeedScreenWrapper,
+  LMChatCommunityChatroomsScreen,
+  LMChatHybridChatroomsScreen,
+  LMChatNetworkChatroomsScreen,
   Themes
 };

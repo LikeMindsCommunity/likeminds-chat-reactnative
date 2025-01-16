@@ -1,5 +1,8 @@
 export enum ScreenName {
   HomeFeed = 'Homefeed',
+  NetworkChatrooms = "Homefeed",
+  CommunityChatrooms = "Homefeed",
+  CommunityHybridChatrooms = "Homefeed",
   ExploreFeed = 'ExploreFeed',
   Chatroom = 'Chatroom',
   FileUpload = 'FileUpload',
