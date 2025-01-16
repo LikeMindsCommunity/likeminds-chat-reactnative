@@ -252,8 +252,8 @@ function App(): React.JSX.Element {
                 theme={Themes.COMMUNITY}
                 >
                 <NavigationContainer ref={navigationRef} independent={true}>
-                  <Stack.Navigator initialRouteName={ScreenName.CommunityHybridChatrooms}>
-                    <Stack.Screen name={ScreenName.CommunityHybridChatrooms} component={LMChatCommunityChatroomsScreen} />
+                  <Stack.Navigator initialRouteName={ScreenName.CommunityChatrooms}>
+                    <Stack.Screen name={ScreenName.CommunityChatrooms} component={LMChatCommunityChatroomsScreen} />
                     <Stack.Screen
                       name={ScreenName.SearchInChatroom}
                       component={SearchInChatroom}
@@ -348,8 +348,8 @@ function App(): React.JSX.Element {
               theme={Themes.COMMUNITY}
               >
               <NavigationContainer ref={navigationRef} independent={true}>
-                <Stack.Navigator initialRouteName={ScreenName.CommunityHybridChatrooms}>
-                  <Stack.Screen name={ScreenName.CommunityHybridChatrooms} component={LMChatCommunityChatroomsScreen} />
+                <Stack.Navigator initialRouteName={ScreenName.CommunityChatrooms}>
+                  <Stack.Screen name={ScreenName.CommunityChatrooms} component={LMChatCommunityChatroomsScreen} />
                   <Stack.Screen
                     name={ScreenName.SearchInChatroom}
                     component={SearchInChatroom}
