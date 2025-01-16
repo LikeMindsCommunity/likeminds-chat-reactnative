@@ -45,7 +45,7 @@ import {
   Token,
   getRoute,
   Themes,
-  NetworkChatScreen
+  NetworkChatScreen,
   ScreenName
 } from '@likeminds.community/chat-rn-core';
 import {setStyles} from './styles';
