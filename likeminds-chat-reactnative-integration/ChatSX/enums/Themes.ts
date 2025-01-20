@@ -1,0 +1,5 @@
+export enum Themes {
+    COMMUNITY = "COMMUNITY",
+    NETWORKING = "NETWORKING",
+    COMMUNITY_HYBRID = "COMMUNITY_HYBRID"
+}

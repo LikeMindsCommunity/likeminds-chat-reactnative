@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Layout from "../../constants/Layout";
 import { CAPITAL_GIF_TEXT, FAILED, SUCCESS } from "../../constants/Strings";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
@@ -25,6 +25,7 @@ import {
 
 const GIFView = () => {
   const [isGifPlaying, setIsGifPlaying] = useState(false);
+  const [isGifLoading, setIsGifLoading] = useState(false);
   const { isIncluded, item, handleLongPress } = useMessageContext();
   const { navigation, handleFileUpload } = useChatroomContext();
   const dispatch = useAppDispatch();
@@ -142,11 +143,16 @@ const GIFView = () => {
           }}
         >
           <Image
-            source={{
-              uri: firstAttachment?.url,
-            }}
-            style={styles.singleImg}
-          />
+          source={{
+            uri: firstAttachment?.url,
+          }}
+          onLoadStart={() => setIsGifLoading(true)}
+          onLoadEnd={() => setIsGifLoading(false)}
+          style={styles.singleImg}
+          /> 
+          {isGifLoading && <ActivityIndicator style={{
+            position: 'absolute', zIndex: 10, alignSelf: 'center', top: '40%'
+          }} size="large" color={STYLES.$COLORS.SECONDARY} />}
         </TouchableWithoutFeedback>
       ) : (
         <Image

@@ -45,10 +45,11 @@ const DMFeedComponent = () => {
     handleLoadMore,
   } = useDmFeedContext();
   const user = useAppSelector((state) => state.homefeed.user);
+  const isFetchingDmFeedChatrooms = useAppSelector(state => state.homefeed.fetchingDmFeedChatrooms);
   const navigation = useNavigation<StackNavigationProp<any>>();
   return (
     <View style={styles.page}>
-      {dmFeedChatrooms?.length === 0 ? (
+      {dmFeedChatrooms?.length === 0 && !isFetchingDmFeedChatrooms ? (
         <View style={styles.nothingDM}>
           <View style={[styles.justifyCenter]}>
             <Image

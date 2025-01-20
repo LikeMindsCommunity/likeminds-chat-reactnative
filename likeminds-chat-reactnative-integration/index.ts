@@ -71,6 +71,10 @@ import TextInputWrapper from "./ChatSX/components/TextInputWrapper";
 import InputWrapperLeftSection from "./ChatSX/components/InputWrapperLeftSection";
 import InputWrapper from "./ChatSX/components/InputWrapper";
 import { ScreenName } from "./ChatSX/enums/ScreenNameEnums";
+import { Themes } from "./ChatSX/enums/Themes"
+import { LMChatCommunityFeedScreenWrapper as CommunityChatScreen} from "./ChatSX/wrappers/LMChatCommunityFeedScreenWrapper"
+import { LMChatNetworkingFeedScreenWrapper as NetworkChatScreen} from "./ChatSX/wrappers/LMChatNetworkingFeedScreenWrapper"
+import { LMChatHybridFeedScreenWrapper as CommunityHybridChat} from "./ChatSX/wrappers/LMChatHybridFeedScreenWrapper"
 
 export {
   ChatRoom,
@@ -139,4 +143,8 @@ export {
   LMChatbotInitializationScreen,
   LMChatAIButton,
   ScreenName,
+  CommunityChatScreen,
+  NetworkChatScreen,
+  CommunityHybridChat,
+  Themes
 };

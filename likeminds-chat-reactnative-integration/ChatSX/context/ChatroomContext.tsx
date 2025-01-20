@@ -108,6 +108,9 @@ import { Image as CompressedImage } from "react-native-compressor";
 import { Client } from "../client";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseModels/Attachment";
+import { SdkTheme } from "../setupChat";
+import { Themes } from "../enums/Themes";
+import { ScreenName } from "../enums/ScreenNameEnums"
 
 interface UploadResource {
   selectedImages: any;
@@ -611,6 +614,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   // this useLayoutEffect calls API's before printing UI Layout
   useLayoutEffect(() => {
+    // if FileUpload Screen is opened then don't call API's
+    if (route.name == ScreenName.FileUpload) {
+      return;
+    }
     dispatch({
       type: CLEAR_CHATROOM_CONVERSATION,
       body: { conversations: [] },
@@ -702,6 +709,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   //this useEffect fetch chatroom details only after initiate API got fetched if `navigation from Notification` else fetch chatroom details
   useEffect(() => {
+    // if FileUpload Screen is opened then don't call API's
+    if (route.name == ScreenName.FileUpload) {
+      return;
+    }
     const invokeFunction = async () => {
       if (navigationFromNotification) {
         if (appState.match(/active|foreground/)) {
@@ -834,6 +845,32 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     }
   }, [chatroomDBDetails, chatroomID]);
 
+  useEffect(() => {
+    if ((chatroomType == ChatroomType.OPENCHATROOM ||
+      chatroomType == ChatroomType.ANNOUNCEMENTROOM) &&
+      selectedMessages?.length == 1 &&
+      (SdkTheme.sdkTheme == Themes.COMMUNITY_HYBRID)
+    ) {
+      callAPI();
+    }
+
+    async function callAPI() {
+      const apiRes = await myClient?.canDmFeed({
+        reqFrom: "group_channel",
+        chatroomId: chatroomID,
+        uuid: selectedMessages[0]?.member?.sdkClientInfo?.uuid,
+      });
+      const response = apiRes?.data;
+      if (response?.cta) {
+        const match = response?.cta?.match(/show_list=([^&]+)/);
+        if (match && match[1]) {
+          setShowList(match[1]);
+        }
+        setShowDM(response?.showDm);
+      }
+    }
+  }, [chatroomID, chatroomDBDetails, selectedMessages])
+
   // sync conversation call with conversation_id from firebase listener
   const firebaseConversationSyncAPI = async (
     page: number,
@@ -880,7 +917,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         .setChatroomId(chatroomID?.toString())
         .setLimit(PAGE_SIZE)
         .build();
-      const conversationsFromRealm = await myClient?.getConversations(payload);
+      let conversationsFromRealm = await myClient?.getConversations(payload);
+      // if uploadingFilesMessages is not empty then add those messages to the conversation list
+      if (Object.keys(uploadingFilesMessages)?.length > 0) {
+        conversationsFromRealm = [...Object.values(uploadingFilesMessages), ...conversationsFromRealm]
+      }
       dispatch({
         type: GET_CONVERSATIONS_SUCCESS,
         body: { conversations: conversationsFromRealm, shimmer: flagForShimmer },
@@ -891,6 +932,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   //useffect includes firebase realtime listener
   useEffect(() => {
+    // if FileUpload Screen is opened then don't call API's
+    if (route.name == ScreenName.FileUpload) {
+      return;
+    }
     const query = ref(db, `/collabcards/${chatroomID}`);
     return onValue(query, async (snapshot: DataSnapshot) => {
       if (snapshot.exists()) {
@@ -1360,14 +1405,14 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           const resultArr = selectedMessages[0]?.reactions.map((element: any) =>
             element?.member?.id == user?.id
               ? {
-                  member: {
-                    id: user?.id,
-                    name: user?.name,
-                    imageUrl: "",
-                  },
-                  reaction: val,
-                  updatedAt: Date.now(),
-                }
+                member: {
+                  id: user?.id,
+                  name: user?.name,
+                  imageUrl: "",
+                },
+                reaction: val,
+                updatedAt: Date.now(),
+              }
               : element
           );
           changedMsg = {
@@ -1380,14 +1425,14 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           const resultArr = selectedMessages[0]?.reactions.map((element: any) =>
             element?.member?.id == user?.id
               ? {
-                  member: {
-                    id: user?.id,
-                    name: user?.name,
-                    imageUrl: "",
-                  },
-                  reaction: val,
-                  updatedAt: Date.now(),
-                }
+                member: {
+                  id: user?.id,
+                  name: user?.name,
+                  imageUrl: "",
+                },
+                reaction: val,
+                updatedAt: Date.now(),
+              }
               : element
           );
           changedMsg = {
@@ -1801,16 +1846,16 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         attachmentType === IMAGE_TEXT
           ? item.fileName
           : attachmentType === VIDEO_TEXT
-          ? item.fileName
-          : attachmentType === VOICE_NOTE_TEXT
-          ? item.name
-          : docAttachmentType === PDF_TEXT
-          ? item.name
-          : null;
+            ? item.fileName
+            : attachmentType === VOICE_NOTE_TEXT
+              ? item.name
+              : docAttachmentType === PDF_TEXT
+                ? item.name
+                : null;
 
-        const fileInfo = splitFileName(name);
-        const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${fileInfo?.name}-${conversationID}.${fileInfo.extension}`;
-        const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
+      const fileInfo = splitFileName(name);
+      const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${fileInfo?.name}-${conversationID}.${fileInfo.extension}`;
+      const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
 
       let uriFinal: any;
 
@@ -1877,15 +1922,15 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             meta:
               fileType === VIDEO_TEXT
                 ? {
-                    size: selectedFilesToUpload[i]?.fileSize,
-                    duration: selectedFilesToUpload[i]?.duration,
-                  }
+                  size: selectedFilesToUpload[i]?.fileSize,
+                  duration: selectedFilesToUpload[i]?.duration,
+                }
                 : fileType === VOICE_NOTE_TEXT
-                ? {
+                  ? {
                     size: null,
                     duration: item?.duration,
                   }
-                : {
+                  : {
                     size:
                       docAttachmentType === PDF_TEXT
                         ? selectedFilesToUpload[i]?.size
@@ -1895,8 +1940,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
               docAttachmentType === PDF_TEXT
                 ? selectedFilesToUpload[i]?.name
                 : voiceNoteAttachmentType === VOICE_NOTE_TEXT
-                ? item?.name
-                : selectedFilesToUpload[i]?.fileName,
+                  ? item?.name
+                  : selectedFilesToUpload[i]?.fileName,
             type: fileType,
             url: awsResponse,
             thumbnailUrl:
@@ -2074,10 +2119,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           if (userDMLimit) {
             Alert.alert(
               REQUEST_DM_LIMIT,
-              `You can only send ${
-                userDMLimit?.numberInDuration
-              } DM requests per ${
-                userDMLimit?.duration
+              `You can only send ${userDMLimit?.numberInDuration
+              } DM requests per ${userDMLimit?.duration
               }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp as number)}`,
               [
                 {
