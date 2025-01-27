@@ -10,6 +10,7 @@ interface AddMoreFilesViewProps {
   handleDocumentProp?: () => void;
 }
 
+
 const AddMoreFilesView = ({
   handleGalleryProp,
   handleDocumentProp,
@@ -22,15 +23,18 @@ const AddMoreFilesView = ({
     selectDoc,
     isUserChatbot,
     chatroomType,
+    inputBoxStyles, 
   } = useInputBoxContext();
+
+  const isDMChatroom = chatroomType === ChatroomType.DMCHATROOM && isUserChatbot;
+
   return (
     <>
-      {!!isUploadScreen &&
-      !isDoc &&
-      !isGif &&
-      !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot) ? (
+      {!!isUploadScreen && !isDoc && !isGif && !isDMChatroom ? (
         <TouchableOpacity
-          style={styles.addMoreButton}
+          style={[
+            inputBoxStyles?.addMoreFilesViewStyles?.addMoreButton,
+          ]}
           onPress={() => {
             if (handleGalleryProp) {
               handleGalleryProp();
@@ -41,15 +45,14 @@ const AddMoreFilesView = ({
         >
           <LMChatIcon
             assetPath={require("../../assets/images/addImages3x.png")}
-            iconStyle={styles.emoji}
+            iconStyle={inputBoxStyles?.addMoreFilesViewStyles?.emoji}
           />
         </TouchableOpacity>
-      ) : !!isUploadScreen &&
-        !isDoc &&
-        !isGif &&
-        !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot) ? (
+      ) : !!isUploadScreen && !isDoc && !isGif && !isDMChatroom ? (
         <TouchableOpacity
-          style={styles.addMoreButton}
+          style={[
+            inputBoxStyles?.addMoreFilesViewStyles?.addMoreButton,
+          ]}
           onPress={() => {
             if (handleDocumentProp) {
               handleDocumentProp();
@@ -60,11 +63,11 @@ const AddMoreFilesView = ({
         >
           <LMChatIcon
             assetPath={require("../../assets/images/add_more_docs3x.png")}
-            iconStyle={styles.emoji}
+            iconStyle={inputBoxStyles?.addMoreFilesViewStyles?.emoji}
           />
         </TouchableOpacity>
       ) : isUploadScreen ? (
-        <View style={styles.paddingHorizontal} />
+        <View style={inputBoxStyles?.addMoreFilesViewStyles?.paddingHorizontal} />
       ) : null}
     </>
   );

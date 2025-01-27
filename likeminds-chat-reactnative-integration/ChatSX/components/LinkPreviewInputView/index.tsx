@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity , StyleSheet} from "react-native";
 import React from "react";
 import LinkPreviewInputBox from "../linkPreviewInputBox";
 import { LMChatIcon } from "../../uiComponents";
@@ -8,6 +8,7 @@ import { useInputBoxContext } from "../../context/InputBoxContext";
 interface LinkPreviewInputViewProps {
   handleLinkPreviewCloseProp?: () => void;
 }
+
 
 const LinkPreviewInputView = ({
   handleLinkPreviewCloseProp,
@@ -20,19 +21,25 @@ const LinkPreviewInputView = ({
     setShowLinkPreview,
     setClosedOnce,
     setClosedPreview,
+    inputBoxStyles,
   } = useInputBoxContext();
+
   return (
     <>
       {Object.keys(ogTagsState || {}).length !== 0 &&
       showLinkPreview &&
       !closedOnce ? (
         <View
-          style={[
-            styles.taggableUsersBox,
+          style={StyleSheet.flatten([
+            styles.taggableUsersBox, 
+            inputBoxStyles?.linkPreviewInputViewStyles?.linkPreviewBox, 
             {
-              backgroundColor: isUploadScreen ? "black" : "white",
+              backgroundColor: isUploadScreen
+                ? "black"
+                : inputBoxStyles?.linkPreviewInputViewStyles?.linkPreviewBox
+                    ?.backgroundColor || "white",
             },
-          ]}
+          ])}
         >
           <LinkPreviewInputBox ogTags={ogTagsState} />
           <TouchableOpacity
@@ -45,11 +52,17 @@ const LinkPreviewInputView = ({
                 setClosedPreview(true);
               }
             }}
-            style={styles.replyBoxClose}
+            style={StyleSheet.flatten([
+              styles.replyBoxClose, 
+              inputBoxStyles?.linkPreviewInputViewStyles?.replyBoxClose, 
+            ])}
           >
             <LMChatIcon
               assetPath={require("../../assets/images/close_icon.png")}
-              iconStyle={styles.replyCloseImg}
+              iconStyle={StyleSheet.flatten([
+                styles.replyCloseImg,
+                inputBoxStyles?.linkPreviewInputViewStyles?.replyCloseImg,
+              ])}
             />
           </TouchableOpacity>
         </View>

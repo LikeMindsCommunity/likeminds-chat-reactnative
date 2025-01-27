@@ -131,6 +131,7 @@ function App(): React.JSX.Element {
     userSchema();
   }, [isTrue]);
 
+
   useEffect(() => {
     setUserName(
       Credentials?.username?.length > 0
@@ -157,6 +158,15 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     setStyles();
+    STYLES.setEditBoxStyle({
+                 
+      textStyle: {                
+        color: "#333",            
+        fontSize: 40,            
+        fontFamily: "Roboto",     
+      },
+    });
+    
   }, []);
 
   const callbackClass = new LMCoreCallbacks(
@@ -223,6 +233,12 @@ function App(): React.JSX.Element {
     });
 
     return unsubscribe;
+  }, []);
+
+
+  useEffect(() => {
+    
+    
   }, []);
 
   return (
