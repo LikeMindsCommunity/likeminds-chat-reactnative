@@ -49,7 +49,7 @@ const SelectFilesModal = ({
     canUserCreatePoll,
     inputBoxStyles, // Centralized styles
   } = useInputBoxContext();
-
+const selectFilesModalStyles= inputBoxStyles.selectFilesModalStyles;
   return (
     <Modal
       animationType="fade"
@@ -60,34 +60,34 @@ const SelectFilesModal = ({
       <Pressable
         style={StyleSheet.flatten([
           styles.centeredView,
-          inputBoxStyles?.selectFilesModalStyles?.centeredView,
+          selectFilesModalStyles?.centeredView,
         ])}
         onPress={handleModalCloseProp ? handleModalCloseProp : handleModalClose}
       >
         <View
           style={StyleSheet.flatten([
             styles.modalViewParent,
-            inputBoxStyles?.selectFilesModalStyles?.modalViewParent,
+            selectFilesModalStyles?.modalViewParent,
           ])}
         >
           <Pressable
             onPress={() => {}}
             style={StyleSheet.flatten([
               styles.modalView,
-              inputBoxStyles?.selectFilesModalStyles?.modalView,
+              selectFilesModalStyles?.modalView,
             ])}
           >
             <View
               style={StyleSheet.flatten([
                 styles.alignModalElements,
-                inputBoxStyles?.selectFilesModalStyles?.alignModalElements,
+                inputBoxStyles.selectFilesModalStyles?.alignModalElements,
               ])}
             >
               {/* Camera */}
               <View
                 style={StyleSheet.flatten([
                   styles.iconContainer,
-                  inputBoxStyles?.selectFilesModalStyles?.iconContainer,
+                  inputBoxStyles.selectFilesModalStyles?.iconContainer,
                 ])}
               >
                 <TouchableOpacity
@@ -103,7 +103,7 @@ const SelectFilesModal = ({
                     assetPath={require("../../assets/images/camera_icon3x.png")}
                     iconStyle={StyleSheet.flatten([
                       styles.emoji,
-                      inputBoxStyles?.selectFilesModalStyles?.cameraIconStyles,
+                      inputBoxStyles.selectFilesModalStyles?.cameraIconStyles,
                     ])}
                   />
                 </TouchableOpacity>
@@ -116,7 +116,7 @@ const SelectFilesModal = ({
               <View
                 style={StyleSheet.flatten([
                   styles.iconContainer,
-                  inputBoxStyles?.selectFilesModalStyles?.iconContainer,
+                  inputBoxStyles.selectFilesModalStyles?.iconContainer,
                 ])}
               >
                 <TouchableOpacity
@@ -134,7 +134,7 @@ const SelectFilesModal = ({
                     assetPath={require("../../assets/images/select_image_icon3x.png")}
                     iconStyle={StyleSheet.flatten([
                       styles.emoji,
-                      inputBoxStyles?.selectFilesModalStyles?.galleryIconStyles,
+                      inputBoxStyles.selectFilesModalStyles?.galleryIconStyles,
                     ])}
                   />
                 </TouchableOpacity>
@@ -148,7 +148,7 @@ const SelectFilesModal = ({
                 <View
                   style={StyleSheet.flatten([
                     styles.iconContainer,
-                    inputBoxStyles?.selectFilesModalStyles?.iconContainer,
+                    inputBoxStyles.selectFilesModalStyles?.iconContainer,
                   ])}
                 >
                   <TouchableOpacity
@@ -166,7 +166,7 @@ const SelectFilesModal = ({
                       assetPath={require("../../assets/images/select_doc_icon3x.png")}
                       iconStyle={StyleSheet.flatten([
                         styles.emoji,
-                        inputBoxStyles?.selectFilesModalStyles
+                        inputBoxStyles.selectFilesModalStyles
                           ?.documentIconStyles,
                       ])}
                     />
@@ -182,7 +182,7 @@ const SelectFilesModal = ({
                 <View
                   style={StyleSheet.flatten([
                     styles.iconContainer,
-                    inputBoxStyles?.selectFilesModalStyles?.iconContainer,
+                    inputBoxStyles.selectFilesModalStyles?.iconContainer,
                   ])}
                 >
                   <TouchableOpacity
@@ -201,7 +201,7 @@ const SelectFilesModal = ({
                       assetPath={require("../../assets/images/poll_icon3x.png")}
                       iconStyle={StyleSheet.flatten([
                         styles.emoji,
-                        inputBoxStyles?.selectFilesModalStyles?.pollIconStyles,
+                        inputBoxStyles.selectFilesModalStyles?.pollIconStyles,
                       ])}
                     />
                   </TouchableOpacity>

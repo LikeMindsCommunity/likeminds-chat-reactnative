@@ -23,7 +23,7 @@ const LinkPreviewInputView = ({
     setClosedPreview,
     inputBoxStyles,
   } = useInputBoxContext();
-
+const linkPreviewInputViewStyles = inputBoxStyles?.linkPreviewInputViewStyles;
   return (
     <>
       {Object.keys(ogTagsState || {}).length !== 0 &&
@@ -32,11 +32,11 @@ const LinkPreviewInputView = ({
         <View
           style={StyleSheet.flatten([
             styles.taggableUsersBox, 
-            inputBoxStyles?.linkPreviewInputViewStyles?.linkPreviewBox, 
+            linkPreviewInputViewStyles?.linkPreviewBox, 
             {
               backgroundColor: isUploadScreen
                 ? "black"
-                : inputBoxStyles?.linkPreviewInputViewStyles?.linkPreviewBox
+                : linkPreviewInputViewStyles?.linkPreviewBox
                     ?.backgroundColor || "white",
             },
           ])}
@@ -54,14 +54,14 @@ const LinkPreviewInputView = ({
             }}
             style={StyleSheet.flatten([
               styles.replyBoxClose, 
-              inputBoxStyles?.linkPreviewInputViewStyles?.replyBoxClose, 
+              linkPreviewInputViewStyles?.replyBoxClose, 
             ])}
           >
             <LMChatIcon
               assetPath={require("../../assets/images/close_icon.png")}
               iconStyle={StyleSheet.flatten([
                 styles.replyCloseImg,
-                inputBoxStyles?.linkPreviewInputViewStyles?.replyCloseImg,
+                linkPreviewInputViewStyles?.replyCloseImg,
               ])}
             />
           </TouchableOpacity>

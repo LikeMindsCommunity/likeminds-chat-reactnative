@@ -17,13 +17,14 @@ const ReplyBoxView = ({ handleReplyBoxCloseProp }: ReplyBoxViewProps) => {
     useInputBoxContext();
   const dispatch = useAppDispatch();
 
+  const replyBoxViewStyles = inputBoxStyles?.replyBoxViewStyles;
   return (
     <>
       {isReply && !isUploadScreen && (
         <View
           style={StyleSheet.flatten([
             styles.replyBox, 
-            inputBoxStyles?.replyBoxViewStyles?.replyBox, 
+            replyBoxViewStyles.replyBox, 
           ])}
         >
           <ReplyBox
@@ -45,14 +46,14 @@ const ReplyBoxView = ({ handleReplyBoxCloseProp }: ReplyBoxViewProps) => {
             }}
             style={StyleSheet.flatten([
               styles.replyBoxClose, 
-              inputBoxStyles?.replyBoxViewStyles?.replyBoxClose, 
+              replyBoxViewStyles.replyBoxClose, 
             ])}
           >
             <LMChatIcon
               assetPath={require("../../assets/images/close_icon.png")}
               iconStyle={StyleSheet.flatten([
                 styles.replyCloseImg, 
-                inputBoxStyles?.replyBoxViewStyles?.replyCloseImg, 
+                replyBoxViewStyles.replyCloseImg, 
               ])}
             />
           </TouchableOpacity>

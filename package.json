@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "command": "file:../likeminds-chat-reactnative-data/command-0.0.5.tgz"
+  }
+}

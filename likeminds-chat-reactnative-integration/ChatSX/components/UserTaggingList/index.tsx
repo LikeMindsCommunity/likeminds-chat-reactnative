@@ -37,6 +37,7 @@ const UserTaggingList = ({
     onUserTaggingClicked,
     inputBoxStyles, // Accessing centralized styles
   } = useInputBoxContext();
+  const  userTaggingListStyles= inputBoxStyles?.userTaggingListStyles;
 
   return (
     <View>
@@ -44,7 +45,7 @@ const UserTaggingList = ({
         <View
           style={StyleSheet.flatten([
             styles.taggableUsersBox,
-            inputBoxStyles?.userTaggingListStyles?.taggableUsersBox,
+            userTaggingListStyles?.taggableUsersBox,
             {
               backgroundColor: isUploadScreen ? "black" : "white",
               height: userTaggingListHeight,
@@ -82,7 +83,7 @@ const UserTaggingList = ({
                   }}
                   style={StyleSheet.flatten([
                     styles.taggableUserView,
-                    inputBoxStyles?.userTaggingListStyles?.taggableUserView,
+                    userTaggingListStyles?.taggableUserView,
                   ])}
                 >
                   {imageUrl ? (
@@ -90,7 +91,7 @@ const UserTaggingList = ({
                       iconUrl={imageUrl}
                       iconStyle={StyleSheet.flatten([
                         styles.avatar,
-                        inputBoxStyles?.userTaggingListStyles?.avatar,
+                        userTaggingListStyles?.avatar,
                       ])}
                     />
                   ) : (
@@ -98,14 +99,14 @@ const UserTaggingList = ({
                       assetPath={require("../../assets/images/default_pic.png")}
                       iconStyle={StyleSheet.flatten([
                         styles.avatar,
-                        inputBoxStyles?.userTaggingListStyles?.avatar,
+                        userTaggingListStyles?.avatar,
                       ])}
                     />
                   )}
                   <View
                     style={StyleSheet.flatten([
                       styles.infoContainer,
-                      inputBoxStyles?.userTaggingListStyles?.infoContainer,
+                      userTaggingListStyles?.infoContainer,
                       {
                         borderBottomWidth: Layout.normalize(0.2),
                         gap: Layout.normalize(5),
@@ -118,7 +119,7 @@ const UserTaggingList = ({
                         inputBoxStyles?.userTaggingListStyles?.title,
                         {
                           color: isUploadScreen
-                            ? inputBoxStyles?.userTaggingListStyles?.title
+                            ? userTaggingListStyles?.title
                                 ?.color || "gray"
                             : "black",
                         },
@@ -131,10 +132,10 @@ const UserTaggingList = ({
                       <LMChatTextView
                         textStyle={StyleSheet.flatten([
                           styles.subTitle,
-                          inputBoxStyles?.userTaggingListStyles?.subTitle,
+                          userTaggingListStyles?.subTitle,
                           {
                             color: isUploadScreen
-                              ? inputBoxStyles?.userTaggingListStyles?.subTitle
+                              ? userTaggingListStyles?.subTitle
                                   ?.color || "gray"
                               : "black",
                           },

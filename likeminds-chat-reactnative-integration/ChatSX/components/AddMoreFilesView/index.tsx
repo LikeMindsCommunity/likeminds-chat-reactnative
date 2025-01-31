@@ -27,13 +27,14 @@ const AddMoreFilesView = ({
   } = useInputBoxContext();
 
   const isDMChatroom = chatroomType === ChatroomType.DMCHATROOM && isUserChatbot;
+  const addMoreFilesViewStyles = inputBoxStyles?.addMoreFilesViewStyles;
 
   return (
     <>
       {!!isUploadScreen && !isDoc && !isGif && !isDMChatroom ? (
         <TouchableOpacity
           style={[
-            inputBoxStyles?.addMoreFilesViewStyles?.addMoreButton,
+            addMoreFilesViewStyles?.addMoreButton,
           ]}
           onPress={() => {
             if (handleGalleryProp) {
@@ -45,13 +46,13 @@ const AddMoreFilesView = ({
         >
           <LMChatIcon
             assetPath={require("../../assets/images/addImages3x.png")}
-            iconStyle={inputBoxStyles?.addMoreFilesViewStyles?.emoji}
+            iconStyle={addMoreFilesViewStyles?.emoji}
           />
         </TouchableOpacity>
       ) : !!isUploadScreen && !isDoc && !isGif && !isDMChatroom ? (
         <TouchableOpacity
           style={[
-            inputBoxStyles?.addMoreFilesViewStyles?.addMoreButton,
+            addMoreFilesViewStyles?.addMoreButton,
           ]}
           onPress={() => {
             if (handleDocumentProp) {
@@ -63,11 +64,11 @@ const AddMoreFilesView = ({
         >
           <LMChatIcon
             assetPath={require("../../assets/images/add_more_docs3x.png")}
-            iconStyle={inputBoxStyles?.addMoreFilesViewStyles?.emoji}
+            iconStyle={addMoreFilesViewStyles?.emoji}
           />
         </TouchableOpacity>
       ) : isUploadScreen ? (
-        <View style={inputBoxStyles?.addMoreFilesViewStyles?.paddingHorizontal} />
+        <View style={addMoreFilesViewStyles?.paddingHorizontal} />
       ) : null}
     </>
   );

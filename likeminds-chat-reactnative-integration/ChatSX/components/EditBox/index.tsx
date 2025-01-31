@@ -23,13 +23,14 @@ const EditBox = ({ handleEditBoxCloseProp }: EditBoxProps) => {
   } = useInputBoxContext();
   const dispatch = useAppDispatch();
 
+  const  editBoxStyles = inputBoxStyles?.editBoxStyles;
   return (
     <>
       {isEditable ? (
         <View
           style={StyleSheet.flatten([
             styles.replyBox, 
-            inputBoxStyles?.editBoxStyles?.containerStyle, 
+            editBoxStyles?.containerStyle, 
           ])}
         >
           <ReplyBox
@@ -58,14 +59,14 @@ const EditBox = ({ handleEditBoxCloseProp }: EditBoxProps) => {
             }}
             style={StyleSheet.flatten([
               styles.replyBoxClose, 
-              inputBoxStyles?.editBoxStyles?.closeButtonStyle, 
+              editBoxStyles?.closeButtonStyle, 
             ])}
           >
             <LMChatIcon
               assetPath={require("../../assets/images/close_icon.png")}
               iconStyle={StyleSheet.flatten([
                 styles.replyCloseImg, 
-                inputBoxStyles?.editBoxStyles?.closeIconStyle,
+                editBoxStyles?.closeIconStyle,
               ])}
             />
           </TouchableOpacity>
