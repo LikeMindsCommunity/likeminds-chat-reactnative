@@ -30,7 +30,10 @@ const AddMoreFilesView = ({
 
   return (
     <>
-      {!!isUploadScreen && !isDoc && !isGif && !isDMChatroom ? (
+      {!!isUploadScreen &&
+      !isDoc &&
+      !isGif &&
+      !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot)? (
         <TouchableOpacity
           style={[
             inputBoxStyles?.addMoreFilesViewStyles?.addMoreButton,
@@ -48,7 +51,7 @@ const AddMoreFilesView = ({
             iconStyle={inputBoxStyles?.addMoreFilesViewStyles?.emoji}
           />
         </TouchableOpacity>
-      ) : !!isUploadScreen && !isDoc && !isGif && !isDMChatroom ? (
+      ) : !!isUploadScreen && !isDoc && !isGif && !(chatroomType == ChatroomType.DMCHATROOM && isUserChatbot) ? (
         <TouchableOpacity
           style={[
             inputBoxStyles?.addMoreFilesViewStyles?.addMoreButton,
