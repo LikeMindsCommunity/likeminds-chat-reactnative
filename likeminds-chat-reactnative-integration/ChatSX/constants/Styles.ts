@@ -14,6 +14,14 @@ import {
   ReactionListStyles,
   SearchInChatroomStyles,
   StylesProps,
+  EditBoxStyles,
+  UserTaggingListStyles,
+  ReplyBoxViewStyles,
+  LinkPreviewInputViewStyles,
+  AddMoreFilesViewStyles,
+  InputBoxViewStyles,
+  SelectFilesModalStyles,
+  SendDMRequestModalStyles
 } from "./type";
 
 const isIOS = Platform.OS === "ios" ? true : false;
@@ -103,7 +111,16 @@ export class STYLES {
   static $SEARCH_IN_CHATROOM: SearchInChatroomStyles = {};
   static $CHATBOT_INIT_SCREEN_STYLE: ChatBotInitiateScreenStyles = {};
   static $LMCHAT_AI_BUTTON_STYLE: LMChatAIButtonStyle = {};
+  static $EDIT_BOX_STYLE :EditBoxStyles={};
+  static $USER_TAGGING_LIST_STYLE: UserTaggingListStyles={};
+  static $REPLY_BOX_VIEW_STYLE:ReplyBoxViewStyles={};
+  static $LINK_PREVIEW_INPUT_VIEW_STYLE:LinkPreviewInputViewStyles={};
+  static $ADD_MORE_FILES_VIEW_STYLE:AddMoreFilesViewStyles={};
+  static $INPUT_BOX_VIEW_STYLE:InputBoxViewStyles={};
+  static $SELECT_FILES_MODAL_STYLE:SelectFilesModalStyles={};
+  static $SEND_DM_REQUEST_MODAL_STYLE:SendDMRequestModalStyles={};
   static setTheme({
+
     hue,
     fontColor,
     primaryColor,
@@ -201,6 +218,7 @@ export class STYLES {
       ...homeFeedStyles,
     };
   }
+  
   static setSearchInChatroomStyle(
     searchInChatroomStyles: SearchInChatroomStyles
   ) {
@@ -220,6 +238,55 @@ export class STYLES {
   ) {
     STYLES.$LMCHAT_AI_BUTTON_STYLE = LMChatAIButtonStyle
   }
+  static setEditBoxStyle(editBoxStyles: EditBoxStyles) {
+    STYLES.$INPUT_BOX_STYLE.editBoxStyles = {
+      ...STYLES.$INPUT_BOX_STYLE.editBoxStyles, 
+      ...editBoxStyles, 
+    };
+  }
+  static setUserTaggingListStyles(userTaggingListStyles: UserTaggingListStyles) {
+    STYLES.$INPUT_BOX_STYLE.userTaggingListStyles = {
+      ...STYLES.$INPUT_BOX_STYLE.userTaggingListStyles,
+      ...userTaggingListStyles,
+    };
+  }
+  static setReplyBoxViewStyles(replyBoxViewStyles: ReplyBoxViewStyles) {
+    STYLES.$INPUT_BOX_STYLE.replyBoxViewStyles = {
+      ...STYLES.$INPUT_BOX_STYLE.replyBoxViewStyles,
+      ...replyBoxViewStyles,
+    };
+  }
+  static setLinkPreviewInputViewStyles(linkPreviewInputViewStyles: LinkPreviewInputViewStyles) {
+    STYLES.$INPUT_BOX_STYLE.linkPreviewInputViewStyles = {
+      ...STYLES.$INPUT_BOX_STYLE.linkPreviewInputViewStyles,
+      ...linkPreviewInputViewStyles,
+    };
+  }
+  static setAddMoreFilesViewStyles(addMoreFilesViewStyles: AddMoreFilesViewStyles) {
+    STYLES.$INPUT_BOX_STYLE.addMoreFilesViewStyles = {
+      ...STYLES.$INPUT_BOX_STYLE.addMoreFilesViewStyles,
+      ...addMoreFilesViewStyles,
+    };
+  }
+  static setInputBoxViewStyles(inputBoxViewStyles: InputBoxViewStyles) {
+    STYLES.$INPUT_BOX_STYLE.inputBoxViewStyles = {
+      ...STYLES.$INPUT_BOX_STYLE.inputBoxViewStyles,
+      ...inputBoxViewStyles,
+    };
+  }
+  static setSelectFilesModalStyles(selectFilesModalStyles: SelectFilesModalStyles) {
+    STYLES.$INPUT_BOX_STYLE.selectFilesModalStyles = {
+      ...STYLES.$INPUT_BOX_STYLE.selectFilesModalStyles,
+      ...selectFilesModalStyles,
+    };
+  }
+  static setSendDMRequestModalStyles(styles: SendDMRequestModalStyles) {
+    STYLES.$INPUT_BOX_STYLE.sendDMRequestModalStyles = {
+      ...STYLES.$INPUT_BOX_STYLE.sendDMRequestModalStyles,
+      ...styles,
+    };
+  }
+  
 }
 
 export default STYLES;

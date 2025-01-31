@@ -146,5 +146,5 @@ export {
   CommunityChatScreen,
   NetworkChatScreen,
   CommunityHybridChat,
-  Themes
+  Themes,
 };

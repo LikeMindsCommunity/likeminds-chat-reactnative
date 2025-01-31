@@ -22,6 +22,7 @@
   "dependencies": {
     "@likeminds.community/chat-rn": "1.8.1",
     "@react-native/babel-preset": "0.74.0",
+    "command": "file:../../likeminds-chat-reactnative-data/command-0.0.5.tgz",
     "diff": "5.1.0",
     "realm": "11.10.2"
   },

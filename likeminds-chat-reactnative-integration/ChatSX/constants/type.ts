@@ -272,8 +272,241 @@ export interface InputBoxStyles {
     resizeMode?: string;
   };
   messageInputMarginBottom?: number;
+  editBoxStyles?: EditBoxStyles;
+  userTaggingListStyles?: UserTaggingListStyles;
+  replyBoxViewStyles?: ReplyBoxViewStyles;
+  linkPreviewInputViewStyles?: LinkPreviewInputViewStyles;
+  addMoreFilesViewStyles?: AddMoreFilesViewStyles;
+  inputBoxViewStyles?: InputBoxViewStyles;
+  selectFilesModalStyles?: SelectFilesModalStyles;
+  sendDMRequestModalStyles?: SendDMRequestModalStyles;
+
+
+}
+export interface EditBoxStyles {
+  containerStyle?: {
+    backgroundColor?: string;
+    borderColor?: string;
+    borderWidth?: number;
+    padding?: number;
+    borderRadius?: number;
+  };
+  closeButtonStyle?: {
+    backgroundColor?: string;
+    padding?: number;
+    borderRadius?: number;
+  };
+  closeIconStyle?: {
+    width?: number;
+    height?: number;
+    tintColor?: string;
+  };
+}
+export interface SendDMRequestModalStyles {
+  modal?: {
+    flex?: number;
+    justifyContent?: string;
+    alignItems?: string;
+    backgroundColor?: string;
+  };
+  modalContainer?: {
+    backgroundColor?: string;
+    borderRadius?: number;
+    padding?: number;
+    width?: string | number;
+    elevation?: number;
+  };
+  title?: {
+    fontSize?: number;
+    fontWeight?: string;
+    textAlign?: string;
+    marginBottom?: number;
+  };
+  message?: {
+    fontSize?: number;
+    textAlign?: string;
+    color?: string;
+    marginBottom?: number;
+  };
+  buttonContainer?: {
+    flexDirection?: string;
+    justifyContent?: string;
+    marginTop?: number;
+  };
+  button?: {
+    padding?: number;
+    borderRadius?: number;
+    marginHorizontal?: number;
+  };
+  cancelButton?: {
+    backgroundColor?: string;
+  };
+  okButton?: {
+    backgroundColor?: string;
+  };
+  buttonText?: {
+    fontSize?: number;
+    fontWeight?: string;
+    textAlign?: string;
+  };
+  cancelButtonText?: {
+    color?: string;
+  };
 }
 
+export interface UserTaggingListStyles {
+  taggableUsersBox?: {
+    backgroundColor?: string;
+    height?: number | string;
+  };
+  taggableUserView?: {
+    flexDirection?: "row" | "column";
+    padding?: number;
+    alignItems?: string;
+  };
+  avatar?: {
+    width?: number;
+    height?: number;
+    borderRadius?: number;
+  };
+  infoContainer?: {
+    gap?: number;
+    borderBottomWidth?: number;
+  };
+  title?: {
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+  };
+  subTitle?: {
+    fontSize?: number;
+    fontFamily?: string;
+    color?: string;
+  };
+}
+export interface ReplyBoxViewStyles {
+  replyBox?: {
+    backgroundColor?: string;
+    padding?: number;
+    borderRadius?: number;
+    margin?: number;
+  };
+  replyBoxClose?: {
+    padding?: number;
+    alignItems?: string;
+    justifyContent?: string;
+  };
+  replyCloseImg?: {
+    width?: number;
+    height?: number;
+    tintColor?: string;
+  };
+}
+export interface LinkPreviewInputViewStyles {
+  linkPreviewBox?: {
+    backgroundColor?: string;
+    padding?: number;
+    borderRadius?: number;
+    margin?: number;
+  };
+  replyBoxClose?: {
+    padding?: number;
+    alignItems?: string;
+    justifyContent?: string;
+  };
+  replyCloseImg?: {
+    width?: number;
+    height?: number;
+    tintColor?: string;
+  };
+}
+export interface AddMoreFilesViewStyles {
+  addMoreButton?: {
+    padding?: number;
+    margin?: number;
+    borderRadius?: number;
+    backgroundColor?: string;
+    alignItems?: string;
+    justifyContent?: string;
+  };
+  emoji?: {
+    width?: number;
+    height?: number;
+    tintColor?: string;
+  };
+}
+export interface InputBoxViewStyles {
+  voiceNotesInputParent?: {
+    paddingVertical?: number;
+    marginHorizontal?: number;
+    backgroundColor?: string;
+  };
+  recordTitle?: {
+    fontSize?: number;
+    color?: string;
+    fontWeight?: string;
+  };
+  emoji?: {
+    width?: number;
+    height?: number;
+    tintColor?: string;
+  };
+  input?: {
+    borderWidth?: number;
+    borderColor?: string;
+    borderRadius?: number;
+    padding?: number;
+    backgroundColor?: string;
+  };
+  gifView?: {
+    backgroundColor?: string;
+    padding?: number;
+    borderRadius?: number;
+  };
+  gifText?: {
+    fontSize?: number;
+    color?: string;
+    fontWeight?: string;
+  };
+}
+export interface SelectFilesModalStyles {
+  centeredView?: {
+    flex?: number;
+    justifyContent?: string;
+    alignItems?: string;
+    backgroundColor?: string;
+  };
+  modalViewParent?: {
+    backgroundColor?: string;
+    borderRadius?: number;
+    padding?: number;
+    margin?: number;
+    shadowColor?: string;
+    shadowOpacity?: number;
+    shadowRadius?: number;
+    elevation?: number;
+  };
+  modalView?: {
+    padding?: number;
+    backgroundColor?: string;
+    borderRadius?: number;
+  };
+  alignModalElements?: {
+    flexDirection?: string;
+    justifyContent?: string;
+    alignItems?: string;
+    padding?: number;
+  };
+  iconContainer?: {
+    alignItems?: string;
+    justifyContent?: string;
+    marginVertical?: number;
+  };
+  cameraIconStyles?: ImageStyle;
+  galleryIconStyles?: ImageStyle;
+  documentIconStyles?: ImageStyle;
+  pollIconStyles?: ImageStyle;
+}
 export interface SearchInChatroomStyles {
   backArrowColor?: string;
   crossIconColor?: string;
