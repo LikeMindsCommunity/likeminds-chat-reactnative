@@ -280,10 +280,10 @@ export class STYLES {
       ...selectFilesModalStyles,
     };
   }
-  static setSendDMRequestModalStyles(styles: SendDMRequestModalStyles) {
+  static setSendDMRequestModalStyles(sendDMRequestModalStyles: SendDMRequestModalStyles) {
     STYLES.$INPUT_BOX_STYLE.sendDMRequestModalStyles = {
       ...STYLES.$INPUT_BOX_STYLE.sendDMRequestModalStyles,
-      ...styles,
+      ...sendDMRequestModalStyles,
     };
   }
   

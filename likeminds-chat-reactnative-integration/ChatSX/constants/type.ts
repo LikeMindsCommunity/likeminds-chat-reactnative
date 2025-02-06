@@ -1,4 +1,5 @@
 import { ImageStyle, TextStyle, ViewStyle } from "react-native";
+import { LMChatIconProps } from "../uiComponents/LMChatIcon/types";
 
 interface FontTypes {
   LIGHT?: string;
@@ -284,228 +285,72 @@ export interface InputBoxStyles {
 
 }
 export interface EditBoxStyles {
-  containerStyle?: {
-    backgroundColor?: string;
-    borderColor?: string;
-    borderWidth?: number;
-    padding?: number;
-    borderRadius?: number;
-  };
-  closeButtonStyle?: {
-    backgroundColor?: string;
-    padding?: number;
-    borderRadius?: number;
-  };
-  closeIconStyle?: {
-    width?: number;
-    height?: number;
-    tintColor?: string;
-  };
-}
+  containerStyle?:ViewStyle;
+  closeButtonStyle?: ViewStyle;
+  closeIconStyle?: LMChatIconProps;
+} 
 export interface SendDMRequestModalStyles {
-  modal?: {
-    flex?: number;
-    justifyContent?: string;
-    alignItems?: string;
-    backgroundColor?: string;
-  };
-  modalContainer?: {
-    backgroundColor?: string;
-    borderRadius?: number;
-    padding?: number;
-    width?: string | number;
-    elevation?: number;
-  };
-  title?: {
-    fontSize?: number;
-    fontWeight?: string;
-    textAlign?: string;
-    marginBottom?: number;
-  };
-  message?: {
-    fontSize?: number;
-    textAlign?: string;
-    color?: string;
-    marginBottom?: number;
-  };
-  buttonContainer?: {
-    flexDirection?: string;
-    justifyContent?: string;
-    marginTop?: number;
-  };
-  button?: {
-    padding?: number;
-    borderRadius?: number;
-    marginHorizontal?: number;
-  };
-  cancelButton?: {
-    backgroundColor?: string;
-  };
-  okButton?: {
-    backgroundColor?: string;
-  };
-  buttonText?: {
-    fontSize?: number;
-    fontWeight?: string;
-    textAlign?: string;
-  };
-  cancelButtonText?: {
-    color?: string;
-  };
+  modal?: ViewStyle;
+  modalContainer?: ViewStyle;
+  title?: TextStyle;
+  message?: TextStyle;
+  buttonContainer?: ViewStyle;
+  button?: ViewStyle
+  cancelButton?: ViewStyle
+  okButton?: ViewStyle
+  buttonText?: TextStyle
+  cancelButtonText?: TextStyle
 }
 
 export interface UserTaggingListStyles {
-  taggableUsersBox?: {
-    backgroundColor?: string;
-    height?: number | string;
-  };
-  taggableUserView?: {
-    flexDirection?: "row" | "column";
-    padding?: number;
-    alignItems?: string;
-  };
-  avatar?: {
-    width?: number;
-    height?: number;
-    borderRadius?: number;
-  };
-  infoContainer?: {
-    gap?: number;
-    borderBottomWidth?: number;
-  };
-  title?: {
-    fontSize?: number;
-    fontFamily?: string;
-    color?: string;
-  };
-  subTitle?: {
-    fontSize?: number;
-    fontFamily?: string;
-    color?: string;
-  };
+  taggableUsersBox?: ViewStyle;
+  taggableUserView?: ViewStyle; 
+  avatar?: LMChatIconProps; 
+  infoContainer?: ViewStyle; 
+  title?: TextStyle;
+  subTitle?: TextStyle;
 }
 export interface ReplyBoxViewStyles {
-  replyBox?: {
-    backgroundColor?: string;
-    padding?: number;
-    borderRadius?: number;
-    margin?: number;
-  };
-  replyBoxClose?: {
-    padding?: number;
-    alignItems?: string;
-    justifyContent?: string;
-  };
-  replyCloseImg?: {
-    width?: number;
-    height?: number;
-    tintColor?: string;
-  };
+  replyBox?: ViewStyle;
+  replyBoxClose?: ViewStyle;
+  replyCloseImg?: LMChatIconProps;
 }
 export interface LinkPreviewInputViewStyles {
-  linkPreviewBox?: {
-    backgroundColor?: string;
-    padding?: number;
-    borderRadius?: number;
-    margin?: number;
-  };
-  replyBoxClose?: {
-    padding?: number;
-    alignItems?: string;
-    justifyContent?: string;
-  };
-  replyCloseImg?: {
-    width?: number;
-    height?: number;
-    tintColor?: string;
-  };
-}
+  linkPreviewBox?: ViewStyle;
+  replyBoxClose?: ViewStyle;
+  replyCloseImg?: LMChatIconProps;
+};
 export interface AddMoreFilesViewStyles {
-  addMoreButton?: {
-    padding?: number;
-    margin?: number;
-    borderRadius?: number;
-    backgroundColor?: string;
-    alignItems?: string;
-    justifyContent?: string;
-  };
-  emoji?: {
-    width?: number;
-    height?: number;
-    tintColor?: string;
-  };
+  addMoreButton?: ViewStyle;
+  emoji?: LMChatIconProps;
 }
 export interface InputBoxViewStyles {
-  voiceNotesInputParent?: {
-    paddingVertical?: number;
-    marginHorizontal?: number;
-    backgroundColor?: string;
-  };
-  recordTitle?: {
-    fontSize?: number;
-    color?: string;
-    fontWeight?: string;
-  };
-  emoji?: {
-    width?: number;
-    height?: number;
-    tintColor?: string;
-  };
-  input?: {
-    borderWidth?: number;
-    borderColor?: string;
-    borderRadius?: number;
-    padding?: number;
-    backgroundColor?: string;
-  };
-  gifView?: {
-    backgroundColor?: string;
-    padding?: number;
-    borderRadius?: number;
-  };
-  gifText?: {
-    fontSize?: number;
-    color?: string;
-    fontWeight?: string;
-  };
+  voiceNotesInputParent?: ViewStyle;
+  recordTitle?: TextStyle;
+  emoji?: LMChatIconProps; 
+  input?: ViewStyle;
+  gifView?: ViewStyle;
+  gifText?: TextStyle;
+  chevron?: LMChatIconProps; 
+  inputTextStyle?: TextStyle;
+  recordIcon?: LMChatIconProps; 
+  stopRecordingIcon?: LMChatIconProps; 
+  cancelRecordingIcon?: LMChatIconProps; 
+  slideCancelIcon?: LMChatIconProps; 
+  pauseIcon?: LMChatIconProps; 
+  playIcon?: LMChatIconProps; 
 }
+
 export interface SelectFilesModalStyles {
-  centeredView?: {
-    flex?: number;
-    justifyContent?: string;
-    alignItems?: string;
-    backgroundColor?: string;
-  };
-  modalViewParent?: {
-    backgroundColor?: string;
-    borderRadius?: number;
-    padding?: number;
-    margin?: number;
-    shadowColor?: string;
-    shadowOpacity?: number;
-    shadowRadius?: number;
-    elevation?: number;
-  };
-  modalView?: {
-    padding?: number;
-    backgroundColor?: string;
-    borderRadius?: number;
-  };
-  alignModalElements?: {
-    flexDirection?: string;
-    justifyContent?: string;
-    alignItems?: string;
-    padding?: number;
-  };
-  iconContainer?: {
-    alignItems?: string;
-    justifyContent?: string;
-    marginVertical?: number;
-  };
-  cameraIconStyles?: ImageStyle;
-  galleryIconStyles?: ImageStyle;
-  documentIconStyles?: ImageStyle;
-  pollIconStyles?: ImageStyle;
+  centeredView?: ViewStyle;
+  modalViewParent?:ViewStyle;
+  modalView?: ViewStyle;
+  alignModalElements?:ViewStyle;
+  iconContainer?: ViewStyle;
+  cameraIconStyles?: LMChatIconProps;
+  galleryIconStyles?: LMChatIconProps;
+  documentIconStyles?: LMChatIconProps;
+  pollIconStyles?: LMChatIconProps;
 }
 export interface SearchInChatroomStyles {
   backArrowColor?: string;

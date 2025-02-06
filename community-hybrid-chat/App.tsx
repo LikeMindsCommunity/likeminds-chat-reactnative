@@ -158,16 +158,8 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     setStyles();
-    STYLES.setEditBoxStyle({
-                 
-      textStyle: {                
-        color: "#333",            
-        fontSize: 40,            
-        fontFamily: "Roboto",     
-      },
-    });
-    
-  }, []);
+  }
+  ),([]);
 
   const callbackClass = new LMCoreCallbacks(
     (accessToken: string, refreshToken: string) => {
@@ -236,10 +228,6 @@ function App(): React.JSX.Element {
   }, []);
 
 
-  useEffect(() => {
-    
-    
-  }, []);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>

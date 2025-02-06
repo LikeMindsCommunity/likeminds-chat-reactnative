@@ -35,8 +35,9 @@ const UserTaggingList = ({
     handleLoadMore,
     renderFooter,
     onUserTaggingClicked,
-    inputBoxStyles, // Accessing centralized styles
+    inputBoxStyles,
   } = useInputBoxContext();
+  const userTaggingListStyles = inputBoxStyles?.userTaggingListStyles;
 
   return (
     <View>
@@ -44,7 +45,7 @@ const UserTaggingList = ({
         <View
           style={StyleSheet.flatten([
             styles.taggableUsersBox,
-            inputBoxStyles?.userTaggingListStyles?.taggableUsersBox,
+            userTaggingListStyles?.taggableUsersBox,
             {
               backgroundColor: isUploadScreen ? "black" : "white",
               height: userTaggingListHeight,
@@ -82,30 +83,28 @@ const UserTaggingList = ({
                   }}
                   style={StyleSheet.flatten([
                     styles.taggableUserView,
-                    inputBoxStyles?.userTaggingListStyles?.taggableUserView,
+                    userTaggingListStyles?.taggableUserView,
                   ])}
                 >
-                  {imageUrl ? (
-                    <LMChatIcon
-                      iconUrl={imageUrl}
-                      iconStyle={StyleSheet.flatten([
-                        styles.avatar,
-                        inputBoxStyles?.userTaggingListStyles?.avatar,
-                      ])}
-                    />
-                  ) : (
-                    <LMChatIcon
-                      assetPath={require("../../assets/images/default_pic.png")}
-                      iconStyle={StyleSheet.flatten([
-                        styles.avatar,
-                        inputBoxStyles?.userTaggingListStyles?.avatar,
-                      ])}
-                    />
-                  )}
+                  <LMChatIcon
+                    iconUrl={imageUrl}
+                    assetPath={
+                      imageUrl
+                        ? undefined
+                        : userTaggingListStyles?.avatar?.assetPath ??
+                          require("../../assets/images/default_pic.png")
+                    }
+                    height={userTaggingListStyles?.avatar?.height ?? 40}
+                    width={userTaggingListStyles?.avatar?.width ?? 40}
+                    iconStyle={StyleSheet.flatten([
+                      styles.avatar,
+                      userTaggingListStyles?.avatar?.iconStyle,
+                    ])}
+                  />
                   <View
                     style={StyleSheet.flatten([
                       styles.infoContainer,
-                      inputBoxStyles?.userTaggingListStyles?.infoContainer,
+                      userTaggingListStyles?.infoContainer,
                       {
                         borderBottomWidth: Layout.normalize(0.2),
                         gap: Layout.normalize(5),
@@ -115,10 +114,10 @@ const UserTaggingList = ({
                     <LMChatTextView
                       textStyle={StyleSheet.flatten([
                         styles.title,
-                        inputBoxStyles?.userTaggingListStyles?.title,
+                        userTaggingListStyles?.title,
                         {
                           color: isUploadScreen
-                            ? inputBoxStyles?.userTaggingListStyles?.title
+                            ? userTaggingListStyles?.title
                                 ?.color || "gray"
                             : "black",
                         },
@@ -131,10 +130,10 @@ const UserTaggingList = ({
                       <LMChatTextView
                         textStyle={StyleSheet.flatten([
                           styles.subTitle,
-                          inputBoxStyles?.userTaggingListStyles?.subTitle,
+                          userTaggingListStyles?.subTitle,
                           {
                             color: isUploadScreen
-                              ? inputBoxStyles?.userTaggingListStyles?.subTitle
+                              ? userTaggingListStyles?.subTitle
                                   ?.color || "gray"
                               : "black",
                           },

@@ -1,4 +1,3 @@
-
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import { ReplyBox } from "../ReplyConversations";
@@ -16,6 +15,7 @@ const ReplyBoxView = ({ handleReplyBoxCloseProp }: ReplyBoxViewProps) => {
   const { isReply, isUploadScreen, replyMessage, chatroomName, inputBoxStyles } =
     useInputBoxContext();
   const dispatch = useAppDispatch();
+  const replyBoxViewStyles = inputBoxStyles?.replyBoxViewStyles;
 
   return (
     <>
@@ -23,7 +23,7 @@ const ReplyBoxView = ({ handleReplyBoxCloseProp }: ReplyBoxViewProps) => {
         <View
           style={StyleSheet.flatten([
             styles.replyBox, 
-            inputBoxStyles?.replyBoxViewStyles?.replyBox, 
+            replyBoxViewStyles?.replyBox, // Updated here
           ])}
         >
           <ReplyBox
@@ -45,16 +45,22 @@ const ReplyBoxView = ({ handleReplyBoxCloseProp }: ReplyBoxViewProps) => {
             }}
             style={StyleSheet.flatten([
               styles.replyBoxClose, 
-              inputBoxStyles?.replyBoxViewStyles?.replyBoxClose, 
+              replyBoxViewStyles?.replyBoxClose, 
             ])}
           >
             <LMChatIcon
-              assetPath={require("../../assets/images/close_icon.png")}
-              iconStyle={StyleSheet.flatten([
-                styles.replyCloseImg, 
-                inputBoxStyles?.replyBoxViewStyles?.replyCloseImg, 
-              ])}
-            />
+            assetPath={
+            replyBoxViewStyles?.replyCloseImg?.assetPath ??
+            require("../../assets/images/close_icon.png")
+            }
+                height={replyBoxViewStyles?.closeIconStyle?.height ?? 24} 
+                width={replyBoxViewStyles?.closeIconStyle?.width ?? 24} 
+                iconStyle={StyleSheet.flatten([
+              styles.replyCloseImg, 
+              replyBoxViewStyles?.replyCloseImg?.iconStyle, 
+            ])}
+          />
+
           </TouchableOpacity>
         </View>
       )}

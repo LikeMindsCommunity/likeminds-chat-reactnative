@@ -5,8 +5,7 @@ import { ReplyBox } from "../ReplyConversations";
 import { SELECTED_MESSAGES, SET_EDIT_MESSAGE } from "../../store/types/types";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import { useAppDispatch } from "../../store";
-import { styles } from "../InputBox/styles"; 
-
+import { styles } from "../InputBox/styles"; // Importing existing styles
 
 interface EditBoxProps {
   handleEditBoxCloseProp?: () => void;
@@ -19,17 +18,20 @@ const EditBox = ({ handleEditBoxCloseProp }: EditBoxProps) => {
     isEditable,
     chatroomName,
     editConversation,
-    inputBoxStyles, 
+    inputBoxStyles, // Accessing dynamic styles from the context
   } = useInputBoxContext();
   const dispatch = useAppDispatch();
+
+  // Store editBoxStyles once to avoid repetitive lookups
+  const editBoxStyles = inputBoxStyles?.editBoxStyles;
 
   return (
     <>
       {isEditable ? (
         <View
           style={StyleSheet.flatten([
-            styles.replyBox, 
-            inputBoxStyles?.editBoxStyles?.containerStyle, 
+            styles.replyBox, // Existing static styles
+            editBoxStyles?.containerStyle, // Optimized dynamic styles
           ])}
         >
           <ReplyBox
@@ -58,14 +60,19 @@ const EditBox = ({ handleEditBoxCloseProp }: EditBoxProps) => {
             }}
             style={StyleSheet.flatten([
               styles.replyBoxClose, 
-              inputBoxStyles?.editBoxStyles?.closeButtonStyle, 
+              editBoxStyles?.closeButtonStyle, 
             ])}
           >
             <LMChatIcon
-              assetPath={require("../../assets/images/close_icon.png")}
+              assetPath={
+                editBoxStyles?.closeIconStyle?.assetPath ??
+                require("../../assets/images/close_icon.png") 
+              }
+              height={editBoxStyles?.closeIconStyle?.height ?? 24} 
+              width={editBoxStyles?.closeIconStyle?.width ?? 24} 
               iconStyle={StyleSheet.flatten([
                 styles.replyCloseImg, 
-                inputBoxStyles?.editBoxStyles?.closeIconStyle,
+                editBoxStyles?.closeIconStyle?.iconStyle,
               ])}
             />
           </TouchableOpacity>

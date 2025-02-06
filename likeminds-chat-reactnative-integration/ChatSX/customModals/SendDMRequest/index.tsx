@@ -18,7 +18,7 @@ const SendDMRequestModal = ({
   message,
 }: any) => {
   const { inputBoxStyles } = useInputBoxContext(); // Use centralized styles
-
+const sendDMRequestModalStyles= inputBoxStyles?.sendDMRequestModalStyles;
   return (
     <Modal
       visible={DMSentAlertModalVisible}
@@ -29,7 +29,7 @@ const SendDMRequestModal = ({
       <Pressable
         style={StyleSheet.flatten([
           styles.modal,
-          inputBoxStyles?.sendDMRequestModalStyles?.modal,
+          sendDMRequestModalStyles?.modal,
         ])}
         onPress={hideDMSentAlert}
       >
@@ -37,13 +37,13 @@ const SendDMRequestModal = ({
           onPress={() => {}}
           style={StyleSheet.flatten([
             styles.modalContainer,
-            inputBoxStyles?.sendDMRequestModalStyles?.modalContainer,
+            sendDMRequestModalStyles?.modalContainer,
           ])}
         >
           <Text
             style={StyleSheet.flatten([
               styles.title,
-              inputBoxStyles?.sendDMRequestModalStyles?.title,
+              sendDMRequestModalStyles?.title,
             ])}
           >
             {SEND_DM_REQUEST}
@@ -51,7 +51,7 @@ const SendDMRequestModal = ({
           <Text
             style={StyleSheet.flatten([
               styles.message,
-              inputBoxStyles?.sendDMRequestModalStyles?.message,
+              sendDMRequestModalStyles?.message,
             ])}
           >
             {DM_REQUEST_MESSAGE}
@@ -59,15 +59,15 @@ const SendDMRequestModal = ({
           <View
             style={StyleSheet.flatten([
               styles.buttonContainer,
-              inputBoxStyles?.sendDMRequestModalStyles?.buttonContainer,
+              sendDMRequestModalStyles?.buttonContainer,
             ])}
           >
             <TouchableOpacity
               style={StyleSheet.flatten([
                 styles.button,
                 styles.cancelButton,
-                inputBoxStyles?.sendDMRequestModalStyles?.button,
-                inputBoxStyles?.sendDMRequestModalStyles?.cancelButton,
+                sendDMRequestModalStyles?.button,
+                sendDMRequestModalStyles?.cancelButton,
               ])}
               onPress={hideDMSentAlert}
             >
@@ -75,8 +75,8 @@ const SendDMRequestModal = ({
                 style={StyleSheet.flatten([
                   styles.buttonText,
                   styles.cancelButtonText,
-                  inputBoxStyles?.sendDMRequestModalStyles?.buttonText,
-                  inputBoxStyles?.sendDMRequestModalStyles?.cancelButtonText,
+                  sendDMRequestModalStyles?.buttonText,
+                  sendDMRequestModalStyles?.cancelButtonText,
                 ])}
               >
                 {CANCEL_BUTTON}
@@ -86,8 +86,8 @@ const SendDMRequestModal = ({
               style={StyleSheet.flatten([
                 styles.button,
                 styles.okButton,
-                inputBoxStyles?.sendDMRequestModalStyles?.button,
-                inputBoxStyles?.sendDMRequestModalStyles?.okButton,
+                sendDMRequestModalStyles?.button,
+                sendDMRequestModalStyles?.okButton,
               ])}
               onPress={() => {
                 onSend(message);
@@ -97,7 +97,7 @@ const SendDMRequestModal = ({
               <Text
                 style={StyleSheet.flatten([
                   styles.buttonText,
-                  inputBoxStyles?.sendDMRequestModalStyles?.buttonText,
+                  sendDMRequestModalStyles?.buttonText,
                 ])}
               >
                 {CONFIRM_BUTTON}

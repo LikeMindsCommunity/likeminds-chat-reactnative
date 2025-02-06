@@ -24,22 +24,6 @@ const AddFilesView = ({ handleFilesViewProp }: AddFilesViewProps) => {
     chatroomType
   } = useInputBoxContext();
 
-  // Combine the styles using StyleSheet.flatten to prevent overriding by STYLES
-  const buttonStyle = StyleSheet.flatten([
-    inputBoxStyles?.inputBoxViewStyles?.emojiButton,
-    styles.emojiButton,
-  ]);
-
-  const iconStyle = StyleSheet.flatten([
-    inputBoxStyles?.inputBoxViewStyles?.attachmentIconStyles,
-    styles.emoji,
-    isUserChatbot
-      ? {
-          height: Layout.normalize(20),
-          width: Layout.normalize(20),
-        }
-      : null,
-  ] as ImageStyle);
 
   return (
     <>
@@ -48,7 +32,10 @@ const AddFilesView = ({ handleFilesViewProp }: AddFilesViewProps) => {
       !voiceNotes?.recordTime &&
       !isDeleteAnimation && !(chatroomType == ChatroomType.DMCHATROOM && chatRequestState == null) ? (
         <TouchableOpacity
-          style={buttonStyle}
+          style={StyleSheet.flatten([
+            inputBoxStyles?.inputBoxViewStyles?.emojiButton,
+            styles.emojiButton,
+          ])}
           onPress={() => {
             if (handleFilesViewProp) {
               handleFilesViewProp();
@@ -64,7 +51,16 @@ const AddFilesView = ({ handleFilesViewProp }: AddFilesViewProps) => {
                 ? require("../../assets/images/chatbot_attachment_button3x.png")
                 : require("../../assets/images/open_files3x.png")
             }
-            iconStyle={iconStyle}
+            iconStyle={StyleSheet.flatten([
+              inputBoxStyles?.inputBoxViewStyles?.attachmentIconStyles,
+              styles.emoji,
+              isUserChatbot
+                ? {
+                    height: Layout.normalize(20),
+                    width: Layout.normalize(20),
+                  }
+                : null,
+            ] as ImageStyle)}
           />
         </TouchableOpacity>
       ) : null}
