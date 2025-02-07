@@ -22,16 +22,16 @@ const EditBox = ({ handleEditBoxCloseProp }: EditBoxProps) => {
   } = useInputBoxContext();
   const dispatch = useAppDispatch();
 
-  // Store editBoxStyles once to avoid repetitive lookups
-  const editBoxStyles = inputBoxStyles?.editBoxStyles;
+ 
 
+  const  editBoxStyles = inputBoxStyles?.editBoxStyles;
   return (
     <>
       {isEditable ? (
         <View
           style={StyleSheet.flatten([
-            styles.replyBox, // Existing static styles
-            editBoxStyles?.containerStyle, // Optimized dynamic styles
+            styles.replyBox, 
+            editBoxStyles?.containerStyle, 
           ])}
         >
           <ReplyBox
