@@ -87,7 +87,10 @@ import InputWrapper from "./ChatSX/components/InputWrapper";
 import { ScreenName } from "./ChatSX/enums/ScreenNameEnums";
 import FileUploadScreenWrapper from "./ChatSX/wrappers/FileUploadWrapper";
 import ChatroomScreenWrapper  from  "./ChatSX/wrappers/ChatroomScreenWrapper"
-
+import { Themes } from "./ChatSX/enums/Themes"
+import { LMChatCommunityFeedScreenWrapper as CommunityChatScreen} from "./ChatSX/wrappers/LMChatCommunityFeedScreenWrapper"
+import { LMChatNetworkingFeedScreenWrapper as NetworkChatScreen} from "./ChatSX/wrappers/LMChatNetworkingFeedScreenWrapper"
+import { LMChatHybridFeedScreenWrapper as CommunityHybridChatScreen} from "./ChatSX/wrappers/LMChatHybridFeedScreenWrapper"
 export {
   ChatRoom,
   ChatroomHeader,
@@ -166,5 +169,9 @@ export {
   LMChatAIButton,
   ScreenName,
   FileUploadScreenWrapper,
-  ChatroomScreenWrapper
+  ChatroomScreenWrapper,
+  CommunityHybridChatScreen,
+  NetworkChatScreen,
+  CommunityChatScreen,
+  Themes
 };
