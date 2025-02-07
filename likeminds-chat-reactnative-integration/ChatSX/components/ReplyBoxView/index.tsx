@@ -15,7 +15,6 @@ const ReplyBoxView = ({ handleReplyBoxCloseProp }: ReplyBoxViewProps) => {
   const { isReply, isUploadScreen, replyMessage, chatroomName, inputBoxStyles } =
     useInputBoxContext();
   const dispatch = useAppDispatch();
-  const replyBoxViewStyles = inputBoxStyles?.replyBoxViewStyles;
 
   const replyBoxViewStyles = inputBoxStyles?.replyBoxViewStyles;
   return (

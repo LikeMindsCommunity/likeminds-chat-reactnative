@@ -61,7 +61,7 @@ const InputBoxView = ({
     setInputHeight,
     MAX_LENGTH,
     isUserChatbot,
-    chatroomType,
+    chatroomType
   } = useInputBoxContext();
 const inputBoxViewStyles = inputBoxStyles?.inputBoxViewStyles;
   return (
@@ -84,6 +84,7 @@ const inputBoxViewStyles = inputBoxStyles?.inputBoxViewStyles;
               source={require("../../assets/lottieJSON/delete.json")}
               style={{ height: 40, width: 40 }}
               autoPlay
+              // loop
             />
           </View>
         </View>
@@ -92,7 +93,7 @@ const inputBoxViewStyles = inputBoxStyles?.inputBoxViewStyles;
           style={StyleSheet.flatten([
             styles.voiceNotesInputParent,
             styles.voiceRecorderInput,
-            inputBoxViewStyles?.voiceNotesInputParent, 
+            inputBoxViewStyles?.voiceNotesInputParent, // Merging dynamic styles
           ])}
         >
           <View style={styles.alignItems}>
@@ -161,7 +162,7 @@ const inputBoxViewStyles = inputBoxStyles?.inputBoxViewStyles;
                 }
                 iconStyle={StyleSheet.flatten([
                   styles.chevron,
-                  inputBoxStyles?.inputBoxViewStyles?.chevron, // Merging dynamic styles
+                  inputBoxViewStyles?.slideCancelIcon?.iconStyle,
                 ])}
               />
               <LMChatTextView
@@ -280,8 +281,7 @@ const inputBoxViewStyles = inputBoxStyles?.inputBoxViewStyles;
           ])}
         >
           {!isUploadScreen &&
-          !(chatRequestState === ChatroomChatRequestState.INITIATED ||
-            (chatroomType == ChatroomType.DMCHATROOM && chatRequestState == null)) &&
+          !(chatRequestState === ChatroomChatRequestState.INITIATED || (chatroomType == ChatroomType.DMCHATROOM && chatRequestState == null)) &&
           !isEditable &&
           !voiceNotes?.recordTime &&
           !isDeleteAnimation ? (
@@ -350,13 +350,12 @@ const inputBoxViewStyles = inputBoxStyles?.inputBoxViewStyles;
                 trigger: "@",
                 textStyle: inputBoxStyles?.partsTextStyle
                   ? inputBoxStyles?.partsTextStyle
-                  : { color: "#0276fa" }, 
+                  : { color: "#0276fa" }, // The mention style in the input
               },
             ]}
             inputText={message}
             maxLength={
-              chatroomType == ChatroomType.DMCHATROOM &&
-              (chatRequestState === 0 || chatRequestState === null)
+              chatroomType == ChatroomType.DMCHATROOM && (chatRequestState === 0 || chatRequestState === null)
                 ? MAX_LENGTH
                 : undefined
             }
