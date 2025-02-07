@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable ,StyleSheet} from "react-native";
 import React from "react";
 import { styles } from "../InputBox/styles";
 import { FlashList } from "@shopify/flash-list";
@@ -10,7 +10,9 @@ import Layout from "../../constants/Layout";
 import STYLES from "../../constants/Styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 
-interface UserTaggingListProps {
+const UserTaggingList = ({
+  onUserTaggingClickedProp,
+}: {
   onUserTaggingClickedProp?: ({
     uuid,
     userName,
@@ -22,11 +24,7 @@ interface UserTaggingListProps {
     communityId: string;
     mentionUsername: string;
   }) => void;
-}
-
-const UserTaggingList = ({
-  onUserTaggingClickedProp,
-}: UserTaggingListProps) => {
+}) => {
   const {
     userTaggingList,
     isUserTagging,
@@ -34,28 +32,32 @@ const UserTaggingList = ({
     userTaggingListHeight,
     groupTags,
     message,
-    isIOS,
     handleLoadMore,
     renderFooter,
     onUserTaggingClicked,
+    inputBoxStyles,
   } = useInputBoxContext();
+  const userTaggingListStyles = inputBoxStyles?.userTaggingListStyles;
+
   return (
     <View>
       {userTaggingList && isUserTagging ? (
         <View
-          style={[
+          style={StyleSheet.flatten([
             styles.taggableUsersBox,
+            userTaggingListStyles?.taggableUsersBox,
             {
               backgroundColor: isUploadScreen ? "black" : "white",
               height: userTaggingListHeight,
             },
-          ]}
+          ])}
         >
           <FlashList
             data={[...groupTags, ...userTaggingList]}
-            renderItem={({ item, index }: any) => {
+            renderItem={({ item }: any) => {
               const description = item?.description;
               const imageUrl = item?.imageUrl;
+
               return (
                 <Pressable
                   onPress={() => {
@@ -79,44 +81,63 @@ const UserTaggingList = ({
                       });
                     }
                   }}
-                  style={styles.taggableUserView}
+                  style={StyleSheet.flatten([
+                    styles.taggableUserView,
+                    userTaggingListStyles?.taggableUserView,
+                  ])}
                 >
-                  {imageUrl ? (
-                    <LMChatIcon iconUrl={imageUrl} iconStyle={styles.avatar} />
-                  ) : (
-                    <LMChatIcon
-                      assetPath={require("../../assets/images/default_pic.png")}
-                      iconStyle={styles.avatar}
-                    />
-                  )}
+                  <LMChatIcon
+                    iconUrl={imageUrl}
+                    assetPath={
+                      imageUrl
+                        ? undefined
+                        : userTaggingListStyles?.avatar?.assetPath ??
+                          require("../../assets/images/default_pic.png")
+                    }
+                    height={userTaggingListStyles?.avatar?.height ?? 40}
+                    width={userTaggingListStyles?.avatar?.width ?? 40}
+                    iconStyle={StyleSheet.flatten([
+                      styles.avatar,
+                      userTaggingListStyles?.avatar?.iconStyle,
+                    ])}
+                  />
                   <View
-                    style={[
+                    style={StyleSheet.flatten([
                       styles.infoContainer,
+                      userTaggingListStyles?.infoContainer,
                       {
                         borderBottomWidth: Layout.normalize(0.2),
-                        gap: isIOS ? Layout.normalize(5) : 0,
+                        gap: Layout.normalize(5),
                       },
-                    ]}
+                    ])}
                   >
                     <LMChatTextView
-                      textStyle={{
-                        ...styles.title,
-                        color: isUploadScreen
-                          ? STYLES.$COLORS.TERTIARY
-                          : STYLES.$COLORS.PRIMARY,
-                      }}
+                      textStyle={StyleSheet.flatten([
+                        styles.title,
+                        userTaggingListStyles?.title,
+                        {
+                          color: isUploadScreen
+                            ? userTaggingListStyles?.title
+                                ?.color || "gray"
+                            : "black",
+                        },
+                      ])}
                       maxLines={1}
                     >
                       {item?.name}
                     </LMChatTextView>
                     {description ? (
                       <LMChatTextView
-                        textStyle={{
-                          ...styles.subTitle,
-                          color: isUploadScreen
-                            ? STYLES.$COLORS.TERTIARY
-                            : STYLES.$COLORS.PRIMARY,
-                        }}
+                        textStyle={StyleSheet.flatten([
+                          styles.subTitle,
+                          userTaggingListStyles?.subTitle,
+                          {
+                            color: isUploadScreen
+                              ? userTaggingListStyles?.subTitle
+                                  ?.color || "gray"
+                              : "black",
+                          },
+                        ])}
                         maxLines={1}
                       >
                         {description}
@@ -126,18 +147,14 @@ const UserTaggingList = ({
                 </Pressable>
               );
             }}
-            extraData={{
-              value: [message, userTaggingList],
-            }}
+            extraData={{ value: [message, userTaggingList] }}
             estimatedItemSize={50}
             keyboardShouldPersistTaps={"handled"}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={1}
             bounces={false}
             ListFooterComponent={renderFooter}
-            keyExtractor={(item: any, index) => {
-              return index?.toString();
-            }}
+            keyExtractor={(item: any, index) => index?.toString()}
           />
         </View>
       ) : null}

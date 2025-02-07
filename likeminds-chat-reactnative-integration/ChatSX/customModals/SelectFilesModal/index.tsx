@@ -1,13 +1,12 @@
+
 import {
   View,
-  Text,
   Modal,
   Pressable,
   TouchableOpacity,
-  ImageStyle,
+  StyleSheet,
 } from "react-native";
 import React from "react";
-import { styles } from "../../components/InputBox/styles";
 import { LMChatIcon, LMChatTextView } from "../../uiComponents";
 import {
   CAMERA_TEXT,
@@ -18,6 +17,7 @@ import {
 import { CREATE_POLL_SCREEN } from "../../constants/Screens";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import { ChatroomType } from "../../enums";
+import { styles } from "../../components/InputBox/styles";
 
 interface SelectFilesModalProps {
   handleGalleryProp?: () => void;
@@ -39,7 +39,6 @@ const SelectFilesModal = ({
     setModalVisible,
     handleModalClose,
     handleCamera,
-    inputBoxStyles,
     handleGallery,
     handleDoc,
     chatroomType,
@@ -48,163 +47,177 @@ const SelectFilesModal = ({
     navigation,
     isUserChatbot,
     canUserCreatePoll,
+    inputBoxStyles, // Centralized styles
   } = useInputBoxContext();
-
+console.log(inputBoxStyles?.selectFilesModalStyles?.cameraIconStyles,"log1");
   return (
-    <>
-      {/* More features modal like select Images, Docs etc. */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(!modalVisible)}
+    >
+      <Pressable
+        style={StyleSheet.flatten([
+          styles.centeredView,
+          inputBoxStyles?.selectFilesModalStyles?.centeredView,
+        ])}
+        onPress={handleModalCloseProp ? handleModalCloseProp : handleModalClose}
       >
-        <Pressable
-          style={styles.centeredView}
-          onPress={
-            handleModalCloseProp ? handleModalCloseProp : handleModalClose
-          }
+        <View
+          style={StyleSheet.flatten([
+            styles.modalViewParent,
+            inputBoxStyles?.selectFilesModalStyles?.modalViewParent,
+          ])}
         >
-          <View style={styles.modalViewParent}>
-            <Pressable onPress={() => {}} style={[styles.modalView]}>
-              <View style={styles.alignModalElements}>
-                {/* camera */}
-                <View style={styles.iconContainer}>
+          <Pressable
+            onPress={() => {}}
+            style={StyleSheet.flatten([
+              styles.modalView,
+              inputBoxStyles?.selectFilesModalStyles?.modalView,
+            ])}
+          >
+            <View
+              style={StyleSheet.flatten([
+                styles.alignModalElements,
+                inputBoxStyles?.selectFilesModalStyles?.alignModalElements,
+              ])}
+            >
+              {/* Camera */}
+              <View
+                style={StyleSheet.flatten([
+                  styles.iconContainer,
+                  inputBoxStyles?.selectFilesModalStyles?.iconContainer,
+                ])}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalVisible(false);
+                    setTimeout(() => {
+                      handleCameraProp ? handleCameraProp() : handleCamera();
+                    }, 50);
+                  }}
+                  style={styles.cameraStyle}
+                >
+                  <LMChatIcon
+
+                    assetPath={inputBoxStyles?.selectFilesModalStyles?.cameraIconStyles?.assetPath ?? require("../../assets/images/camera_icon3x.png")}
+                    iconStyle={StyleSheet.flatten([
+                      styles.emoji,
+                      //inputBoxStyles?.selectFilesModalStyles?.cameraIconStyles,
+                    ])}
+                    height={50}
+                    width={50}
+                  />
+                </TouchableOpacity>
+                <LMChatTextView textStyle={styles.iconText}>
+                  {CAMERA_TEXT}
+                </LMChatTextView>
+              </View>
+
+              {/* Gallery */}
+              <View
+                style={StyleSheet.flatten([
+                  styles.iconContainer,
+                  inputBoxStyles?.selectFilesModalStyles?.iconContainer,
+                ])}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalVisible(false);
+                    setTimeout(() => {
+                      handleGalleryProp
+                        ? handleGalleryProp()
+                        : handleGallery();
+                    }, 500);
+                  }}
+                  style={styles.imageStyle}
+                >
+                  <LMChatIcon
+                    assetPath={inputBoxStyles?.selectFilesModalStyles?.galleryIconStyles?.assetPath ?? require("../../assets/images/select_image_icon3x.png")}
+                    iconStyle={StyleSheet.flatten([
+                      styles.emoji,
+                      inputBoxStyles?.selectFilesModalStyles?.galleryIconStyles,
+                    ])}
+                  />
+                </TouchableOpacity>
+                <LMChatTextView textStyle={styles.iconText}>
+                  {PHOTOS_AND_VIDEOS_TEXT}
+                </LMChatTextView>
+              </View>
+
+              {/* Document */}
+              {chatroomType !== ChatroomType.DMCHATROOM || !isUserChatbot ? (
+                <View
+                  style={StyleSheet.flatten([
+                    styles.iconContainer,
+                    inputBoxStyles?.selectFilesModalStyles?.iconContainer,
+                  ])}
+                >
                   <TouchableOpacity
                     onPress={() => {
                       setModalVisible(false);
                       setTimeout(() => {
-                        if (handleCameraProp) {
-                          handleCameraProp();
-                        } else {
-                          handleCamera();
-                        }
+                        handleDocumentProp
+                          ? handleDocumentProp()
+                          : handleDoc();
                       }, 50);
                     }}
-                    style={styles.cameraStyle}
+                    style={styles.docStyle}
                   >
                     <LMChatIcon
-                      assetPath={require("../../assets/images/camera_icon3x.png")}
-                      iconStyle={
-                        [
-                          styles.emoji,
-                          inputBoxStyles?.cameraIconStyles,
-                        ] as ImageStyle
-                      }
+                      assetPath={inputBoxStyles?.selectFilesModalStyles?.documentIconStyles?.assetPath ?? require("../../assets/images/select_doc_icon3x.png")}
+                      iconStyle={StyleSheet.flatten([
+                        styles.emoji,
+                        inputBoxStyles?.selectFilesModalStyles
+                          ?.documentIconStyles,
+                      ])}
                     />
                   </TouchableOpacity>
                   <LMChatTextView textStyle={styles.iconText}>
-                    {CAMERA_TEXT}
+                    {DOCUMENTS_TEXT}
                   </LMChatTextView>
                 </View>
+              ) : null}
 
-                {/* image/video */}
-                <View style={styles.iconContainer}>
+              {/* Poll */}
+              {chatroomType !== ChatroomType.DMCHATROOM && canUserCreatePoll ? (
+                <View
+                  style={StyleSheet.flatten([
+                    styles.iconContainer,
+                    inputBoxStyles?.selectFilesModalStyles?.iconContainer,
+                  ])}
+                >
                   <TouchableOpacity
                     onPress={() => {
                       setModalVisible(false);
-                      setTimeout(() => {
-                        if (handleGalleryProp) {
-                          handleGalleryProp();
-                        } else {
-                          handleGallery();
-                        }
-                      }, 500);
-                    }}
-                    style={styles.imageStyle}
-                  >
-                    <LMChatIcon
-                      assetPath={require("../../assets/images/select_image_icon3x.png")}
-                      iconStyle={
-                        [
-                          styles.emoji,
-                          inputBoxStyles?.galleryIconStyles,
-                        ] as ImageStyle
-                      }
-                    />
-                  </TouchableOpacity>
-                  <LMChatTextView textStyle={styles.iconText}>
-                    {PHOTOS_AND_VIDEOS_TEXT}
-                  </LMChatTextView>
-                </View>
-
-                {/* doc */}
-                {(chatroomType == ChatroomType.DMCHATROOM && !isUserChatbot) ||
-                chatroomType == ChatroomType.OPENCHATROOM ||
-                chatroomType == ChatroomType.ANNOUNCEMENTROOM ? (
-                  <View style={styles.iconContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setModalVisible(false);
-                        setTimeout(() => {
-                          if (handleDocumentProp) {
-                            handleDocumentProp();
-                          } else {
-                            handleDoc();
-                          }
-                          handleDoc();
-                        }, 50);
-                      }}
-                      style={styles.docStyle}
-                    >
-                      <LMChatIcon
-                        assetPath={require("../../assets/images/select_doc_icon3x.png")}
-                        iconStyle={
-                          [
-                            styles.emoji,
-                            inputBoxStyles?.documentIconStyles,
-                          ] as ImageStyle
-                        }
-                      />
-                    </TouchableOpacity>
-                    <LMChatTextView textStyle={styles.iconText}>
-                      {DOCUMENTS_TEXT}
-                    </LMChatTextView>
-                  </View>
-                ) : null}
-
-                {/* poll */}
-                {(chatroomType == ChatroomType.OPENCHATROOM ||
-                  chatroomType == ChatroomType.ANNOUNCEMENTROOM) &&
-                canUserCreatePoll ? (
-                  <View style={styles.iconContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setModalVisible(false);
-                        if (handlePollProp) {
-                          handlePollProp();
-                        } else {
-                          navigation.navigate(CREATE_POLL_SCREEN, {
+                      handlePollProp
+                        ? handlePollProp()
+                        : navigation.navigate(CREATE_POLL_SCREEN, {
                             chatroomID: chatroomID,
                             conversationsLength: conversations.length * 2,
                           });
-                        }
-                      }}
-                      style={styles.pollStyle}
-                    >
-                      <LMChatIcon
-                        assetPath={require("../../assets/images/poll_icon3x.png")}
-                        iconStyle={
-                          [
-                            styles.emoji,
-                            inputBoxStyles?.pollIconStyles,
-                          ] as ImageStyle
-                        }
-                      />
-                    </TouchableOpacity>
-                    <LMChatTextView textStyle={styles.iconText}>
-                      {POLL_TEXT}
-                    </LMChatTextView>
-                  </View>
-                ) : null}
-              </View>
-            </Pressable>
-          </View>
-        </Pressable>
-      </Modal>
-    </>
+                    }}
+                    style={styles.pollStyle}
+                  >
+                    <LMChatIcon
+                      assetPath={inputBoxStyles?.selectFilesModalStyles?.pollIconStyles?.assetPath ?? require("../../assets/images/poll_icon3x.png")}
+                      iconStyle={StyleSheet.flatten([
+                        styles.emoji,
+                        inputBoxStyles?.selectFilesModalStyles?.pollIconStyles,
+                      ])}
+                    />
+                  </TouchableOpacity>
+                  <LMChatTextView textStyle={styles.iconText}>
+                    {POLL_TEXT}
+                  </LMChatTextView>
+                </View>
+              ) : null}
+            </View>
+          </Pressable>
+        </View>
+      </Pressable>
+    </Modal>
   );
 };
 

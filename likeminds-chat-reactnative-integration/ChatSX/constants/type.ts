@@ -1,4 +1,5 @@
 import { ImageStyle, TextStyle, ViewStyle } from "react-native";
+import { LMChatIconProps } from "../uiComponents/LMChatIcon/types";
 
 interface FontTypes {
   LIGHT?: string;
@@ -272,8 +273,85 @@ export interface InputBoxStyles {
     resizeMode?: string;
   };
   messageInputMarginBottom?: number;
+  editBoxStyles?: EditBoxStyles;
+  userTaggingListStyles?: UserTaggingListStyles;
+  replyBoxViewStyles?: ReplyBoxViewStyles;
+  linkPreviewInputViewStyles?: LinkPreviewInputViewStyles;
+  addMoreFilesViewStyles?: AddMoreFilesViewStyles;
+  inputBoxViewStyles?: InputBoxViewStyles;
+  selectFilesModalStyles?: SelectFilesModalStyles;
+  sendDMRequestModalStyles?: SendDMRequestModalStyles;
+
+
+}
+export interface EditBoxStyles {
+  containerStyle?:ViewStyle;
+  closeButtonStyle?: ViewStyle;
+  closeIconStyle?: LMChatIconProps;
+} 
+export interface SendDMRequestModalStyles {
+  modal?: ViewStyle;
+  modalContainer?: ViewStyle;
+  title?: TextStyle;
+  message?: TextStyle;
+  buttonContainer?: ViewStyle;
+  button?: ViewStyle
+  cancelButton?: ViewStyle
+  okButton?: ViewStyle
+  buttonText?: TextStyle
+  cancelButtonText?: TextStyle
 }
 
+export interface UserTaggingListStyles {
+  taggableUsersBox?: ViewStyle;
+  taggableUserView?: ViewStyle; 
+  avatar?: LMChatIconProps; 
+  infoContainer?: ViewStyle; 
+  title?: TextStyle;
+  subTitle?: TextStyle;
+}
+export interface ReplyBoxViewStyles {
+  replyBox?: ViewStyle;
+  replyBoxClose?: ViewStyle;
+  replyCloseImg?: LMChatIconProps;
+}
+export interface LinkPreviewInputViewStyles {
+  linkPreviewBox?: ViewStyle;
+  replyBoxClose?: ViewStyle;
+  replyCloseImg?: LMChatIconProps;
+};
+export interface AddMoreFilesViewStyles {
+  addMoreButton?: ViewStyle;
+  emoji?: LMChatIconProps;
+}
+export interface InputBoxViewStyles {
+  voiceNotesInputParent?: ViewStyle;
+  recordTitle?: TextStyle;
+  emoji?: LMChatIconProps; 
+  input?: ViewStyle;
+  gifView?: ViewStyle;
+  gifText?: TextStyle;
+  chevron?: LMChatIconProps; 
+  inputTextStyle?: TextStyle;
+  recordIcon?: LMChatIconProps; 
+  stopRecordingIcon?: LMChatIconProps; 
+  cancelRecordingIcon?: LMChatIconProps; 
+  slideCancelIcon?: LMChatIconProps; 
+  pauseIcon?: LMChatIconProps; 
+  playIcon?: LMChatIconProps; 
+}
+
+export interface SelectFilesModalStyles {
+  centeredView?: ViewStyle;
+  modalViewParent?:ViewStyle;
+  modalView?: ViewStyle;
+  alignModalElements?:ViewStyle;
+  iconContainer?: ViewStyle;
+  cameraIconStyles?: LMChatIconProps;
+  galleryIconStyles?: LMChatIconProps;
+  documentIconStyles?: LMChatIconProps;
+  pollIconStyles?: LMChatIconProps;
+}
 export interface SearchInChatroomStyles {
   backArrowColor?: string;
   crossIconColor?: string;

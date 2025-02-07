@@ -932,7 +932,7 @@ export const InputBoxContextProvider = ({
 
     await createThumbnail({
       url: gif?.data?.images?.fixed_width?.mp4,
-      timeStamp: 10000,
+      timeStamp: 100,
     })
       .then((response) => {
         item.thumbnailUrl = response?.path;

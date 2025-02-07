@@ -1,9 +1,10 @@
-import { TouchableOpacity, ImageStyle, Keyboard } from "react-native";
+
+import { styles } from "../InputBox/styles";
+import { TouchableOpacity, ImageStyle, Keyboard, StyleSheet } from "react-native";
 import React from "react";
 import { LMChatIcon } from "../../uiComponents";
-import { styles } from "../InputBox/styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
-import { ChatroomType } from "../../enums";
+import { ChatroomChatRequestState, ChatroomType } from "../../enums";
 import Layout from "../../constants/Layout";
 
 interface AddFilesViewProps {
@@ -20,15 +21,21 @@ const AddFilesView = ({ handleFilesViewProp }: AddFilesViewProps) => {
     isDeleteAnimation,
     setModalVisible,
     inputBoxStyles,
+    chatroomType
   } = useInputBoxContext();
+
+
   return (
     <>
       {!isUploadScreen &&
       !isEditable &&
       !voiceNotes?.recordTime &&
-      !isDeleteAnimation ? (
+      !isDeleteAnimation && !(chatroomType == ChatroomType.DMCHATROOM && chatRequestState == null) ? (
         <TouchableOpacity
-          style={[styles.emojiButton]}
+          style={StyleSheet.flatten([
+            inputBoxStyles?.inputBoxViewStyles?.emojiButton,
+            styles.emojiButton,
+          ])}
           onPress={() => {
             if (handleFilesViewProp) {
               handleFilesViewProp();
@@ -44,18 +51,16 @@ const AddFilesView = ({ handleFilesViewProp }: AddFilesViewProps) => {
                 ? require("../../assets/images/chatbot_attachment_button3x.png")
                 : require("../../assets/images/open_files3x.png")
             }
-            iconStyle={
-              [
-                styles.emoji,
-                isUserChatbot
-                  ? {
-                      height: Layout.normalize(20),
-                      width: Layout.normalize(20),
-                    }
-                  : null,
-                inputBoxStyles?.attachmentIconStyles,
-              ] as ImageStyle
-            }
+            iconStyle={StyleSheet.flatten([
+              inputBoxStyles?.inputBoxViewStyles?.attachmentIconStyles,
+              styles.emoji,
+              isUserChatbot
+                ? {
+                    height: Layout.normalize(20),
+                    width: Layout.normalize(20),
+                  }
+                : null,
+            ] as ImageStyle)}
           />
         </TouchableOpacity>
       ) : null}
