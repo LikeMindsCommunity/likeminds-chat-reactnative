@@ -85,6 +85,8 @@ import TextInputWrapper from "./ChatSX/components/TextInputWrapper";
 import InputWrapperLeftSection from "./ChatSX/components/InputWrapperLeftSection";
 import InputWrapper from "./ChatSX/components/InputWrapper";
 import { ScreenName } from "./ChatSX/enums/ScreenNameEnums";
+import FileUploadScreenWrapper from "./ChatSX/wrappers/FileUploadWrapper";
+import ChatroomScreenWrapper  from  "./ChatSX/wrappers/ChatroomScreenWrapper"
 
 export {
   ChatRoom,
@@ -163,4 +165,6 @@ export {
   LMChatbotInitializationScreen,
   LMChatAIButton,
   ScreenName,
+  FileUploadScreenWrapper,
+  ChatroomScreenWrapper
 };
