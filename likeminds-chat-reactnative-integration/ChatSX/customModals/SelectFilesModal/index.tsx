@@ -100,11 +100,14 @@ const selectFilesModalStyles= inputBoxStyles.selectFilesModalStyles;
                   style={styles.cameraStyle}
                 >
                   <LMChatIcon
-                    assetPath={require("../../assets/images/camera_icon3x.png")}
+
+                    assetPath={inputBoxStyles?.selectFilesModalStyles?.cameraIconStyles?.assetPath ?? require("../../assets/images/camera_icon3x.png")}
                     iconStyle={StyleSheet.flatten([
                       styles.emoji,
-                      inputBoxStyles.selectFilesModalStyles?.cameraIconStyles,
+                      inputBoxStyles?.selectFilesModalStyles?.cameraIconStyles,
                     ])}
+                    height={50}
+                    width={50}
                   />
                 </TouchableOpacity>
                 <LMChatTextView textStyle={styles.iconText}>
@@ -131,7 +134,7 @@ const selectFilesModalStyles= inputBoxStyles.selectFilesModalStyles;
                   style={styles.imageStyle}
                 >
                   <LMChatIcon
-                    assetPath={require("../../assets/images/select_image_icon3x.png")}
+                    assetPath={inputBoxStyles?.selectFilesModalStyles?.galleryIconStyles?.assetPath ?? require("../../assets/images/select_image_icon3x.png")}
                     iconStyle={StyleSheet.flatten([
                       styles.emoji,
                       inputBoxStyles.selectFilesModalStyles?.galleryIconStyles,
@@ -163,7 +166,7 @@ const selectFilesModalStyles= inputBoxStyles.selectFilesModalStyles;
                     style={styles.docStyle}
                   >
                     <LMChatIcon
-                      assetPath={require("../../assets/images/select_doc_icon3x.png")}
+                      assetPath={inputBoxStyles?.selectFilesModalStyles?.documentIconStyles?.assetPath ?? require("../../assets/images/select_doc_icon3x.png")}
                       iconStyle={StyleSheet.flatten([
                         styles.emoji,
                         inputBoxStyles.selectFilesModalStyles
@@ -198,7 +201,7 @@ const selectFilesModalStyles= inputBoxStyles.selectFilesModalStyles;
                     style={styles.pollStyle}
                   >
                     <LMChatIcon
-                      assetPath={require("../../assets/images/poll_icon3x.png")}
+                      assetPath={inputBoxStyles?.selectFilesModalStyles?.pollIconStyles?.assetPath ?? require("../../assets/images/poll_icon3x.png")}
                       iconStyle={StyleSheet.flatten([
                         styles.emoji,
                         inputBoxStyles.selectFilesModalStyles?.pollIconStyles,

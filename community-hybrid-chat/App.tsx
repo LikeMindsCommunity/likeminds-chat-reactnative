@@ -156,7 +156,10 @@ function App(): React.JSX.Element {
     setMyClient(res);
   }, [isTrue, apiKey]);
 
- 
+  useEffect(() => {
+    setStyles();
+  }
+  ),([]);
 
   const callbackClass = new LMCoreCallbacks(
     (accessToken: string, refreshToken: string) => {

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity , StyleSheet} from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import LinkPreviewInputBox from "../linkPreviewInputBox";
 import { LMChatIcon } from "../../uiComponents";
@@ -9,10 +9,7 @@ interface LinkPreviewInputViewProps {
   handleLinkPreviewCloseProp?: () => void;
 }
 
-
-const LinkPreviewInputView = ({
-  handleLinkPreviewCloseProp,
-}: LinkPreviewInputViewProps) => {
+const LinkPreviewInputView = ({ handleLinkPreviewCloseProp }: LinkPreviewInputViewProps) => {
   const {
     ogTagsState,
     showLinkPreview,
@@ -23,21 +20,20 @@ const LinkPreviewInputView = ({
     setClosedPreview,
     inputBoxStyles,
   } = useInputBoxContext();
-const linkPreviewInputViewStyles = inputBoxStyles?.linkPreviewInputViewStyles;
+
+  const linkPreviewStyles = inputBoxStyles?.linkPreviewInputViewStyles;
+
   return (
     <>
-      {Object.keys(ogTagsState || {}).length !== 0 &&
-      showLinkPreview &&
-      !closedOnce ? (
+      {Object.keys(ogTagsState || {}).length !== 0 && showLinkPreview && !closedOnce ? (
         <View
           style={StyleSheet.flatten([
-            styles.taggableUsersBox, 
-            linkPreviewInputViewStyles?.linkPreviewBox, 
+            styles.taggableUsersBox,
+            linkPreviewStyles?.linkPreviewBox,
             {
               backgroundColor: isUploadScreen
                 ? "black"
-                : linkPreviewInputViewStyles?.linkPreviewBox
-                    ?.backgroundColor || "white",
+                : linkPreviewStyles?.linkPreviewBox?.backgroundColor || "white",
             },
           ])}
         >
@@ -53,16 +49,25 @@ const linkPreviewInputViewStyles = inputBoxStyles?.linkPreviewInputViewStyles;
               }
             }}
             style={StyleSheet.flatten([
-              styles.replyBoxClose, 
-              linkPreviewInputViewStyles?.replyBoxClose, 
+              styles.replyBoxClose,
+              linkPreviewStyles?.replyBoxClose,
             ])}
           >
             <LMChatIcon
-              assetPath={require("../../assets/images/close_icon.png")}
+              iconUrl={linkPreviewStyles?.replyCloseImg?.iconUrl}
+              assetPath={
+                linkPreviewStyles?.replyCloseImg?.assetPath ??
+                require("../../assets/images/close_icon.png") // Default icon
+              }
+              color={linkPreviewStyles?.replyCloseImg?.color}
+              height={linkPreviewStyles?.replyCloseImg?.height ?? 24} // Default height
+              width={linkPreviewStyles?.replyCloseImg?.width ?? 24} // Default width
               iconStyle={StyleSheet.flatten([
                 styles.replyCloseImg,
-                linkPreviewInputViewStyles?.replyCloseImg,
+                linkPreviewStyles?.replyCloseImg?.iconStyle,
               ])}
+              boxFit={linkPreviewStyles?.replyCloseImg?.boxFit}
+              boxStyle={linkPreviewStyles?.replyCloseImg?.boxStyle}
             />
           </TouchableOpacity>
         </View>

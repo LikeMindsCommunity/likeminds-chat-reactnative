@@ -35,9 +35,9 @@ const UserTaggingList = ({
     handleLoadMore,
     renderFooter,
     onUserTaggingClicked,
-    inputBoxStyles, // Accessing centralized styles
+    inputBoxStyles,
   } = useInputBoxContext();
-  const  userTaggingListStyles= inputBoxStyles?.userTaggingListStyles;
+  const userTaggingListStyles = inputBoxStyles?.userTaggingListStyles;
 
   return (
     <View>
@@ -86,23 +86,21 @@ const UserTaggingList = ({
                     userTaggingListStyles?.taggableUserView,
                   ])}
                 >
-                  {imageUrl ? (
-                    <LMChatIcon
-                      iconUrl={imageUrl}
-                      iconStyle={StyleSheet.flatten([
-                        styles.avatar,
-                        userTaggingListStyles?.avatar,
-                      ])}
-                    />
-                  ) : (
-                    <LMChatIcon
-                      assetPath={require("../../assets/images/default_pic.png")}
-                      iconStyle={StyleSheet.flatten([
-                        styles.avatar,
-                        userTaggingListStyles?.avatar,
-                      ])}
-                    />
-                  )}
+                  <LMChatIcon
+                    iconUrl={imageUrl}
+                    assetPath={
+                      imageUrl
+                        ? undefined
+                        : userTaggingListStyles?.avatar?.assetPath ??
+                          require("../../assets/images/default_pic.png")
+                    }
+                    height={userTaggingListStyles?.avatar?.height ?? 40}
+                    width={userTaggingListStyles?.avatar?.width ?? 40}
+                    iconStyle={StyleSheet.flatten([
+                      styles.avatar,
+                      userTaggingListStyles?.avatar?.iconStyle,
+                    ])}
+                  />
                   <View
                     style={StyleSheet.flatten([
                       styles.infoContainer,
@@ -116,7 +114,7 @@ const UserTaggingList = ({
                     <LMChatTextView
                       textStyle={StyleSheet.flatten([
                         styles.title,
-                        inputBoxStyles?.userTaggingListStyles?.title,
+                        userTaggingListStyles?.title,
                         {
                           color: isUploadScreen
                             ? userTaggingListStyles?.title

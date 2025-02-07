@@ -63,9 +63,7 @@ const InputBoxView = ({
     isUserChatbot,
     chatroomType,
   } = useInputBoxContext();
-
-  const inputBoxViewStyles = inputBoxStyles?.inputBoxViewStyles;
-
+const inputBoxViewStyles = inputBoxStyles?.inputBoxViewStyles;
   return (
     <>
       {isDeleteAnimation && LottieView ? (
@@ -78,7 +76,7 @@ const InputBoxView = ({
               marginVertical: 0,
               marginHorizontal: Layout.normalize(10),
             },
-            inputBoxViewStyles?.voiceNotesInputParent, 
+            inputBoxViewStyles?.voiceNotesInputParent, // Merging dynamic styles
           ])}
         >
           <View style={styles.alignItems}>
@@ -99,18 +97,21 @@ const InputBoxView = ({
         >
           <View style={styles.alignItems}>
             <Animated.View style={[{ opacity: micIconOpacity }]}>
-              <LMChatIcon
-                assetPath={require("../../assets/images/record_icon3x.png")}
+            <LMChatIcon
+                assetPath={
+                  inputBoxViewStyles?.recordIcon?.assetPath ||
+                  require("../../assets/images/record_icon3x.png")
+                }
                 iconStyle={StyleSheet.flatten([
                   styles.emoji,
-                  inputBoxViewStyles?.emoji, 
+                  inputBoxViewStyles?.recordIcon?.iconStyle,
                 ])}
               />
             </Animated.View>
             <LMChatTextView
               textStyle={StyleSheet.flatten([
                 styles.recordTitle,
-                inputBoxViewStyles?.recordTitle, 
+                inputBoxViewStyles?.recordTitle, // Merging dynamic styles
               ])}
             >
               {voiceNotes.recordTime}
@@ -124,10 +125,13 @@ const InputBoxView = ({
                 }
               >
                 <LMChatIcon
-                  assetPath={require("../../assets/images/stop_recording_icon3x.png")}
+                  assetPath={
+                    inputBoxViewStyles?.stopRecordingIcon?.assetPath ||
+                    require("../../assets/images/stop_recording_icon3x.png")
+                  }
                   iconStyle={StyleSheet.flatten([
                     styles.emoji,
-                    inputBoxViewStyles?.emoji, 
+                    inputBoxViewStyles?.stopRecordingIcon?.iconStyle,
                   ])}
                 />
               </TouchableOpacity>
@@ -136,11 +140,14 @@ const InputBoxView = ({
                   clearVoiceRecordProp ? clearVoiceRecordProp : clearVoiceRecord
                 }
               >
-                <LMChatIcon
-                  assetPath={require("../../assets/images/cross_circle_icon3x.png")}
+                 <LMChatIcon
+                  assetPath={
+                    inputBoxViewStyles?.cancelRecordingIcon?.assetPath ||
+                    require("../../assets/images/cross_circle_icon3x.png")
+                  }
                   iconStyle={StyleSheet.flatten([
                     styles.emoji,
-                    inputBoxViewStyles?.emoji, 
+                    inputBoxViewStyles?.cancelRecordingIcon?.iconStyle,
                   ])}
                 />
               </TouchableOpacity>
@@ -148,16 +155,19 @@ const InputBoxView = ({
           ) : (
             <View style={styles.alignItems}>
               <LMChatIcon
-                assetPath={require("../../assets/images/left_chevron_icon3x.png")}
+                assetPath={
+                  inputBoxViewStyles?.slideCancelIcon?.assetPath ||
+                  require("../../assets/images/left_chevron_icon3x.png")
+                }
                 iconStyle={StyleSheet.flatten([
                   styles.chevron,
-                  inputBoxViewStyles?.chevron, 
+                  inputBoxStyles?.inputBoxViewStyles?.chevron, // Merging dynamic styles
                 ])}
               />
               <LMChatTextView
                 textStyle={StyleSheet.flatten([
                   styles.recordTitle,
-                  inputBoxViewStyles?.recordTitle, 
+                  inputBoxViewStyles?.recordTitle, // Merging dynamic styles
                 ])}
               >
                 {SLIDE_TO_CANCEL}
@@ -170,7 +180,7 @@ const InputBoxView = ({
           style={StyleSheet.flatten([
             styles.voiceNotesInputParent,
             styles.voiceRecorderInput,
-            inputBoxViewStyles?.voiceNotesInputParent, 
+            inputBoxViewStyles?.voiceNotesInputParent, // Merging dynamic styles
           ])}
         >
           <View style={styles.alignItems}>
@@ -185,10 +195,13 @@ const InputBoxView = ({
                 }}
               >
                 <LMChatIcon
-                  assetPath={require("../../assets/images/pause_icon3x.png")}
+                  assetPath={
+                    inputBoxViewStyles?.pauseIcon?.assetPath ||
+                    require("../../assets/images/pause_icon3x.png")
+                  }
                   iconStyle={StyleSheet.flatten([
                     styles.emoji,
-                    inputBoxViewStyles?.emoji, 
+                    inputBoxViewStyles?.pauseIcon?.iconStyle,
                   ])}
                 />
               </TouchableOpacity>
@@ -207,10 +220,13 @@ const InputBoxView = ({
                 }}
               >
                 <LMChatIcon
-                  assetPath={require("../../assets/images/play_icon3x.png")}
+                  assetPath={
+                    inputBoxViewStyles?.playIcon?.assetPath ||
+                    require("../../assets/images/play_icon3x.png")
+                  }
                   iconStyle={StyleSheet.flatten([
                     styles.emoji,
-                    inputBoxViewStyles?.emoji, 
+                    inputBoxViewStyles?.playIcon?.iconStyle,
                   ])}
                 />
               </TouchableOpacity>
@@ -219,7 +235,7 @@ const InputBoxView = ({
               <LMChatTextView
                 textStyle={StyleSheet.flatten([
                   styles.recordTitle,
-                  inputBoxViewStyles?.recordTitle, 
+                  inputBoxViewStyles?.recordTitle, // Merging dynamic styles
                 ])}
               >
                 {voiceNotesPlayer?.playTime}
@@ -228,7 +244,7 @@ const InputBoxView = ({
               <LMChatTextView
                 textStyle={StyleSheet.flatten([
                   styles.recordTitle,
-                  inputBoxViewStyles?.recordTitle, 
+                  inputBoxViewStyles?.recordTitle, // Merging dynamic styles
                 ])}
               >
                 {voiceNotes?.recordTime}
@@ -242,10 +258,13 @@ const InputBoxView = ({
             style={styles.alignItems}
           >
             <LMChatIcon
-              assetPath={require("../../assets/images/cross_circle_icon3x.png")}
+              assetPath={
+                inputBoxViewStyles?.cancelRecordingIcon?.assetPath ||
+                require("../../assets/images/cross_circle_icon3x.png")
+              }
               iconStyle={StyleSheet.flatten([
                 styles.emoji,
-                inputBoxViewStyles?.emoji, 
+                inputBoxViewStyles?.cancelRecordingIcon?.iconStyle,
               ])}
             />
           </TouchableOpacity>
@@ -257,7 +276,7 @@ const InputBoxView = ({
             isUploadScreen
               ? { marginHorizontal: Layout.normalize(5) }
               : { marginHorizontal: Layout.normalize(15) },
-            inputBoxViewStyles?.inputParent, 
+            inputBoxViewStyles?.inputParent, // Merging dynamic styles
           ])}
         >
           {!isUploadScreen &&
@@ -270,7 +289,7 @@ const InputBoxView = ({
               <TouchableOpacity
                 style={StyleSheet.flatten([
                   styles.gifView,
-                  inputBoxViewStyles?.gifView, 
+                  inputBoxViewStyles?.gifView, // Merging dynamic styles
                 ])}
                 onPress={() => {
                   if (handleGifProp) {
@@ -283,7 +302,7 @@ const InputBoxView = ({
                 <LMChatTextView
                   textStyle={StyleSheet.flatten([
                     styles.gifText,
-                    inputBoxViewStyles?.gifText, 
+                    inputBoxViewStyles?.gifText, // Merging dynamic styles
                   ])}
                 >
                   {CAPITAL_GIF_TEXT}

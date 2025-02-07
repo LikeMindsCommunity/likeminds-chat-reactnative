@@ -1,7 +1,6 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import React from "react";
 import { LMChatIcon } from "../../uiComponents";
-import { styles } from "../InputBox/styles";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import { ChatroomType } from "../../enums";
 
@@ -9,7 +8,6 @@ interface AddMoreFilesViewProps {
   handleGalleryProp?: () => void;
   handleDocumentProp?: () => void;
 }
-
 
 const AddMoreFilesView = ({
   handleGalleryProp,
@@ -23,7 +21,7 @@ const AddMoreFilesView = ({
     selectDoc,
     isUserChatbot,
     chatroomType,
-    inputBoxStyles, 
+    inputBoxStyles,
   } = useInputBoxContext();
 
   const isDMChatroom = chatroomType === ChatroomType.DMCHATROOM && isUserChatbot;
@@ -33,9 +31,7 @@ const AddMoreFilesView = ({
     <>
       {!!isUploadScreen && !isDoc && !isGif && !isDMChatroom ? (
         <TouchableOpacity
-          style={[
-            addMoreFilesViewStyles?.addMoreButton,
-          ]}
+          style={addMoreFilesViewStyles?.addMoreButton}
           onPress={() => {
             if (handleGalleryProp) {
               handleGalleryProp();
@@ -45,15 +41,16 @@ const AddMoreFilesView = ({
           }}
         >
           <LMChatIcon
-            assetPath={require("../../assets/images/addImages3x.png")}
+            assetPath={
+              addMoreFilesViewStyles?.addMoreButton?.assetPath ??
+              require("../../assets/images/addImages3x.png")
+            }
             iconStyle={addMoreFilesViewStyles?.emoji}
           />
         </TouchableOpacity>
       ) : !!isUploadScreen && !isDoc && !isGif && !isDMChatroom ? (
         <TouchableOpacity
-          style={[
-            addMoreFilesViewStyles?.addMoreButton,
-          ]}
+          style={addMoreFilesViewStyles?.addMoreButton}
           onPress={() => {
             if (handleDocumentProp) {
               handleDocumentProp();
@@ -63,7 +60,8 @@ const AddMoreFilesView = ({
           }}
         >
           <LMChatIcon
-            assetPath={require("../../assets/images/add_more_docs3x.png")}
+              assetPath={inputBoxStyles?.addMoreFilesViewStyles?.addMoreButton?.assetPath ?? require("../../assets/images/addImages3x.png")}
+
             iconStyle={addMoreFilesViewStyles?.emoji}
           />
         </TouchableOpacity>
