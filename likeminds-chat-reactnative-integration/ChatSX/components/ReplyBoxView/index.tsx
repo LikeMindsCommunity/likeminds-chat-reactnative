@@ -1,24 +1,31 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import { ReplyBox } from "../ReplyConversations";
 import { LMChatIcon } from "../../uiComponents";
-import { styles } from "../InputBox/styles";
-import { SET_IS_REPLY, SET_REPLY_MESSAGE } from "../../store/types/types";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import { useAppDispatch } from "../../store";
+import { SET_IS_REPLY, SET_REPLY_MESSAGE } from "../../store/types/types";
+import { styles } from "../InputBox/styles";
 
 interface ReplyBoxViewProps {
   handleReplyBoxCloseProp?: () => void;
 }
 
 const ReplyBoxView = ({ handleReplyBoxCloseProp }: ReplyBoxViewProps) => {
-  const { isReply, isUploadScreen, replyMessage, chatroomName } =
+  const { isReply, isUploadScreen, replyMessage, chatroomName, inputBoxStyles } =
     useInputBoxContext();
   const dispatch = useAppDispatch();
+
+  const replyBoxViewStyles = inputBoxStyles?.replyBoxViewStyles;
   return (
     <>
       {isReply && !isUploadScreen && (
-        <View style={styles.replyBox}>
+        <View
+          style={StyleSheet.flatten([
+            styles.replyBox, 
+            replyBoxViewStyles?.replyBox, // Updated here
+          ])}
+        >
           <ReplyBox
             isIncluded={false}
             item={replyMessage}
@@ -36,12 +43,24 @@ const ReplyBoxView = ({ handleReplyBoxCloseProp }: ReplyBoxViewProps) => {
                 });
               }
             }}
-            style={styles.replyBoxClose}
+            style={StyleSheet.flatten([
+              styles.replyBoxClose, 
+              replyBoxViewStyles?.replyBoxClose, 
+            ])}
           >
             <LMChatIcon
-              assetPath={require("../../assets/images/close_icon.png")}
-              iconStyle={styles.replyCloseImg}
-            />
+            assetPath={
+            replyBoxViewStyles?.replyCloseImg?.assetPath ??
+            require("../../assets/images/close_icon.png")
+            }
+                height={replyBoxViewStyles?.closeIconStyle?.height ?? 24} 
+                width={replyBoxViewStyles?.closeIconStyle?.width ?? 24} 
+                iconStyle={StyleSheet.flatten([
+              styles.replyCloseImg, 
+              replyBoxViewStyles?.replyCloseImg?.iconStyle, 
+            ])}
+          />
+
           </TouchableOpacity>
         </View>
       )}
