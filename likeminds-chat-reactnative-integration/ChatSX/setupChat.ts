@@ -5,6 +5,7 @@ import {
 } from "@likeminds.community/chat-rn";
 import { Client } from "./client";
 import { Themes } from "../ChatSX/enums/Themes";
+import { getUniqueId } from "react-native-device-info";
 
 // create a class by LMChatCoreCallbacks and take two functions in its contructors, assign these two functions to the class's functions
 export class LMCoreCallbacks {
@@ -45,11 +46,13 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
       await Client.myClient.getUserFromLocalStorage(); // replace with actual method to get user
     const user = stringifiedUser ? JSON.parse(stringifiedUser) : null;
     if (user?.apiKey) {
+      const deviceID = await getUniqueId();
       const payload: InitUserWithUuid = {
         apiKey: user.apiKey,
         uuid: user.userUniqueID,
         userName: user.userName,
         isGuest: false,
+        deviceId: deviceID,
       };
       const response: any = await Client.myClient.initiateUser(payload);
       await Client.myClient.setTokens(
@@ -82,10 +85,10 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
 }
 
 export class SdkTheme {
-  private static _theme: Themes
+  private static _theme: Themes;
 
   static setSdkTheme(theme: Themes): void {
-    this._theme = theme
+    this._theme = theme;
   }
 
   static get sdkTheme(): Themes {
