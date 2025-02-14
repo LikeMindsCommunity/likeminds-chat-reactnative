@@ -5,6 +5,7 @@ import { isValidURI } from "../../shareUtils";
 import { DeepLinkRequest, DeepLinkResponse } from "./models";
 import { CHATROOM } from "../../constants/Screens";
 import { Client } from "../../client";
+import { getUniqueId } from "react-native-device-info";
 
 // this function is to parse deep link url
 export async function parseDeepLink(
@@ -34,11 +35,13 @@ export async function parseDeepLink(
         const internalRoute = `route://collabcard?collabcard_id=${chatroomId}`;
         const user: any = await Client.myClient.getUserFromLocalStorage();
         // initiate API call
+        const deviceID = await getUniqueId();
         const initiateUserRequest = {
           userName: request?.userName,
           uuid: request?.uuid,
           isGuest: false,
           apiKey: user?.apiKey,
+          deviceId: deviceID,
         };
         const initiateUserResponse = await Client.myClient?.initiateUser(
           initiateUserRequest

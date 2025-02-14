@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 import { CHATBOT_INITIATE_SCREEN, CHATROOM } from "../../constants/Screens";
 import Layout from "../../constants/Layout";
+import { getUniqueId } from "react-native-device-info";
 
 interface LMChatAIButtonProps {
     text?: string;
@@ -79,12 +80,14 @@ export default function LMChatAIButton({
             callValidateApi(accessToken, refreshToken);
             return;
         }
+        const deviceID = await getUniqueId();
         const payload: InitUserWithUuid = {
             userName: userName,
             apiKey: apiKey ? apiKey : "",
             uuid: uuid ? uuid : "",
             isGuest: false,
             imageUrl: imageUrl ? imageUrl : "",
+            deviceId: deviceID,
         };
         const initiateResponse: any = await dispatch(initAPI(payload));
         if (initiateResponse !== undefined && initiateResponse !== null) {
