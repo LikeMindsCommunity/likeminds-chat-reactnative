@@ -78,19 +78,22 @@ const MessagesComponent = ({
     showRetry,
     setShowRetry,
     setRetryUploadInProgress,
-    retryUploadInProgress
+    retryUploadInProgress,
+    failedMessageId
   } = useMessageContext();
 
 
   useLayoutEffect(() => {
     let interval;
-
+    let uploadFailed = item?.id == failedMessageId
+  
     const checkMessageStatus = () => {
       const currentTimeStampEpoch = Math.floor(Date.now() / 1000);
       if (item?.id?.includes && item?.id?.includes("-")) {
         if (item?.attachments?.length > 0) {
           const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch)) / 1000);
-          if (currentTimeStampEpoch - localTimestamp > 1 && (item?.inProgress == undefined || item?.inProgress == null)) {
+
+          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30 && (item?.inProgress == undefined || item?.inProgress == null))) {
             setShowRetry(true);
   
             // Stop checking once the condition is met
@@ -100,7 +103,7 @@ const MessagesComponent = ({
           }
         } else {
           const localTimestamp = Math.floor(Math.abs(parseInt(item?.localSavedEpoch ?? item?.localCreatedEpoch)) / 1000);
-          if (currentTimeStampEpoch - localTimestamp > 1) {
+          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30)) {
             setShowRetry(true);
   
             // Stop checking once the condition is met
@@ -123,7 +126,7 @@ const MessagesComponent = ({
 
     // Cleanup interval when component unmounts
     return () => clearInterval(interval);
-  }, [item])
+  }, [item, failedMessageId])
 
 
   const { customReactionList }: CustomReactionList =
@@ -136,6 +139,7 @@ const MessagesComponent = ({
     customReplyConversations,
     customPollConversationView,
     customLinkPreview,
+    customRetryButton
   } = useCustomComponentsContext();
 
   const chatBubbleStyles = STYLES.$CHAT_BUBBLE_STYLE;
@@ -219,6 +223,7 @@ const MessagesComponent = ({
           />
         )}
         {showRetry && item?.attachments?.length == 0 ?
+          customRetryButton ? customRetryButton :
           <TouchableOpacity onPress={() => onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress)} style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
             <Text style={{ color: '#F04438', fontSize: 8, right: 10, bottom: 5 }}>Failed. Tap to retry</Text>
           </TouchableOpacity>
