@@ -75,26 +75,42 @@ const MessagesComponent = ({
     userIdStringified,
     isItemIncludedInStateArr,
     handleLongPress,
+    showRetry,
+    setShowRetry,
+    setRetryUploadInProgress,
+    retryUploadInProgress
   } = useMessageContext();
-  const [showRetry, setShowRetry] = useState(false);
+
 
   useLayoutEffect(() => {
     let interval;
 
     const checkMessageStatus = () => {
+      const currentTimeStampEpoch = Math.floor(Date.now() / 1000);
       if (item?.id?.includes && item?.id?.includes("-")) {
-        const currentTimeStampEpoch = Math.floor(Date.now() / 1000);
-        const localTimestamp = Math.floor(Math.abs(parseInt(item?.id)) / 1000);
-
-        if (currentTimeStampEpoch - localTimestamp > 30) {
-          setShowRetry(true);
-
-          // Stop checking once the condition is met
-          if (interval) {
-            console.log("HOGYE 30Seconds")
-            clearInterval(interval);
+        if (item?.attachments?.length > 0) {
+          const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch)) / 1000);
+          if (currentTimeStampEpoch - localTimestamp > 1 && (item?.inProgress == undefined || item?.inProgress == null)) {
+            setShowRetry(true);
+  
+            // Stop checking once the condition is met
+            if (interval) {
+              clearInterval(interval);
+            }
+          }
+        } else {
+          const localTimestamp = Math.floor(Math.abs(parseInt(item?.localSavedEpoch ?? item?.localCreatedEpoch)) / 1000);
+          if (currentTimeStampEpoch - localTimestamp > 1) {
+            setShowRetry(true);
+  
+            // Stop checking once the condition is met
+            if (interval) {
+              clearInterval(interval);
+            }
           }
         }
+      } else {
+        setShowRetry(false);
       }
     };
     
@@ -113,7 +129,7 @@ const MessagesComponent = ({
   const { customReactionList }: CustomReactionList =
     useCustomComponentsContext();
 
-  const { removeReaction, chatroomID, uploadResourceRetry } = useChatroomContext();
+  const { removeReaction, chatroomID, onRetryButtonClicked } = useChatroomContext();
 
   const {
     customDeletedMessage,
@@ -153,49 +169,6 @@ const MessagesComponent = ({
     return customWidgetMessageView ? customWidgetMessageView(item) : null;
   }
 
-  const dispatch = useAppDispatch();
-
-  async function retry() {
-    const failedUploads = item?.attachments?.map(attachmentObject => {
-      if (attachmentObject?.isUploaded == false) {
-        return attachmentObject
-      }
-    });
-
-    const res = await uploadResourceRetry(
-      {
-        selectedImages: failedUploads,
-        conversationID: item?.id,
-        chatroomID: item?.chatroomId,
-        conversation: item,
-        isRetry: false,
-      }
-    )
-
-    let payload: any = {
-      chatroomId: chatroomID,
-      hasFiles: item?.attachments?.length > 0 ? true : false,
-      text: item?.answer?.trim(),
-      temporaryId: item?.temporaryId?.toString(),
-      attachmentCount: item?.attachments?.length,
-      repliedConversationId: item?.replyConversationId?.id,
-      attachments: res,
-      triggerBot: false,
-    };
-
-    item.localCreatedEpoch = Date.now();
-
-    try {
-      await Client?.myClient?.updateConversationData(item)
-    } catch (e) {
-      console.log(e);
-    } finally {
-      const response: any = await dispatch(
-        onConversationsCreate(payload) as any
-      );
-      setShowRetry(false);
-    }
-  }
 
   return (
     <View>
@@ -245,8 +218,8 @@ const MessagesComponent = ({
             removeReaction={removeReaction}
           />
         )}
-        {showRetry ?
-          <TouchableOpacity onPress={retry} style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+        {showRetry && item?.attachments?.length == 0 ?
+          <TouchableOpacity onPress={() => onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress)} style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
             <Text style={{ color: '#F04438', fontSize: 8, right: 10, bottom: 5 }}>Failed. Tap to retry</Text>
           </TouchableOpacity>
           : null}
