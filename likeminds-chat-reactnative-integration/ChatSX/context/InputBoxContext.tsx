@@ -67,6 +67,7 @@ import {
   SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
   SET_CHATROOM_TOPIC,
   SET_EDIT_MESSAGE,
+  SET_FAILED_MESSAGE_ID,
   SET_FILE_UPLOADING_MESSAGES,
   SET_IS_REPLY,
   SET_MESSAGE_ID,
@@ -1521,6 +1522,17 @@ export const InputBoxContextProvider = ({
               attachments = await handleFileUpload(ID, false);
             }
           }
+
+          if (voiceNotesToUpload?.length > 0 && (attachments == undefined || attachments == null)) {
+            dispatch({
+              type: SET_FAILED_MESSAGE_ID,
+              body: {
+                id: `-${ID?.toString()}`
+              }
+            })
+            return;
+          }
+
           let payload: any = {
             chatroomId: chatroomID,
             hasFiles: attachments?.length > 0 ? true : false,
@@ -1548,7 +1560,7 @@ export const InputBoxContextProvider = ({
             onConversationsCreate(payload) as any
           );
 
-          if (response) {
+          if (response?.conversation) {
             setMessageSentByUserId(response?.conversation?.id ?? "");
             dispatch({
               type: SET_MESSAGE_ID,
@@ -1560,6 +1572,13 @@ export const InputBoxContextProvider = ({
               response?.conversation,
               response?.widgets
             );
+          } else {
+            dispatch({
+              type: SET_FAILED_MESSAGE_ID,
+              body: {
+                id: `-${ID?.toString()}`
+              }
+            })
           }
 
           //Handling conversation failed case
@@ -1623,6 +1642,15 @@ export const InputBoxContextProvider = ({
               };
 
           const attachments = await handleFileUpload(ID, false);
+          if (attachments == null) {
+            dispatch({
+              type: SET_FAILED_MESSAGE_ID,
+              body: {
+                id: `-${ID?.toString()}`
+              }
+            })
+            return;
+          }
           let payload: any = {
             chatroomId: chatroomID,
             hasFiles: attachments?.length > 0 ? true : false,

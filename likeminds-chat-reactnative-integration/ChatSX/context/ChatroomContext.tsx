@@ -16,6 +16,7 @@ import {
   CLEAR_CHATROOM_CONVERSATION,
   CLEAR_CHATROOM_DETAILS,
   CLEAR_CHATROOM_TOPIC,
+  CLEAR_FAILED_MESSAGE_ID,
   CLEAR_FILE_UPLOADING_MESSAGES,
   CLEAR_SELECTED_FILE_TO_VIEW,
   CLEAR_SELECTED_FILES_TO_UPLOAD,
@@ -1872,43 +1873,43 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
 
       let uriFinal: any;
-
-      if (attachmentType === IMAGE_TEXT) {
-        //image compression
-        const compressedImgURI = await CompressedImage.compress(item.uri, {
-          compressionMethod: "auto",
-        });
-        const compressedImg = await fetchResourceFromURI(compressedImgURI);
-        uriFinal = compressedImg;
-      } else {
-        const img = await fetchResourceFromURI(item.uri);
-        uriFinal = img;
-      }
-
-      //for video thumbnail
-      let thumbnailUrlImg: any;
-      if (thumbnailURL && attachmentType === VIDEO_TEXT) {
-        thumbnailUrlImg = await fetchResourceFromURI(thumbnailURL);
-      }
-
-      const params = {
-        Bucket: BUCKET,
-        Key: path,
-        Body: uriFinal,
-        ACL: "public-read-write",
-        ContentType: item?.type, // Replace with the appropriate content type for your file
-      };
-
-      //for video thumbnail
-      const thumnnailUrlParams: any = {
-        Bucket: BUCKET,
-        Key: thumbnailUrlPath,
-        Body: thumbnailUrlImg,
-        ACL: "public-read-write",
-        ContentType: "image/jpeg", // Replace with the appropriate content type for your file
-      };
-
       try {
+
+        if (attachmentType === IMAGE_TEXT) {
+          //image compression
+          const compressedImgURI = await CompressedImage.compress(item.uri, {
+            compressionMethod: "auto",
+          });
+          const compressedImg = await fetchResourceFromURI(compressedImgURI);
+          uriFinal = compressedImg;
+        } else {
+          const img = await fetchResourceFromURI(item.uri);
+          uriFinal = img;
+        }
+
+        //for video thumbnail
+        let thumbnailUrlImg: any;
+        if (thumbnailURL && attachmentType === VIDEO_TEXT) {
+          thumbnailUrlImg = await fetchResourceFromURI(thumbnailURL);
+        }
+
+        const params = {
+          Bucket: BUCKET,
+          Key: path,
+          Body: uriFinal,
+          ACL: "public-read-write",
+          ContentType: item?.type, // Replace with the appropriate content type for your file
+        };
+
+        //for video thumbnail
+        const thumnnailUrlParams: any = {
+          Bucket: BUCKET,
+          Key: thumbnailUrlPath,
+          Body: thumbnailUrlImg,
+          ACL: "public-read-write",
+          ContentType: "image/jpeg", // Replace with the appropriate content type for your file
+        };
+
         let getVideoThumbnailData: any;
 
         if (thumbnailURL && attachmentType === VIDEO_TEXT) {
@@ -2040,7 +2041,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         ])
       );
 
-      return res;
+      if (Array.isArray(res)) {
+        return res;
+      }
+      return null;
     } else {
       LMChatAnalytics.track(
         Events.ATTACHMENT_UPLOAD_ERROR,
@@ -2079,7 +2083,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         uploadingFilesMessages,
         isRetry: isRetry,
       });
-      return res;
+      if (Array?.isArray(res)) {
+        return res;
+      }
+
+      return null;
     }
   };
 
@@ -2087,6 +2095,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     if (retryUploadInProgress) {
       return null;
     }
+
     setRetryUploadInProgress(true);
     const failedUploads: any[] = [];
     const uploadResponse: any[] = [];
@@ -2094,7 +2103,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     for (let i = 0; i < (item?.attachments?.length || 0); i++) {
       const attachmentObject = item.attachments[i];
 
-      if (attachmentObject?.isUploaded === false || attachmentObject?.isUploaded == undefined || attachmentObject?.isUploaded == undefined) {
+      if (attachmentObject?.isUploaded === false || attachmentObject?.isUploaded == undefined || attachmentObject?.isUploaded == null) {
         const res = await uploadResourceRetry({
           selectedImages: attachmentObject,
           conversationID: item?.id,
@@ -2110,6 +2119,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       } else {
         uploadResponse?.push(attachmentObject);
       }
+    }
+
+
+    if (failedUploads?.length > 0) {
+      setRetryUploadInProgress(false);
+      return null;
     }
 
 
@@ -2135,7 +2150,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       );
       if (response?.conversation) {
         setShowRetry(false);
-        await Client?.myClient?.updateConversationData(item)
+        dispatch({
+          type: CLEAR_FAILED_MESSAGE_ID
+        })
+        await Client?.myClient?.updateConversationData(response?.conversation, response?.widgets)
       }
     } catch (e) {
       console.log(e)
@@ -2180,44 +2198,45 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${conversationID}/${thumbnailURL}`;
     let uriFinal: any;
 
-    if (attachmentType === IMAGE_TEXT) {
-      const compressedImgURI = await CompressedImage.compress(item.url, {
-        compressionMethod: "auto",
-      });
-      const compressedImg = await fetchResourceFromURI(compressedImgURI);
-      uriFinal = compressedImg;
-    } else {
-      const img = await fetchResourceFromURI(item?.url);
-      uriFinal = img;
-    }
-
-    //for video thumbnail
-    let thumbnailUrlImg: any;
-    if (
-      thumbnailURL &&
-      (attachmentType === VIDEO_TEXT || gifAttachmentType === GIF_TEXT)
-    ) {
-      thumbnailUrlImg = await fetchResourceFromURI(thumbnailURL);
-    }
-
-    const params = {
-      Bucket: BUCKET,
-      Key: path,
-      Body: uriFinal,
-      ACL: "public-read-write",
-      ContentType: item?.type, // Replace with the appropriate content type for your file
-    };
-
-    //for video thumbnail
-    const thumnnailUrlParams: any = {
-      Bucket: BUCKET,
-      Key: thumbnailUrlPath,
-      Body: thumbnailUrlImg,
-      ACL: "public-read-write",
-      ContentType: "image/jpeg", // Replace with the appropriate content type for your file
-    };
-
     try {
+
+      if (attachmentType === IMAGE_TEXT) {
+        const compressedImgURI = await CompressedImage.compress(item.url, {
+          compressionMethod: "auto",
+        });
+        const compressedImg = await fetchResourceFromURI(compressedImgURI);
+        uriFinal = compressedImg;
+      } else {
+        const img = await fetchResourceFromURI(item?.url);
+        uriFinal = img;
+      }
+
+      //for video thumbnail
+      let thumbnailUrlImg: any;
+      if (
+        thumbnailURL &&
+        (attachmentType === VIDEO_TEXT || gifAttachmentType === GIF_TEXT)
+      ) {
+        thumbnailUrlImg = await fetchResourceFromURI(thumbnailURL);
+      }
+
+      const params = {
+        Bucket: BUCKET,
+        Key: path,
+        Body: uriFinal,
+        ACL: "public-read-write",
+        ContentType: item?.type, // Replace with the appropriate content type for your file
+      };
+
+      //for video thumbnail
+      const thumnnailUrlParams: any = {
+        Bucket: BUCKET,
+        Key: thumbnailUrlPath,
+        Body: thumbnailUrlImg,
+        ACL: "public-read-write",
+        ContentType: "image/jpeg", // Replace with the appropriate content type for your file
+      };
+
       let getVideoThumbnailData: any = null;
       if (
         thumbnailURL &&
@@ -2293,7 +2312,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         );
       }
     } catch (error) {
-      failedUploads?.push(...selectedImages)
+
+      failedUploads?.push(selectedImages);
     }
     dispatch({
       type: CLEAR_SELECTED_FILES_TO_UPLOAD,
