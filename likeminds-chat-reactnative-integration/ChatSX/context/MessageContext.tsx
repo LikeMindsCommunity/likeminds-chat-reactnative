@@ -41,6 +41,7 @@ export interface MessageContextValues {
   isIncluded: boolean;
   showRetry: boolean;
   retryUploadInProgress: boolean;
+  failedMessageId: string;
   
   handleLongPress: (event: GestureResponderEvent) => void;
   setRetryUploadInProgress: Dispatch<SetStateAction<boolean>>;
@@ -72,7 +73,7 @@ export const MessageContextProvider = ({
 }: MessageContextProps) => {
   const { user } = useAppSelector((state) => state.homefeed);
 
-  const { stateArr, chatroomDBDetails }: any = useAppSelector(
+  const { stateArr, chatroomDBDetails, failedMessageId }: any = useAppSelector(
     (state) => state.chatroom
   );
 
@@ -196,6 +197,7 @@ export const MessageContextProvider = ({
     isIncluded,
     showRetry,
     retryUploadInProgress,
+    failedMessageId,
 
     setShowRetry,
     handleLongPress,
