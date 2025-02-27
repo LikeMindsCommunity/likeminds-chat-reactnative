@@ -1104,20 +1104,20 @@ export const InputBoxContextProvider = ({
         if (attachmentType === IMAGE_TEXT) {
           const obj = {
             imageUrl: selectedFilesToUpload[i].uri,
-            index: i,
+            index: i + 1,
           };
           dummySelectedFileArr = [...dummySelectedFileArr, obj];
         } else if (attachmentType === VIDEO_TEXT) {
           const obj = {
             videoUrl: selectedFilesToUpload[i].uri,
-            index: i,
+            index: i + 1,
             thumbnailUrl: selectedFilesToUpload[i].thumbanil,
           };
           dummySelectedFileArr = [...dummySelectedFileArr, obj];
         } else if (docAttachmentType === PDF_TEXT) {
           const obj = {
             pdfFile: selectedFilesToUpload[i].uri,
-            index: i,
+            index: i + 1,
           };
           dummySelectedFileArr = [...dummySelectedFileArr, obj];
         }
@@ -1138,7 +1138,7 @@ export const InputBoxContextProvider = ({
             ...selectedFilesToUpload[i],
             type: attachmentType,
             url: URI,
-            index: i,
+            index: i + 1,
             name: selectedFilesToUpload[i]?.fileName,
             meta: {
               size: selectedFilesToUpload[i]?.fileSize,
@@ -1151,7 +1151,7 @@ export const InputBoxContextProvider = ({
             type: attachmentType,
             url: URI,
             thumbnailUrl: selectedFilesToUpload[i].thumbnailUrl,
-            index: i,
+            index: i + 1,
             name: selectedFilesToUpload[i].fileName,
             meta: {
               size: selectedFilesToUpload[i]?.fileSize,
@@ -1164,7 +1164,7 @@ export const InputBoxContextProvider = ({
             ...selectedFilesToUpload[i],
             type: docAttachmentType,
             url: URI,
-            index: i,
+            index: i + 1,
             name: selectedFilesToUpload[i].name,
             meta: {
               size: selectedFilesToUpload[i]?.size,
@@ -1176,8 +1176,9 @@ export const InputBoxContextProvider = ({
             ...voiceNotesToUpload[i],
             type: audioAttachmentType,
             url: audioURI,
-            index: i,
+            index: i + 1,
             name: voiceNotesToUpload[i].name,
+            chatroomId: chatroomID,
             metaRO: {
               size: null,
               duration: voiceNotesToUpload[i].duration,
@@ -1190,7 +1191,7 @@ export const InputBoxContextProvider = ({
             type: attachmentType,
             url: selectedFilesToUpload[i]?.url,
             thumbnailUrl: selectedFilesToUpload[i].thumbnailUrl,
-            index: i,
+            index: i + 1,
             name: selectedFilesToUpload[i].name,
           };
           dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
@@ -1248,6 +1249,9 @@ export const InputBoxContextProvider = ({
           } ${months[time.getMonth()]} ${time.getFullYear()}`;
         replyObj.attachmentCount = attachmentsCount;
         replyObj.attachments = dummyAttachmentsArr;
+        replyObj.attachmentUploadedEpoch = ID;
+        replyObj.attachmentSavedEpoch = ID;
+        replyObj.inProgress = true;
         replyObj.hasFiles = attachmentsCount > 0 ? true : false;
         replyObj.attachmentsUploaded = attachmentsCount > 0 ? true : false;
         replyObj.images = dummySelectedFileArr;
@@ -1285,6 +1289,8 @@ export const InputBoxContextProvider = ({
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
       obj.localCreatedEpoch = ID
+      obj.attachmentUploadedEpoch = ID
+      obj.inProgress = true;
       obj.temporaryId = ID.toString()
       obj.widget =
         Object.keys(metaData ?? {}).length > 0
@@ -1504,11 +1510,6 @@ export const InputBoxContextProvider = ({
                   isInProgress: SUCCESS,
                 };
 
-            await myClient?.saveAttachmentUploadConversation(
-              ID.toString(),
-              JSON.stringify(message)
-            );
-
             if (voiceNotesToUpload?.length > 0) {
               attachments = await handleFileUpload(
                 ID,
@@ -1621,10 +1622,6 @@ export const InputBoxContextProvider = ({
                 isInProgress: SUCCESS,
               };
 
-          await myClient?.saveAttachmentUploadConversation(
-            ID.toString(),
-            JSON.stringify(message)
-          );
           const attachments = await handleFileUpload(ID, false);
           let payload: any = {
             chatroomId: chatroomID,
