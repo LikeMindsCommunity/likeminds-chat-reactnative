@@ -2146,17 +2146,16 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     ) {
       payload.ogTags = item.ogTags;
     }
-
-    item.localCreatedEpoch = Date.now();
-    if (uploadResponse?.length > 0) {
-      (item as Conversation).attachmentUploadedEpoch = Date.now();
-    }
-
+ 
     try {
       const response: any = await dispatch(
         onConversationsCreate(payload) as any
       );
       if (response?.conversation) {
+        response.conversation.localCreatedEpoch = Date.now();
+        if (uploadResponse?.length > 0) {
+          (response.conversation as Conversation).attachmentUploadedEpoch = Date.now();
+        }
         setShowRetry(false);
         dispatch({
           type: CLEAR_FAILED_MESSAGE_ID

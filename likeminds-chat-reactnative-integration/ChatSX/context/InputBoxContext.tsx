@@ -1254,7 +1254,7 @@ export const InputBoxContextProvider = ({
           } ${months[time.getMonth()]} ${time.getFullYear()}`;
         replyObj.attachmentCount = attachmentsCount;
         replyObj.attachments = dummyAttachmentsArr;
-        replyObj.attachmentUploadedEpoch = ID;
+        replyObj.attachmentUploadedEpoch = 0;
         replyObj.attachmentSavedEpoch = ID;
         replyObj.inProgress = true;
         replyObj.hasFiles = attachmentsCount > 0 ? true : false;
@@ -1294,7 +1294,7 @@ export const InputBoxContextProvider = ({
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
       obj.localCreatedEpoch = ID
-      obj.attachmentUploadedEpoch = ID
+      obj.attachmentUploadedEpoch = 0;
       obj.inProgress = true;
       obj.temporaryId = ID.toString()
       obj.widget =
@@ -1504,6 +1504,17 @@ export const InputBoxContextProvider = ({
             return;
           }
 
+          if (isReply) {
+            replyObj.attachmentUploadedEpoch = Date.now()
+          } else {
+            obj.attachmentUploadedEpoch = Date.now()
+          }
+
+          await Client?.myClient?.updateConversationData(
+            isReply ? replyObj : obj,
+            null
+          )
+
           let payload: any = {
             chatroomId: chatroomID,
             hasFiles: attachments?.length > 0 ? true : false,
@@ -1622,6 +1633,18 @@ export const InputBoxContextProvider = ({
             })
             return;
           }
+
+          if (isReply) {
+            replyObj.attachmentUploadedEpoch = Date.now()
+          } else {
+            obj.attachmentUploadedEpoch = Date.now()
+          }
+
+
+          await Client?.myClient?.updateConversationData(
+            isReply ? replyObj : obj,
+            null
+          )
 
           let payload: any = {
             chatroomId: chatroomID,
