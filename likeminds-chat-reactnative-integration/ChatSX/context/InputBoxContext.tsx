@@ -761,6 +761,7 @@ export const InputBoxContextProvider = ({
       chatroomID: chatroomID,
       previousMessage: message, // to keep message on uploadScreen InputBox
       limit,
+      communityId: community?.id?.toString()
     });
     await launchImageLibrary(options, async (response: ImagePickerResponse) => {
       if (response?.didCancel) {
@@ -796,6 +797,7 @@ export const InputBoxContextProvider = ({
       navigation.navigate(FILE_UPLOAD, {
         chatroomID: chatroomID,
         previousMessage: message, // to keep message on uploadScreen InputBox
+        communityId: community?.id?.toString()
       });
       const response = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf],
@@ -914,6 +916,7 @@ export const InputBoxContextProvider = ({
       navigation.navigate(FILE_UPLOAD, {
         chatroomID: chatroomID,
         previousMessage: message, // to keep message on uploadScreen InputBox
+        communityId: community?.id?.toString()
       });
     } catch (error) {
       if (selectedFilesToUpload.length === 0) {
@@ -929,6 +932,7 @@ export const InputBoxContextProvider = ({
     navigation.navigate(FILE_UPLOAD, {
       chatroomID: chatroomID,
       previousMessage: message, // to keep message on uploadScreen InputBox
+      communityId: community?.id?.toString()
     });
 
     await createThumbnail({
@@ -1278,7 +1282,7 @@ export const InputBoxContextProvider = ({
         useGrouping: false,
       })}`;
       obj.id = `-${ID?.toString()}`;
-      obj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
+      obj.chatroomId = chatroomDetails?.chatroom?.id?.toString() ?? chatroomID?.toString();
       obj.communityId = community?.id?.toString();
       obj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
         } ${months[time.getMonth()]} ${time.getFullYear()}`;
@@ -1318,35 +1322,6 @@ export const InputBoxContextProvider = ({
         type: MESSAGE_SENT,
         body: isReply ? { id: replyObj?.id } : { id: obj?.id },
       });
-      if (
-        chatroomType !== ChatroomType.DMCHATROOM && // if not DM
-        chatRequestState !== null // if not first DM message sent to an user
-      ) {
-        if (isReply) {
-          if (attachmentsCount > 0) {
-            const editedReplyObj = { ...replyObj, isInProgress: SUCCESS };
-            await myClient?.saveNewConversation(
-              chatroomID?.toString(),
-              editedReplyObj
-            );
-          } else {
-            await myClient?.saveNewConversation(
-              chatroomID?.toString(),
-              replyObj
-            );
-          }
-        } else {
-          if (attachmentsCount > 0) {
-            const editedObj = { ...obj, isInProgress: SUCCESS };
-            await myClient?.saveNewConversation(
-              chatroomID?.toString(),
-              editedObj
-            );
-          } else {
-            await myClient?.saveNewConversation(chatroomID?.toString(), obj);
-          }
-        }
-      }
       if (isUploadScreen) {
         dispatch({
           type: CLEAR_SELECTED_FILES_TO_UPLOAD,
@@ -1441,30 +1416,28 @@ export const InputBoxContextProvider = ({
           ChatroomChatRequestState.ACCEPTED
         );
       } else {
-        if (chatroomType === ChatroomType.DMCHATROOM) {
-          if (isReply) {
-            if (attachmentsCount > 0) {
-              const editedReplyObj = { ...replyObj, isInProgress: SUCCESS };
-              await myClient?.saveNewConversation(
-                chatroomID?.toString(),
-                editedReplyObj
-              );
-            } else {
-              await myClient?.saveNewConversation(
-                chatroomID?.toString(),
-                replyObj
-              );
-            }
+        if (isReply) {
+          if (attachmentsCount > 0) {
+            const editedReplyObj = { ...replyObj, isInProgress: SUCCESS };
+            await myClient?.saveNewConversation(
+              chatroomID?.toString(),
+              editedReplyObj
+            );
           } else {
-            if (attachmentsCount > 0) {
-              const editedObj = { ...obj, isInProgress: SUCCESS };
-              await myClient?.saveNewConversation(
-                chatroomID?.toString(),
-                editedObj
-              );
-            } else {
-              await myClient?.saveNewConversation(chatroomID?.toString(), obj);
-            }
+            await myClient?.saveNewConversation(
+              chatroomID?.toString(),
+              replyObj
+            );
+          }
+        } else {
+          if (attachmentsCount > 0) {
+            const editedObj = { ...obj, isInProgress: SUCCESS };
+            await myClient?.saveNewConversation(
+              chatroomID?.toString(),
+              editedObj
+            );
+          } else {
+            await myClient?.saveNewConversation(chatroomID?.toString(), obj);
           }
         }
         if (!isUploadScreen) {
@@ -1518,8 +1491,6 @@ export const InputBoxContextProvider = ({
                 true,
                 voiceNotesToUpload
               );
-            } else {
-              attachments = await handleFileUpload(ID, false);
             }
           }
 
@@ -1651,6 +1622,7 @@ export const InputBoxContextProvider = ({
             })
             return;
           }
+
           let payload: any = {
             chatroomId: chatroomID,
             hasFiles: attachments?.length > 0 ? true : false,
