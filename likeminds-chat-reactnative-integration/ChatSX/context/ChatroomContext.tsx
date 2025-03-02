@@ -21,6 +21,7 @@ import {
   CLEAR_SELECTED_FILE_TO_VIEW,
   CLEAR_SELECTED_FILES_TO_UPLOAD,
   CLEAR_SELECTED_MESSAGES,
+  CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
   GET_CHATROOM_ACTIONS_SUCCESS,
   GET_CHATROOM_DB_SUCCESS,
   GET_CONVERSATIONS_SUCCESS,
@@ -1974,6 +1975,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           attachments.push(payload);
         }
       } catch (error) {
+        dispatch({ type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD });
         dispatch({
           type: SET_FILE_UPLOADING_MESSAGES,
           body: {
@@ -2139,6 +2141,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       triggerBot: false,
     };
 
+    if (
+      Object.keys(item?.ogTags).length !== 0
+    ) {
+      payload.ogTags = item.ogTags;
+    }
+
     item.localCreatedEpoch = Date.now();
     if (uploadResponse?.length > 0) {
       (item as Conversation).attachmentUploadedEpoch = Date.now();
@@ -2177,7 +2185,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     const item = selectedImages
     if (item == null || item == undefined) return response
     const attachmentType = isRetry ? item?.type : item?.type?.split("/")[0];
-    const gifAttachmentType = item?.data?.type;
+    const gifAttachmentType = item?.type;
     const docAttachmentType = item?.type
     const thumbnailURL = item?.thumbnailUrl;
     const gifHeight = item?.data?.images?.fixed_width?.height;
