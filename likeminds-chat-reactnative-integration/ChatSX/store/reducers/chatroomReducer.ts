@@ -46,6 +46,8 @@ import {
   REMOVE_SHIMMER_MESSAGE,
   SET_FAILED_MESSAGE_ID,
   CLEAR_FAILED_MESSAGE_ID,
+  SET_MESSAGE_IN_PROGRESS_ID,
+  CLEAR_MESSAGE_IN_PROGRESS_ID,
 } from "../types/types";
 
 export interface ChatroomReducerState {
@@ -70,7 +72,8 @@ export interface ChatroomReducerState {
   temporaryStateMessage: any;
   shimmerVisible: boolean;
   messageId: string;
-  failedMessageId: string
+  failedMessageId: string;
+  messageUploadInProgressId: string;
 }
 
 export const initialState: ChatroomReducerState = {
@@ -95,7 +98,8 @@ export const initialState: ChatroomReducerState = {
   temporaryStateMessage: {},
   shimmerVisible: false,
   messageId: "",
-  failedMessageId: ""
+  failedMessageId: "",
+  messageUploadInProgressId: ""
 };
 
 export function chatroomReducer(state = initialState, action: any) {
@@ -140,6 +144,23 @@ export function chatroomReducer(state = initialState, action: any) {
         {
           ...state,
           failedMessageId: id
+        }
+      )
+    }
+    case SET_MESSAGE_IN_PROGRESS_ID: {
+      const { id } = action?.body;
+      return (
+        {
+          ...state,
+          messageUploadInProgressId: id
+        }
+      )
+    }
+    case CLEAR_MESSAGE_IN_PROGRESS_ID: {
+      return (
+        {
+          ...state,
+          messageUploadInProgressId: ""
         }
       )
     }
