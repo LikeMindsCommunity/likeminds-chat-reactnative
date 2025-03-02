@@ -85,15 +85,15 @@ const MessagesComponent = ({
 
   useLayoutEffect(() => {
     let interval;
-    let uploadFailed = item?.id == failedMessageId
+    let uploadFailed = item?.id == failedMessageId;
   
-    const checkMessageStatus = () => {
+  const checkMessageStatus = () => {
       const currentTimeStampEpoch = Math.floor(Date.now() / 1000);
       if (item?.id?.includes && item?.id?.includes("-")) {
         if (item?.attachments?.length > 0) {
           const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch)) / 1000);
 
-          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30 && (item?.inProgress == undefined || item?.inProgress == null))) {
+          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30 && ((item?.inProgress == undefined || item?.inProgress == null)) )) {
             setShowRetry(true);
   
             // Stop checking once the condition is met
@@ -222,11 +222,13 @@ const MessagesComponent = ({
             removeReaction={removeReaction}
           />
         )}
-        {showRetry && item?.attachments?.length == 0 ?
+        {showRetry && !item?.deletedBy && item?.attachments?.length == 0 ?
           customRetryButton ? customRetryButton :
-          <TouchableOpacity onPress={() => onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress)} style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <Text style={{ color: '#F04438', fontSize: 8, right: 10, bottom: 5 }}>Failed. Tap to retry</Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() =>
+              onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress)}
+              style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+              <Text style={{ color: '#F04438', fontSize: 8, right: 10, bottom: 5 }}>Failed. Tap to retry</Text>
+            </TouchableOpacity>
           : null}
       </View>
     </View>

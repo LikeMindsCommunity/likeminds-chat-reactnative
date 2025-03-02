@@ -18,6 +18,7 @@ import {
   CLEAR_CHATROOM_TOPIC,
   CLEAR_FAILED_MESSAGE_ID,
   CLEAR_FILE_UPLOADING_MESSAGES,
+  CLEAR_MESSAGE_IN_PROGRESS_ID,
   CLEAR_SELECTED_FILE_TO_VIEW,
   CLEAR_SELECTED_FILES_TO_UPLOAD,
   CLEAR_SELECTED_MESSAGES,
@@ -36,6 +37,7 @@ import {
   SET_EXPLORE_FEED_PAGE,
   SET_FILE_UPLOADING_MESSAGES,
   SET_IS_REPLY,
+  SET_MESSAGE_IN_PROGRESS_ID,
   SET_PAGE,
   SET_REPLY_MESSAGE,
   SET_TEMP_STATE_MESSAGE,
@@ -117,22 +119,22 @@ import { ScreenName } from "../enums/ScreenNameEnums"
 import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
 
 interface UploadResource {
-  selectedImages: any;
-  conversationID: any;
-  chatroomID: any;
+  selectedImages: any[];
+  conversationID: string | number;
+  chatroomID: string | number;
   selectedFilesToUpload: any;
   uploadingFilesMessages: any;
   isRetry: boolean;
 }
 
 interface UploadResourceRetry {
-  selectedImages: any;
-  conversationID: any;
-  chatroomID: any;
-  conversation: any,
+  selectedImages: Array<any>;
+  conversationID: string | number;
+  chatroomID: string | number;
+  conversation: Conversation,
   isRetry: boolean;
-  failedUploads: any;
-  index: any;
+  failedUploads: Array<any>;
+  index: number;
 }
 
 interface ChatroomContextProps {
@@ -1932,7 +1934,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             fileType = VOICE_NOTE_TEXT;
           }
 
-          const payload: Attachment = {
+          const payload = {
             id: conversationID,
             index: i + 1,
             meta:
@@ -1972,10 +1974,13 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             isUploaded: true
           };
 
-          attachments.push(payload);
+          attachments.push(payload as Attachment);
         }
       } catch (error) {
         dispatch({ type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD });
+        dipatch({
+          type: CLEAR_MESSAGE_IN_PROGRESS_ID
+        })
         dispatch({
           type: SET_FILE_UPLOADING_MESSAGES,
           body: {
@@ -1998,6 +2003,9 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         );
         return error;
       }
+      dipatch({
+        type: CLEAR_MESSAGE_IN_PROGRESS_ID
+      })
       dispatch({
         type: CLEAR_SELECTED_FILES_TO_UPLOAD,
       });
@@ -2025,6 +2033,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     isVoiceNote?: boolean,
     voiceNotesToUpload?: any
   ) => {
+    dispatch({
+      type: SET_MESSAGE_IN_PROGRESS_ID,
+      body : {
+        id: conversationID
+      }
+    })
     if (isVoiceNote) {
       const res = await uploadResource({
         selectedImages: voiceNotesToUpload,
@@ -2093,10 +2107,15 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     }
   };
 
-  async function onRetryButtonClicked(item: any, setShowRetry: any, setRetryUploadInProgress: any, retryUploadInProgress: any) {
+  async function onRetryButtonClicked(
+    item: any,
+    setShowRetry: Dispatch<SetStateAction<boolean>>,
+    setRetryUploadInProgress: Dispatch<SetStateAction<boolean>>,
+    retryUploadInProgress: boolean) {
     if (retryUploadInProgress) {
       return null;
     }
+
 
     setRetryUploadInProgress(true);
     const failedUploads: any[] = [];
@@ -2146,7 +2165,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     ) {
       payload.ogTags = item.ogTags;
     }
- 
+    
     try {
       const response: any = await dispatch(
         onConversationsCreate(payload) as any
@@ -2181,7 +2200,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   }: UploadResourceRetry) => {
     LogBox.ignoreLogs(["new NativeEventEmitter"]);
     let response: any = null;
-    const item = selectedImages
+    const item: any = selectedImages
     if (item == null || item == undefined) return response
     const attachmentType = isRetry ? item?.type : item?.type?.split("/")[0];
     const gifAttachmentType = item?.type;
@@ -2302,7 +2321,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         };
 
         await Client?.myClient?.updateAttachment(
-          conversationID,
+          conversationID as string,
           payload
         )
 
@@ -2320,8 +2339,14 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       }
     } catch (error) {
 
+      dipatch({
+        type: CLEAR_MESSAGE_IN_PROGRESS_ID
+      })
       failedUploads?.push(selectedImages);
     }
+    dipatch({
+      type: CLEAR_MESSAGE_IN_PROGRESS_ID
+    })
     dispatch({
       type: CLEAR_SELECTED_FILES_TO_UPLOAD,
     });
