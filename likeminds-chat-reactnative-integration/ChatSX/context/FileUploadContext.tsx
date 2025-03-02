@@ -48,7 +48,7 @@ interface UploadResource {
 }
 
 interface FileUploadContextValues {
-  handleFileUpload: (conversationID: string, isRetry: boolean) => Promise<any> | null;
+  handleFileUpload: (conversationID: string, isRetry: boolean) => any;
   selectedFilesToUpload: any[];
   selectedFileToView: any;
   len: any;
@@ -91,7 +91,7 @@ export const FileUploadContextProvider = ({
   const selectedImageBorderColor =
     STYLES.$FILE_UPLOAD_STYLE?.selectedImageBorderColor;
 
-  const { chatroomID, previousMessage = "" }: any = route?.params;
+  const { chatroomID, previousMessage = "", communityId }: any = route?.params;
   const { backIconPath, imageCropIcon }: any = route.params;
   const {
     selectedFilesToUpload = [],
@@ -181,54 +181,54 @@ export const FileUploadContextProvider = ({
         attachmentType === IMAGE_TEXT
           ? item.fileName
           : attachmentType === VIDEO_TEXT
-            ? item.fileName
-            : gifAttachmentType === GIF_TEXT
-              ? generateGifName()
-              : docAttachmentType === PDF_TEXT
-                ? item.name
-                : null;
+          ? item.fileName
+          : gifAttachmentType === GIF_TEXT
+          ? generateGifName()
+          : docAttachmentType === PDF_TEXT
+          ? item.name
+          : null;
 
       const path = `files/collabcard/${chatroomID}/conversation/${conversationID}/${name}`;
       const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${conversationID}/${thumbnailURL}`;
       let uriFinal: any;
       try {
 
-        if (attachmentType === IMAGE_TEXT) {
-          const compressedImgURI = await CompressedImage.compress(item.uri, {
-            compressionMethod: "auto",
-          });
-          const compressedImg = await fetchResourceFromURI(compressedImgURI);
-          uriFinal = compressedImg;
-        } else {
-          const img = await fetchResourceFromURI(item.uri ? item.uri : item.url);
-          uriFinal = img;
-        }
+      if (attachmentType === IMAGE_TEXT) {
+        const compressedImgURI = await CompressedImage.compress(item.uri, {
+          compressionMethod: "auto",
+        });
+        const compressedImg = await fetchResourceFromURI(compressedImgURI);
+        uriFinal = compressedImg;
+      } else {
+        const img = await fetchResourceFromURI(item.uri ? item.uri : item.url);
+        uriFinal = img;
+      }
 
-        //for video thumbnail
-        let thumbnailUrlImg: any;
-        if (
-          thumbnailURL &&
-          (attachmentType === VIDEO_TEXT || gifAttachmentType === GIF_TEXT)
-        ) {
-          thumbnailUrlImg = await fetchResourceFromURI(thumbnailURL);
-        }
+      //for video thumbnail
+      let thumbnailUrlImg: any;
+      if (
+        thumbnailURL &&
+        (attachmentType === VIDEO_TEXT || gifAttachmentType === GIF_TEXT)
+      ) {
+        thumbnailUrlImg = await fetchResourceFromURI(thumbnailURL);
+      }
 
-        const params = {
-          Bucket: BUCKET,
-          Key: path,
-          Body: uriFinal,
-          ACL: "public-read-write",
-          ContentType: item?.type, // Replace with the appropriate content type for your file
-        };
+      const params = {
+        Bucket: BUCKET,
+        Key: path,
+        Body: uriFinal,
+        ACL: "public-read-write",
+        ContentType: item?.type, // Replace with the appropriate content type for your file
+      };
 
-        //for video thumbnail
-        const thumnnailUrlParams: any = {
-          Bucket: BUCKET,
-          Key: thumbnailUrlPath,
-          Body: thumbnailUrlImg,
-          ACL: "public-read-write",
-          ContentType: "image/jpeg", // Replace with the appropriate content type for your file
-        };
+      //for video thumbnail
+      const thumnnailUrlParams: any = {
+        Bucket: BUCKET,
+        Key: thumbnailUrlPath,
+        Body: thumbnailUrlImg,
+        ACL: "public-read-write",
+        ContentType: "image/jpeg", // Replace with the appropriate content type for your file
+      };
 
         let getVideoThumbnailData: any = null;
         if (
@@ -256,28 +256,30 @@ export const FileUploadContextProvider = ({
             fileType = GIF_TEXT;
           }
 
-          const payload = {
+          const payload: any = {
             conversationId: conversationID,
             filesCount: selectedImages?.length,
+            chatroomId: chatroomID,
+            communityId: communityId,
             index: i + 1,
             meta:
               fileType === VIDEO_TEXT
                 ? {
-                  size: selectedFilesToUpload[i]?.fileSize,
-                  duration: selectedFilesToUpload[i]?.duration,
-                }
+                    size: selectedFilesToUpload[i]?.fileSize,
+                    duration: selectedFilesToUpload[i]?.duration,
+                  }
                 : {
-                  size:
-                    docAttachmentType === PDF_TEXT
-                      ? selectedFilesToUpload[i]?.size
-                      : selectedFilesToUpload[i]?.fileSize,
-                },
+                    size:
+                      docAttachmentType === PDF_TEXT
+                        ? selectedFilesToUpload[i]?.size
+                        : selectedFilesToUpload[i]?.fileSize,
+                  },
             name:
               docAttachmentType === PDF_TEXT
                 ? selectedFilesToUpload[i]?.name
                 : gifAttachmentType === GIF_TEXT
-                  ? name
-                  : selectedFilesToUpload[i]?.fileName,
+                ? name
+                : selectedFilesToUpload[i]?.fileName,
             type: fileType,
             url: awsResponse,
             thumbnailUrl:
@@ -286,6 +288,7 @@ export const FileUploadContextProvider = ({
                 : null,
             height: gifHeight ? gifHeight : null,
             width: gifWidth ? gifWidth : null,
+            isUploaded: true
           };
 
           attachments.push(payload)
