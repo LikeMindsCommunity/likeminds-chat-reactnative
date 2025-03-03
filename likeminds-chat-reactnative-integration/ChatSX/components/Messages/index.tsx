@@ -102,7 +102,7 @@ const MessagesComponent = ({
             }
           }
         } else {
-          const localTimestamp = Math.floor(Math.abs(parseInt(item?.localSavedEpoch ?? item?.localCreatedEpoch)) / 1000);
+          const localTimestamp = Math.floor(Math.abs(parseInt(item?.localSavedEpoch ?? item?.localCreatedEpoch ?? 0)) / 1000);
           if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30)) {
             setShowRetry(true);
   
