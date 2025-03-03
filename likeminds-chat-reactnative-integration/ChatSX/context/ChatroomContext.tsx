@@ -79,7 +79,7 @@ import {
 } from "@likeminds.community/chat-rn";
 import { Credentials } from "../credentials";
 import { initAPI } from "../store/actions/homefeed";
-import { createTemporaryStateMessage, splitFileName } from "../utils/chatroomUtils";
+import { createTemporaryStateMessage, isOtherUserAIChatbot, splitFileName } from "../utils/chatroomUtils";
 import { LMChatAnalytics } from "../analytics/LMChatAnalytics";
 import { getChatroomType, getConversationType } from "../utils/analyticsUtils";
 import {
@@ -2157,7 +2157,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       attachmentCount: item?.attachments?.length,
       repliedConversationId: item?.replyConversationId?.id,
       attachments: uploadResponse,
-      triggerBot: false,
+      triggerBot: isOtherUserAIChatbot(chatroomDBDetails, user) ?? false,
     };
 
     if (
