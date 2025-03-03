@@ -1256,6 +1256,7 @@ export const InputBoxContextProvider = ({
         replyObj.attachments = dummyAttachmentsArr;
         replyObj.attachmentUploadedEpoch = 0;
         replyObj.attachmentSavedEpoch = ID;
+        replyObj.localCreatedEpoch = ID;
         replyObj.inProgress = true;
         replyObj.hasFiles = attachmentsCount > 0 ? true : false;
         replyObj.attachmentsUploaded = attachmentsCount > 0 ? true : false;
