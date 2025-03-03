@@ -121,7 +121,7 @@ import {
   PanGestureHandlerEventPayload,
 } from "react-native-gesture-handler";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
-import { SyncConversationRequest } from "@likeminds.community/chat-rn";
+import { SyncConversationRequest, UpdateAttachmentRequestBuilder, UpdateConversationDataRequestBuilder } from "@likeminds.community/chat-rn";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
@@ -1511,8 +1511,11 @@ export const InputBoxContextProvider = ({
           }
 
           await Client?.myClient?.updateConversationData(
-            isReply ? replyObj : obj,
-            null
+            UpdateConversationDataRequestBuilder.builder()
+              .setConversation(
+                isReply ? replyObj : obj
+              )
+              .build()
           )
 
           let payload: any = {
@@ -1642,8 +1645,11 @@ export const InputBoxContextProvider = ({
 
 
           await Client?.myClient?.updateConversationData(
-            isReply ? replyObj : obj,
-            null
+            UpdateConversationDataRequestBuilder.builder()
+              .setConversation(
+                isReply ? replyObj : obj
+              )
+              .build()
           )
 
           let payload: any = {

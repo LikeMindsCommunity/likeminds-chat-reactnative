@@ -358,7 +358,7 @@ export const FileUploadContextProvider = ({
       dispatch({
         type: SET_MESSAGE_IN_PROGRESS_ID,
         body : {
-          id: conversationID
+          id: `-${conversationID}`
         }
       })
       const res = await uploadResource({

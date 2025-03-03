@@ -1,8 +1,9 @@
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import { LMChatIcon } from "../../uiComponents";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import { ChatroomType } from "../../enums";
+import Layout from "@likeminds.community/chat-rn-core/ChatSX/constants/Layout";
 
 interface AddMoreFilesViewProps {
   handleGalleryProp?: () => void;
@@ -31,7 +32,14 @@ const AddMoreFilesView = ({
     <>
       {!!isUploadScreen && !isDoc && !isGif && !isDMChatroom ? (
         <TouchableOpacity
-          style={addMoreFilesViewStyles?.addMoreButton}
+          style={StyleSheet.flatten([
+            addMoreFilesViewStyles?.addMoreButton,
+            {
+              paddingHorizontal: Layout.normalize(5),
+              marginLeft: Layout.normalize(10),
+              bottom: Layout.normalize(2)
+            }
+          ])}
           onPress={() => {
             if (handleGalleryProp) {
               handleGalleryProp();
@@ -60,7 +68,7 @@ const AddMoreFilesView = ({
           }}
         >
           <LMChatIcon
-              assetPath={inputBoxStyles?.addMoreFilesViewStyles?.addMoreButton?.assetPath ?? require("../../assets/images/addImages3x.png")}
+            assetPath={inputBoxStyles?.addMoreFilesViewStyles?.addMoreButton?.assetPath ?? require("../../assets/images/addImages3x.png")}
 
             iconStyle={addMoreFilesViewStyles?.emoji}
           />

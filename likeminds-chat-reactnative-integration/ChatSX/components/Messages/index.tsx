@@ -227,7 +227,7 @@ const MessagesComponent = ({
             <TouchableOpacity onPress={() =>
               onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress)}
               style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-              <Text style={{ color: '#F04438', fontSize: 8, right: 10, bottom: 5 }}>Failed. Tap to retry</Text>
+              <Text style={{ color: '#F04438', fontSize: 11, right: 10, bottom: 5 }}>Failed. Tap to retry</Text>
             </TouchableOpacity>
           : null}
       </View>

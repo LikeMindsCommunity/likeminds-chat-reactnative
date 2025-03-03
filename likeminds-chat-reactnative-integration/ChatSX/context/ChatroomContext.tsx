@@ -76,6 +76,8 @@ import {
 import {
   GetConversationsRequestBuilder,
   SyncConversationRequest,
+  UpdateAttachmentRequestBuilder,
+  UpdateConversationDataRequestBuilder,
 } from "@likeminds.community/chat-rn";
 import { Credentials } from "../credentials";
 import { initAPI } from "../store/actions/homefeed";
@@ -2036,7 +2038,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     dispatch({
       type: SET_MESSAGE_IN_PROGRESS_ID,
       body : {
-        id: conversationID
+        id: `-${conversationID}`
       }
     })
     if (isVoiceNote) {
@@ -2121,6 +2123,15 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     const failedUploads: any[] = [];
     const uploadResponse: any[] = [];
 
+    if (item?.attachments?.length) {
+      dispatch({
+        type: SET_MESSAGE_IN_PROGRESS_ID,
+        body : {
+          id: item?.id
+        }
+      })
+    }
+
     for (let i = 0; i < (item?.attachments?.length || 0); i++) {
       const attachmentObject = item.attachments[i];
 
@@ -2179,7 +2190,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         dispatch({
           type: CLEAR_FAILED_MESSAGE_ID
         })
-        await Client?.myClient?.updateConversationData(response?.conversation, response?.widgets)
+        await Client?.myClient?.updateConversationData(
+          UpdateConversationDataRequestBuilder.builder()
+          .setConversation(response?.conversation)
+          .setWidgets(response?.widgets)
+          .build()
+        )
       }
     } catch (e) {
       console.log(e)
@@ -2321,8 +2337,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         };
 
         await Client?.myClient?.updateAttachment(
-          conversationID as string,
-          payload
+          UpdateAttachmentRequestBuilder.builder()
+          .setAttachment(payload)
+          .setConversationID(conversationID as string)
+          .build()
         )
 
         response = payload
