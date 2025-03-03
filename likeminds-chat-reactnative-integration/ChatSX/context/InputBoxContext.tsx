@@ -1244,7 +1244,7 @@ export const InputBoxContextProvider = ({
           useGrouping: false,
         })}`;
         replyObj.id = `-${ID?.toString()}`;
-        replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
+        replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString() ?? chatroomID?.toString();;
         replyObj.communityId = community?.id?.toString();
         replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
           } ${months[time.getMonth()]} ${time.getFullYear()}`;

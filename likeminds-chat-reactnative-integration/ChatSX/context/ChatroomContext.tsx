@@ -2166,7 +2166,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       text: item?.answer?.trim(),
       temporaryId: item?.temporaryId?.toString(),
       attachmentCount: item?.attachments?.length,
-      repliedConversationId: item?.replyConversationId?.id,
+      repliedConversationId: item?.replyConversation,
       attachments: uploadResponse,
       triggerBot: isOtherUserAIChatbot(chatroomDBDetails, user) ?? false,
     };
