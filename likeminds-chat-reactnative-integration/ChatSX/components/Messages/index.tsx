@@ -1,4 +1,4 @@
-import { Image, TouchableOpacity, View, Text } from "react-native";
+import { Image, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import React, { ReactNode, useMemo, useState, useLayoutEffect } from "react";
 import { styles } from "./styles";
 import STYLES from "../../constants/Styles";
@@ -82,6 +82,7 @@ const MessagesComponent = ({
     failedMessageId
   } = useMessageContext();
 
+  const styles = STYLES?.$CHAT_BUBBLE_STYLE;
 
   useLayoutEffect(() => {
     let interval;
@@ -226,8 +227,20 @@ const MessagesComponent = ({
           customRetryButton ? customRetryButton :
             <TouchableOpacity onPress={() =>
               onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress)}
-              style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-              <Text style={{ color: '#F04438', fontSize: 11, right: 10, bottom: 5 }}>Failed. Tap to retry</Text>
+              style={
+                StyleSheet.flatten([
+                  { flex: 1, flexDirection: 'row', justifyContent: 'flex-end' },
+                  styles?.retryButtonStyle?.viewStyle
+                ])
+              }
+            >
+              <Text style={StyleSheet.flatten([
+                { color: '#F04438', fontSize: 11, right: 10, bottom: 5 },
+                styles?.retryButtonStyle?.textStyle
+              ])
+              }>
+                Failed. Tap to retry
+              </Text>
             </TouchableOpacity>
           : null}
       </View>

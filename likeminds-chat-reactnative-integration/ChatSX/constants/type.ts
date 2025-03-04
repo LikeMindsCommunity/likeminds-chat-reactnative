@@ -203,6 +203,10 @@ export interface ChatBubbleStyles {
   };
   imageVideoAttachmentsBorderRadius?: number;
   showMoreTextStyle?: TextStyle;
+  retryButtonStyle?: {
+    textStyle: TextStyle;
+    viewStyle: ViewStyle
+  }
 }
 
 export interface ReactionListStyles {
