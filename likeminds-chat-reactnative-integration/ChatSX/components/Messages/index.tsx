@@ -1,5 +1,5 @@
 import { Image, TouchableOpacity, View, Text, StyleSheet } from "react-native";
-import React, { ReactNode, useMemo, useState, useLayoutEffect } from "react";
+import React, { ReactNode, useMemo, useState, useLayoutEffect, useEffect } from "react";
 import { styles } from "./styles";
 import STYLES from "../../constants/Styles";
 import ReplyConversations from "../ReplyConversations";
@@ -84,17 +84,17 @@ const MessagesComponent = ({
 
   const styles = STYLES?.$CHAT_BUBBLE_STYLE;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     let interval;
     let uploadFailed = item?.id == failedMessageId;
   
   const checkMessageStatus = () => {
-      const currentTimeStampEpoch = Math.floor(Date.now() / 1000);
+      const currentTimeStampEpoch = Math.floor(Date.now());
       if (item?.id?.includes && item?.id?.includes("-")) {
         if (item?.attachments?.length > 0) {
-          const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch)) / 1000);
+          const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch)));
 
-          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30 && ((item?.inProgress == undefined || item?.inProgress == null)) )) {
+          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30000 && ((item?.inProgress == undefined || item?.inProgress == null)) )) {
             setShowRetry(true);
   
             // Stop checking once the condition is met
@@ -103,8 +103,8 @@ const MessagesComponent = ({
             }
           }
         } else {
-          const localTimestamp = Math.floor(Math.abs(parseInt(item?.localSavedEpoch ?? item?.localCreatedEpoch ?? 0)) / 1000);
-          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30)) {
+          const localTimestamp = Math.floor(Math.abs(parseInt(item?.localSavedEpoch ?? item?.localCreatedEpoch ?? 0)));
+          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30000)) {
             setShowRetry(true);
   
             // Stop checking once the condition is met
