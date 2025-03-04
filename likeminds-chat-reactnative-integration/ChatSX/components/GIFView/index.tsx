@@ -183,9 +183,9 @@ const GIFView = () => {
           >
             <Image
               style={styles.retryIcon}
-              source={require("../../assets/images/retry_file_upload3x.png")}
+              source={require("../../assets/images/retry_upload_3x.png")}
             />
-            <Text style={styles.retryText}>RETRY</Text>
+            <Text style={styles.retryText}>Retry</Text>
           </Pressable>
         </View>
       ) : null}

@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Platform,
+  StyleSheet,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "../AttachmentConversations/styles";
@@ -208,9 +209,9 @@ const VoiceNoteView = () => {
           >
             <Image
               style={styles.retryIcon}
-              source={require("../../assets/images/retry_file_upload3x.png")}
+              source={require("../../assets/images/retry_upload_3x.png")}
             />
-            <Text style={styles.retryText}>RETRY</Text>
+            <Text style={styles.retryText}>Retry</Text>
           </Pressable>
         </View>
       ) : null}

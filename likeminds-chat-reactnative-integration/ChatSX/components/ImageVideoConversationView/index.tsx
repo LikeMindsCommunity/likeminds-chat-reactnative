@@ -736,9 +736,9 @@ export const ImageVideoConversationView = () => {
 
       {((item?.isInProgress) === SUCCESS && !showRetry) || retryUploadInProgress ? (
         <View style={styles.uploadingIndicator}>
-          <ShimmerPlaceHolder height={'100%'} width={Layout.normalize(250)} />
+          <ActivityIndicator size="large" color={STYLES.$COLORS.SECONDARY} />
         </View>
-      ) : showRetry? (
+      ) : showRetry ? (
         <View style={styles.uploadingIndicator}>
           <Pressable
             onPress={() => {
@@ -753,9 +753,9 @@ export const ImageVideoConversationView = () => {
           >
             <Image
               style={styles.retryIcon}
-              source={require("../../assets/images/retry_file_upload3x.png")}
+              source={require("../../assets/images/retry_upload_3x.png")}
             />
-            <Text style={styles.retryText}>RETRY</Text>
+            <Text style={styles.retryText}>Retry</Text>
           </Pressable>
         </View>
       ) : null}
