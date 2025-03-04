@@ -31,7 +31,7 @@ import {
 import { LMChatAnalytics } from "../../analytics/LMChatAnalytics";
 import { getConversationType } from "../../utils/analyticsUtils";
 import { copySelectedMessages } from "../../commonFuctions";
-import { useAppDispatch } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { VOICE_NOTE_TEXT } from "../../constants/Strings";
 import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 import RNClipboard from "../../optionalDependecies/RNClipboard";
@@ -106,6 +106,8 @@ const ChatroomHeader = ({
   }, [chatroomDBDetails, user]);
 
   const dispatch = useAppDispatch();
+
+  const { messageUploadInProgressId } = useAppSelector((state) => state.chatroom);
 
   // Initial header of chatroom screen
   const setInitialHeader = () => {
@@ -425,6 +427,14 @@ const ChatroomHeader = ({
         } else {
           isDelete = true;
         }
+
+        selectedMessagesIDArr?.forEach((messageId) => {
+          if (messageId == messageUploadInProgressId) {
+            isDelete = false;
+          }
+        })
+
+
         return (
           <View style={styles.selectedHeadingContainer}>
             {len === 1 &&

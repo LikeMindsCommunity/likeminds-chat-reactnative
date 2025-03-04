@@ -67,6 +67,7 @@ import {
   SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
   SET_CHATROOM_TOPIC,
   SET_EDIT_MESSAGE,
+  SET_FAILED_MESSAGE_ID,
   SET_FILE_UPLOADING_MESSAGES,
   SET_IS_REPLY,
   SET_MESSAGE_ID,
@@ -120,7 +121,7 @@ import {
   PanGestureHandlerEventPayload,
 } from "react-native-gesture-handler";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
-import { SyncConversationRequest } from "@likeminds.community/chat-rn";
+import { SyncConversationRequest, UpdateConversationDataRequest } from "@likeminds.community/chat-rn";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
@@ -760,6 +761,7 @@ export const InputBoxContextProvider = ({
       chatroomID: chatroomID,
       previousMessage: message, // to keep message on uploadScreen InputBox
       limit,
+      communityId: community?.id?.toString()
     });
     await launchImageLibrary(options, async (response: ImagePickerResponse) => {
       if (response?.didCancel) {
@@ -795,6 +797,7 @@ export const InputBoxContextProvider = ({
       navigation.navigate(FILE_UPLOAD, {
         chatroomID: chatroomID,
         previousMessage: message, // to keep message on uploadScreen InputBox
+        communityId: community?.id?.toString()
       });
       const response = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf],
@@ -913,6 +916,7 @@ export const InputBoxContextProvider = ({
       navigation.navigate(FILE_UPLOAD, {
         chatroomID: chatroomID,
         previousMessage: message, // to keep message on uploadScreen InputBox
+        communityId: community?.id?.toString()
       });
     } catch (error) {
       if (selectedFilesToUpload.length === 0) {
@@ -928,6 +932,7 @@ export const InputBoxContextProvider = ({
     navigation.navigate(FILE_UPLOAD, {
       chatroomID: chatroomID,
       previousMessage: message, // to keep message on uploadScreen InputBox
+      communityId: community?.id?.toString()
     });
 
     await createThumbnail({
@@ -952,7 +957,7 @@ export const InputBoxContextProvider = ({
           body: { color: STYLES.$STATUS_BAR_STYLE["light-content"] },
         });
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   const handleModalClose = () => {
@@ -1104,20 +1109,20 @@ export const InputBoxContextProvider = ({
         if (attachmentType === IMAGE_TEXT) {
           const obj = {
             imageUrl: selectedFilesToUpload[i].uri,
-            index: i,
+            index: i + 1,
           };
           dummySelectedFileArr = [...dummySelectedFileArr, obj];
         } else if (attachmentType === VIDEO_TEXT) {
           const obj = {
             videoUrl: selectedFilesToUpload[i].uri,
-            index: i,
+            index: i + 1,
             thumbnailUrl: selectedFilesToUpload[i].thumbanil,
           };
           dummySelectedFileArr = [...dummySelectedFileArr, obj];
         } else if (docAttachmentType === PDF_TEXT) {
           const obj = {
             pdfFile: selectedFilesToUpload[i].uri,
-            index: i,
+            index: i + 1,
           };
           dummySelectedFileArr = [...dummySelectedFileArr, obj];
         }
@@ -1138,7 +1143,11 @@ export const InputBoxContextProvider = ({
             ...selectedFilesToUpload[i],
             type: attachmentType,
             url: URI,
-            index: i,
+            index: i + 1,
+            name: selectedFilesToUpload[i]?.fileName,
+            meta: {
+              size: selectedFilesToUpload[i]?.fileSize,
+            }
           };
           dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
         } else if (attachmentType === VIDEO_TEXT) {
@@ -1147,8 +1156,12 @@ export const InputBoxContextProvider = ({
             type: attachmentType,
             url: URI,
             thumbnailUrl: selectedFilesToUpload[i].thumbnailUrl,
-            index: i,
+            index: i + 1,
             name: selectedFilesToUpload[i].fileName,
+            meta: {
+              size: selectedFilesToUpload[i]?.fileSize,
+              duration: selectedFilesToUpload[i]?.duration,
+            }
           };
           dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
         } else if (docAttachmentType === PDF_TEXT) {
@@ -1156,8 +1169,11 @@ export const InputBoxContextProvider = ({
             ...selectedFilesToUpload[i],
             type: docAttachmentType,
             url: URI,
-            index: i,
+            index: i + 1,
             name: selectedFilesToUpload[i].name,
+            meta: {
+              size: selectedFilesToUpload[i]?.size,
+            }
           };
           dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
         } else if (audioAttachmentType === VOICE_NOTE_TEXT) {
@@ -1165,8 +1181,9 @@ export const InputBoxContextProvider = ({
             ...voiceNotesToUpload[i],
             type: audioAttachmentType,
             url: audioURI,
-            index: i,
+            index: i + 1,
             name: voiceNotesToUpload[i].name,
+            chatroomId: chatroomID,
             metaRO: {
               size: null,
               duration: voiceNotesToUpload[i].duration,
@@ -1179,7 +1196,7 @@ export const InputBoxContextProvider = ({
             type: attachmentType,
             url: selectedFilesToUpload[i]?.url,
             thumbnailUrl: selectedFilesToUpload[i].thumbnailUrl,
-            index: i,
+            index: i + 1,
             name: selectedFilesToUpload[i].name,
           };
           dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
@@ -1226,24 +1243,27 @@ export const InputBoxContextProvider = ({
           minimumIntegerDigits: 2,
           useGrouping: false,
         })}`;
-        replyObj.id = ID?.toString();
+        replyObj.id = `-${ID?.toString()}`;
+        replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString() ?? chatroomID?.toString();;
+        replyObj.communityId = community?.id?.toString();
+        replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+          } ${months[time.getMonth()]} ${time.getFullYear()}`;
         replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
         replyObj.communityId = community?.id?.toString();
-        replyObj.date = `${
-          time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-        } ${months[time.getMonth()]} ${time.getFullYear()}`;
-        replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
-        replyObj.communityId = community?.id?.toString();
-        replyObj.date = `${
-          time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-        } ${months[time.getMonth()]} ${time.getFullYear()}`;
+        replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+          } ${months[time.getMonth()]} ${time.getFullYear()}`;
         replyObj.attachmentCount = attachmentsCount;
         replyObj.attachments = dummyAttachmentsArr;
+        replyObj.attachmentUploadedEpoch = 0;
+        replyObj.attachmentSavedEpoch = ID;
+        replyObj.localCreatedEpoch = ID;
+        replyObj.inProgress = true;
         replyObj.hasFiles = attachmentsCount > 0 ? true : false;
         replyObj.attachmentsUploaded = attachmentsCount > 0 ? true : false;
         replyObj.images = dummySelectedFileArr;
         replyObj.videos = dummySelectedFileArr;
         replyObj.pdf = dummySelectedFileArr;
+        replyObj.temporaryId = ID.toString();
         if (!closedOnce || !closedPreview) {
           replyObj.ogTags = ogTagsState;
         }
@@ -1262,12 +1282,11 @@ export const InputBoxContextProvider = ({
         minimumIntegerDigits: 2,
         useGrouping: false,
       })}`;
-      obj.id = ID?.toString();
-      obj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
+      obj.id = `-${ID?.toString()}`;
+      obj.chatroomId = chatroomDetails?.chatroom?.id?.toString() ?? chatroomID?.toString();
       obj.communityId = community?.id?.toString();
-      obj.date = `${
-        time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-      } ${months[time.getMonth()]} ${time.getFullYear()}`;
+      obj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+        } ${months[time.getMonth()]} ${time.getFullYear()}`;
       obj.attachmentCount = attachmentsCount;
       obj.attachments = dummyAttachmentsArr;
       obj.hasFiles = attachmentsCount > 0 ? true : false;
@@ -1275,15 +1294,19 @@ export const InputBoxContextProvider = ({
       obj.images = dummySelectedFileArr;
       obj.videos = dummySelectedFileArr;
       obj.pdf = dummySelectedFileArr;
+      obj.localCreatedEpoch = ID
+      obj.attachmentUploadedEpoch = 0;
+      obj.inProgress = true;
+      obj.temporaryId = ID.toString()
       obj.widget =
         Object.keys(metaData ?? {}).length > 0
           ? {
-              metadata: metaData,
-              parentEntityId: "",
-              parentEntityType: "",
-              createdAt: ID,
-              updatedAt: ID,
-            }
+            metadata: metaData,
+            parentEntityId: "",
+            parentEntityType: "",
+            createdAt: ID,
+            updatedAt: ID,
+          }
           : null;
       obj.widgetId =
         Object.keys(metaData ?? {}).length > 0 ? ID?.toString() : "";
@@ -1300,35 +1323,6 @@ export const InputBoxContextProvider = ({
         type: MESSAGE_SENT,
         body: isReply ? { id: replyObj?.id } : { id: obj?.id },
       });
-      if (
-        chatroomType !== ChatroomType.DMCHATROOM && // if not DM
-        chatRequestState !== null // if not first DM message sent to an user
-      ) {
-        if (isReply) {
-          if (attachmentsCount > 0) {
-            const editedReplyObj = { ...replyObj, isInProgress: SUCCESS };
-            await myClient?.saveNewConversation(
-              chatroomID?.toString(),
-              editedReplyObj
-            );
-          } else {
-            await myClient?.saveNewConversation(
-              chatroomID?.toString(),
-              replyObj
-            );
-          }
-        } else {
-          if (attachmentsCount > 0) {
-            const editedObj = { ...obj, isInProgress: SUCCESS };
-            await myClient?.saveNewConversation(
-              chatroomID?.toString(),
-              editedObj
-            );
-          } else {
-            await myClient?.saveNewConversation(chatroomID?.toString(), obj);
-          }
-        }
-      }
       if (isUploadScreen) {
         dispatch({
           type: CLEAR_SELECTED_FILES_TO_UPLOAD,
@@ -1423,7 +1417,32 @@ export const InputBoxContextProvider = ({
           ChatroomChatRequestState.ACCEPTED
         );
       } else {
+        if (isReply) {
+          if (attachmentsCount > 0) {
+            const editedReplyObj = { ...replyObj, isInProgress: SUCCESS };
+            await myClient?.saveNewConversation(
+              chatroomID?.toString(),
+              editedReplyObj
+            );
+          } else {
+            await myClient?.saveNewConversation(
+              chatroomID?.toString(),
+              replyObj
+            );
+          }
+        } else {
+          if (attachmentsCount > 0) {
+            const editedObj = { ...obj, isInProgress: SUCCESS };
+            await myClient?.saveNewConversation(
+              chatroomID?.toString(),
+              editedObj
+            );
+          } else {
+            await myClient?.saveNewConversation(chatroomID?.toString(), obj);
+          }
+        }
         if (!isUploadScreen) {
+
           if (isUserChatbot) {
             dispatch({
               type: ADD_SHIMMER_MESSAGE,
@@ -1466,11 +1485,6 @@ export const InputBoxContextProvider = ({
                   isInProgress: SUCCESS,
                 };
 
-            await myClient?.saveAttachmentUploadConversation(
-              ID.toString(),
-              JSON.stringify(message)
-            );
-
             if (voiceNotesToUpload?.length > 0) {
               attachments = await handleFileUpload(
                 ID,
@@ -1478,10 +1492,33 @@ export const InputBoxContextProvider = ({
                 true,
                 voiceNotesToUpload
               );
-            } else {
-              attachments = await handleFileUpload(ID, false);
             }
           }
+
+          if (voiceNotesToUpload?.length > 0 && (attachments == undefined || attachments == null)) {
+            dispatch({
+              type: SET_FAILED_MESSAGE_ID,
+              body: {
+                id: `-${ID?.toString()}`
+              }
+            })
+            return;
+          }
+
+          if (isReply) {
+            replyObj.attachmentUploadedEpoch = Date.now()
+          } else {
+            obj.attachmentUploadedEpoch = Date.now()
+          }
+
+          await Client?.myClient?.updateConversationData(
+            UpdateConversationDataRequest.builder()
+              .setConversation(
+                isReply ? replyObj : obj
+              )
+              .build()
+          )
+
           let payload: any = {
             chatroomId: chatroomID,
             hasFiles: attachments?.length > 0 ? true : false,
@@ -1509,7 +1546,7 @@ export const InputBoxContextProvider = ({
             onConversationsCreate(payload) as any
           );
 
-          if (response) {
+          if (response?.conversation) {
             setMessageSentByUserId(response?.conversation?.id ?? "");
             dispatch({
               type: SET_MESSAGE_ID,
@@ -1521,6 +1558,13 @@ export const InputBoxContextProvider = ({
               response?.conversation,
               response?.widgets
             );
+          } else {
+            dispatch({
+              type: SET_FAILED_MESSAGE_ID,
+              body: {
+                id: `-${ID?.toString()}`
+              }
+            })
           }
 
           //Handling conversation failed case
@@ -1583,11 +1627,32 @@ export const InputBoxContextProvider = ({
                 isInProgress: SUCCESS,
               };
 
-          await myClient?.saveAttachmentUploadConversation(
-            ID.toString(),
-            JSON.stringify(message)
-          );
           const attachments = await handleFileUpload(ID, false);
+          if (attachments == null) {
+            dispatch({
+              type: SET_FAILED_MESSAGE_ID,
+              body: {
+                id: `-${ID?.toString()}`
+              }
+            })
+            return;
+          }
+
+          if (isReply) {
+            replyObj.attachmentUploadedEpoch = Date.now()
+          } else {
+            obj.attachmentUploadedEpoch = Date.now()
+          }
+
+
+          await Client?.myClient?.updateConversationData(
+            UpdateConversationDataRequest.builder()
+              .setConversation(
+                isReply ? replyObj : obj
+              )
+              .build()
+          )
+
           let payload: any = {
             chatroomId: chatroomID,
             hasFiles: attachments?.length > 0 ? true : false,
@@ -2185,8 +2250,8 @@ export const InputBoxContextProvider = ({
       ? 5
       : 5
     : isIOS
-    ? 20
-    : 5;
+      ? 20
+      : 5;
 
   const contextValues: InputBoxContext = {
     isVoiceNoteIconPress,

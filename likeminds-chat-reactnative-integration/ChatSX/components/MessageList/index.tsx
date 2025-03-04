@@ -320,6 +320,10 @@ const MessageListComponent = ({
             }}
             estimatedItemSize={250}
             renderItem={({ item: value, index }: any) => {
+              // to filter out blank message bubbles
+              if (!value?.id) {
+                return <></>
+              }
 
               // return shimmer component if message is just a shimmer
               if (isOtherUserChatbot && value?.isShimmer) {
@@ -409,7 +413,8 @@ const MessageListComponent = ({
 
               return (
                 <View>
-                  {index < conversations?.length &&
+                  {/* logic to show date state message if conversations have different and valid dates */}
+                  {index < conversations?.length && ((conversations[index])?.date !== undefined && (conversations[index + 1])?.date !== undefined) && 
                     conversations[index]?.date !==
                     conversations[index + 1]?.date && !hideDate && !(shimmerVisible || shimmerVisibleForChatbot) ? (
                     <View style={[styles.statusMessage]}>

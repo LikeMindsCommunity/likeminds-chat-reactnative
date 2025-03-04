@@ -1,5 +1,5 @@
-import { Image, TouchableOpacity, View } from "react-native";
-import React, { ReactNode, useMemo } from "react";
+import { Image, TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import React, { ReactNode, useMemo, useState, useLayoutEffect, useEffect } from "react";
 import { styles } from "./styles";
 import STYLES from "../../constants/Styles";
 import ReplyConversations from "../ReplyConversations";
@@ -18,6 +18,9 @@ import { NavigateToProfileParams } from "../../callBacks/type";
 import { CallBack } from "../../callBacks/callBackClass";
 import { useCustomComponentsContext } from "../../context/CustomComponentContextProvider";
 import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { onConversationsCreate } from "../../store/actions/chatroom";
+import { useAppDispatch } from "../../store";
+import { Client } from "../../client";
 
 interface Messages {
   item: any;
@@ -72,17 +75,72 @@ const MessagesComponent = ({
     userIdStringified,
     isItemIncludedInStateArr,
     handleLongPress,
+    showRetry,
+    setShowRetry,
+    setRetryUploadInProgress,
+    retryUploadInProgress,
+    failedMessageId
   } = useMessageContext();
+
+  const styles = STYLES?.$CHAT_BUBBLE_STYLE;
+
+  useEffect(() => {
+    let interval;
+    let uploadFailed = item?.id == failedMessageId;
+  
+  const checkMessageStatus = () => {
+      const currentTimeStampEpoch = Math.floor(Date.now());
+      if (item?.id?.includes && item?.id?.includes("-")) {
+        if (item?.attachments?.length > 0) {
+          const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch)));
+
+          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30000 && ((item?.inProgress == undefined || item?.inProgress == null)) )) {
+            setShowRetry(true);
+  
+            // Stop checking once the condition is met
+            if (interval) {
+              clearInterval(interval);
+            }
+          }
+        } else {
+          const localTimestamp = Math.floor(Math.abs(parseInt(item?.localSavedEpoch ?? item?.localCreatedEpoch ?? 0)));
+          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30000)) {
+            setShowRetry(true);
+  
+            // Stop checking once the condition is met
+            if (interval) {
+              clearInterval(interval);
+            }
+          }
+        }
+      } else {
+        setShowRetry(false);
+      }
+    };
+    
+    // Initial check
+    checkMessageStatus();
+    if (item?.id?.includes && item?.id?.includes("-")) {
+      // Start periodic checking
+      interval = setInterval(checkMessageStatus, 5000);
+    }
+
+    // Cleanup interval when component unmounts
+    return () => clearInterval(interval);
+  }, [item, failedMessageId])
+
+
   const { customReactionList }: CustomReactionList =
     useCustomComponentsContext();
 
-  const { removeReaction, chatroomID } = useChatroomContext();
+  const { removeReaction, chatroomID, onRetryButtonClicked } = useChatroomContext();
 
   const {
     customDeletedMessage,
     customReplyConversations,
     customPollConversationView,
     customLinkPreview,
+    customRetryButton
   } = useCustomComponentsContext();
 
   const chatBubbleStyles = STYLES.$CHAT_BUBBLE_STYLE;
@@ -115,6 +173,7 @@ const MessagesComponent = ({
   if (showCustomMessageViewWidget) {
     return customWidgetMessageView ? customWidgetMessageView(item) : null;
   }
+
 
   return (
     <View>
@@ -164,6 +223,26 @@ const MessagesComponent = ({
             removeReaction={removeReaction}
           />
         )}
+        {showRetry && !item?.deletedBy && item?.attachments?.length == 0 ?
+          customRetryButton ? customRetryButton :
+            <TouchableOpacity onPress={() =>
+              onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress)}
+              style={
+                StyleSheet.flatten([
+                  { flex: 1, flexDirection: 'row', justifyContent: 'flex-end' },
+                  styles?.retryButtonStyle?.viewStyle
+                ])
+              }
+            >
+              <Text style={StyleSheet.flatten([
+                { color: '#F04438', fontSize: 11, right: 10, bottom: 5 },
+                styles?.retryButtonStyle?.textStyle
+              ])
+              }>
+                Failed. Tap to retry
+              </Text>
+            </TouchableOpacity>
+          : null}
       </View>
     </View>
   );

@@ -71,6 +71,7 @@ export const AUDIO_ICON = "🎧";
 export const DOCUMENT_ICON = "📄";
 
 export const DELETED_MESSAGE = "This message has been deleted";
+export const DELETED_MESSAGE_BY_USER = "You deleted this message";
 export const MESSAGE_NOT_SUPPORTED = "This message is not supported yet";
 
 export const SUCCESS = "SUCCESS";
