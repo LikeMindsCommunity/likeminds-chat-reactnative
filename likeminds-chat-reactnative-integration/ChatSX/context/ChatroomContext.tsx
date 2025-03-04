@@ -251,7 +251,7 @@ export interface ChatroomContextValues {
   setShimmerVisibleForChatbot: Dispatch<SetStateAction<boolean>>;
   setMessageSentByUserId: Dispatch<SetStateAction<string>>;
   backAction: any;
-  uploadResourceRetry: (params: UploadResourceRetry) => any;
+  uploadResourceRetry: (params: UploadResourceRetry) => Promise<Attachment | null>;
   onRetryButtonClicked: (
     item: any,
     setShowRetry: Dispatch<SetStateAction<boolean>>,
