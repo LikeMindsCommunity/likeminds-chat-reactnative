@@ -121,7 +121,7 @@ import {
   PanGestureHandlerEventPayload,
 } from "react-native-gesture-handler";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
-import { SyncConversationRequest, UpdateAttachmentRequestBuilder, UpdateConversationDataRequestBuilder } from "@likeminds.community/chat-rn";
+import { SyncConversationRequest, UpdateConversationDataRequest } from "@likeminds.community/chat-rn";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
@@ -1512,7 +1512,7 @@ export const InputBoxContextProvider = ({
           }
 
           await Client?.myClient?.updateConversationData(
-            UpdateConversationDataRequestBuilder.builder()
+            UpdateConversationDataRequest.builder()
               .setConversation(
                 isReply ? replyObj : obj
               )
@@ -1646,7 +1646,7 @@ export const InputBoxContextProvider = ({
 
 
           await Client?.myClient?.updateConversationData(
-            UpdateConversationDataRequestBuilder.builder()
+            UpdateConversationDataRequest.builder()
               .setConversation(
                 isReply ? replyObj : obj
               )

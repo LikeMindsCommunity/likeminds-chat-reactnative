@@ -3,7 +3,7 @@ import React from "react";
 import { LMChatIcon } from "../../uiComponents";
 import { useInputBoxContext } from "../../context/InputBoxContext";
 import { ChatroomType } from "../../enums";
-import Layout from "@likeminds.community/chat-rn-core/ChatSX/constants/Layout";
+import Layout from "../../constants/Layout";
 
 interface AddMoreFilesViewProps {
   handleGalleryProp?: () => void;

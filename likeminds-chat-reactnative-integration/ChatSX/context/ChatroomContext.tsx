@@ -76,8 +76,8 @@ import {
 import {
   GetConversationsRequestBuilder,
   SyncConversationRequest,
-  UpdateAttachmentRequestBuilder,
-  UpdateConversationDataRequestBuilder,
+  UpdateConversationDataRequest,
+  UpdateAttachmentRequest
 } from "@likeminds.community/chat-rn";
 import { Credentials } from "../credentials";
 import { initAPI } from "../store/actions/homefeed";
@@ -121,7 +121,7 @@ import { ScreenName } from "../enums/ScreenNameEnums"
 import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
 
 interface UploadResource {
-  selectedImages: any[];
+  selectedImages: Attachment[] | any[];
   conversationID: string | number;
   chatroomID: string | number;
   selectedFilesToUpload: any;
@@ -252,7 +252,12 @@ export interface ChatroomContextValues {
   setMessageSentByUserId: Dispatch<SetStateAction<string>>;
   backAction: any;
   uploadResourceRetry: (params: UploadResourceRetry) => any;
-  onRetryButtonClicked: (item: any, setShowRetry: any, setRetryUploadInProgress: any, retryUploadInProgress: any) => void;
+  onRetryButtonClicked: (
+    item: any,
+    setShowRetry: Dispatch<SetStateAction<boolean>>,
+    setRetryUploadInProgress: Dispatch<SetStateAction<boolean>>,
+    retryUploadInProgress: boolean
+  ) => void;
 }
 
 const ChatroomContext = createContext<ChatroomContextValues | undefined>(
@@ -2037,7 +2042,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   ) => {
     dispatch({
       type: SET_MESSAGE_IN_PROGRESS_ID,
-      body : {
+      body: {
         id: `-${conversationID}`
       }
     })
@@ -2113,7 +2118,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     item: any,
     setShowRetry: Dispatch<SetStateAction<boolean>>,
     setRetryUploadInProgress: Dispatch<SetStateAction<boolean>>,
-    retryUploadInProgress: boolean) {
+    retryUploadInProgress: boolean
+  ) {
     if (retryUploadInProgress) {
       return null;
     }
@@ -2126,7 +2132,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     if (item?.attachments?.length) {
       dispatch({
         type: SET_MESSAGE_IN_PROGRESS_ID,
-        body : {
+        body: {
           id: item?.id
         }
       })
@@ -2176,7 +2182,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     ) {
       payload.ogTags = item.ogTags;
     }
-    
+
     try {
       const response: any = await dispatch(
         onConversationsCreate(payload) as any
@@ -2191,10 +2197,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           type: CLEAR_FAILED_MESSAGE_ID
         })
         await Client?.myClient?.updateConversationData(
-          UpdateConversationDataRequestBuilder.builder()
-          .setConversation(response?.conversation)
-          .setWidgets(response?.widgets)
-          .build()
+          UpdateConversationDataRequest.builder()
+            .setConversation(response?.conversation)
+            .setWidgets(response?.widgets)
+            .build()
         )
       }
     } catch (e) {
@@ -2337,10 +2343,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         };
 
         await Client?.myClient?.updateAttachment(
-          UpdateAttachmentRequestBuilder.builder()
-          .setAttachment(payload)
-          .setConversationID(conversationID as string)
-          .build()
+          UpdateAttachmentRequest.builder()
+            .setAttachment(payload)
+            .setConversationID(conversationID as string)
+            .build()
         )
 
         response = payload
