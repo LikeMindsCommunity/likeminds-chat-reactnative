@@ -22,8 +22,14 @@ import Layout from "../../constants/Layout";
 import { styles } from "../AttachmentConversations/styles";
 
 export const PDFConversationView = () => {
-  const { isIncluded, item, handleLongPress } = useMessageContext();
-  const { handleFileUpload } = useChatroomContext();
+  const { 
+    isIncluded, item, handleLongPress,
+    setShowRetry,
+    showRetry,
+    setRetryUploadInProgress,
+    retryUploadInProgress,
+  } = useMessageContext();
+  const { handleFileUpload, onRetryButtonClicked } = useChatroomContext();
   const firstAttachment = item?.attachments[0];
   const secondAttachment = item?.attachments[1];
   const dispatch = useAppDispatch();
@@ -195,15 +201,15 @@ export const PDFConversationView = () => {
           } more`}</Text>
         </TouchableOpacity>
       )}
-      {item?.isInProgress === SUCCESS ? (
+      {(item?.isInProgress === SUCCESS && !showRetry) || retryUploadInProgress ? (
         <View style={styles.uploadingIndicator}>
           <ActivityIndicator size="large" color={STYLES.$COLORS.SECONDARY} />
         </View>
-      ) : item?.isInProgress === FAILED ? (
+      ) : showRetry ? (
         <View style={styles.uploadingIndicator}>
           <Pressable
             onPress={() => {
-              handleFileUpload(item?.id, true);
+              onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress);
             }}
             style={({ pressed }) => [
               {
@@ -214,9 +220,9 @@ export const PDFConversationView = () => {
           >
             <Image
               style={styles.retryIcon}
-              source={require("../../assets/images/retry_file_upload3x.png")}
+              source={require("../../assets/images/retry_upload_3x.png")}
             />
-            <Text style={styles.retryText}>RETRY</Text>
+            <Text style={styles.retryText}>Retry</Text>
           </Pressable>
         </View>
       ) : null}

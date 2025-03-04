@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Platform,
+  StyleSheet,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "../AttachmentConversations/styles";
@@ -25,8 +26,8 @@ import AudioPlayer from "../../optionalDependecies/AudioPlayer";
 import Slider from "../../optionalDependecies/Slider";
 
 const VoiceNoteView = () => {
-  const { item } = useMessageContext();
-  const { handleFileUpload } = useChatroomContext();
+  const { item, showRetry, setShowRetry, setRetryUploadInProgress, retryUploadInProgress } = useMessageContext();
+  const { handleFileUpload, onRetryButtonClicked } = useChatroomContext();
   const [isVoiceNotePlaying, setIsVoiceNotePlaying] = useState(false);
   const progress = AudioPlayer ? AudioPlayer?.useProgress() : null;
   const activeTrack = AudioPlayer ? AudioPlayer?.useActiveTrack() : null;
@@ -95,6 +96,8 @@ const VoiceNoteView = () => {
     const secondsToSeek = value * (firstAttachment?.metaRO?.duration / 100);
     await onSeekTo(secondsToSeek);
   };
+
+
   return (
     <View>
       <View style={styles.voiceNotesParentBox}>
@@ -187,15 +190,15 @@ const VoiceNoteView = () => {
           </View>
         </View>
       </View>
-      {item?.isInProgress === SUCCESS ? (
+      {(item?.isInProgress === SUCCESS && !showRetry) || retryUploadInProgress ? (
         <View style={styles.uploadingIndicator}>
           <ActivityIndicator size="large" color={STYLES.$COLORS.SECONDARY} />
         </View>
-      ) : item?.isInProgress === FAILED ? (
+      ) : showRetry ? (
         <View style={styles.uploadingIndicator}>
           <Pressable
             onPress={() => {
-              handleFileUpload(item?.id, true);
+              onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress)
             }}
             style={({ pressed }) => [
               {
@@ -206,9 +209,9 @@ const VoiceNoteView = () => {
           >
             <Image
               style={styles.retryIcon}
-              source={require("../../assets/images/retry_file_upload3x.png")}
+              source={require("../../assets/images/retry_upload_3x.png")}
             />
-            <Text style={styles.retryText}>RETRY</Text>
+            <Text style={styles.retryText}>Retry</Text>
           </Pressable>
         </View>
       ) : null}

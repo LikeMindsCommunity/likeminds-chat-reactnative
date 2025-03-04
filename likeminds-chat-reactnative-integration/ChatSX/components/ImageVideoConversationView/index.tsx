@@ -33,8 +33,10 @@ import { sortAttachmentsBasedOnIndex } from "../../utils/chatroomUtils";
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
 export const ImageVideoConversationView = () => {
-  const { isIncluded, item, handleLongPress } = useMessageContext();
-  const { navigation, handleFileUpload } = useChatroomContext();
+  const { isIncluded, item, handleLongPress, retryUploadInProgress, setRetryUploadInProgress,
+    setShowRetry, showRetry
+   } = useMessageContext();
+  const { navigation, handleFileUpload, onRetryButtonClicked } = useChatroomContext();
 
   const chatBubbleStyles = STYLES.$CHAT_BUBBLE_STYLE;
   const imageVideoBorderRadius =
@@ -732,15 +734,15 @@ export const ImageVideoConversationView = () => {
         />
       ) : null}
 
-      {item?.isInProgress === SUCCESS ? (
+      {((item?.isInProgress) === SUCCESS && !showRetry) || retryUploadInProgress ? (
         <View style={styles.uploadingIndicator}>
-          <ShimmerPlaceHolder height={'100%'} width={Layout.normalize(250)} />
+          <ActivityIndicator size="large" color={STYLES.$COLORS.SECONDARY} />
         </View>
-      ) : item?.isInProgress === FAILED ? (
+      ) : showRetry ? (
         <View style={styles.uploadingIndicator}>
           <Pressable
             onPress={() => {
-              handleFileUpload(item?.id, true);
+              onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress);
             }}
             style={({ pressed }) => [
               {
@@ -751,9 +753,9 @@ export const ImageVideoConversationView = () => {
           >
             <Image
               style={styles.retryIcon}
-              source={require("../../assets/images/retry_file_upload3x.png")}
+              source={require("../../assets/images/retry_upload_3x.png")}
             />
-            <Text style={styles.retryText}>RETRY</Text>
+            <Text style={styles.retryText}>Retry</Text>
           </Pressable>
         </View>
       ) : null}

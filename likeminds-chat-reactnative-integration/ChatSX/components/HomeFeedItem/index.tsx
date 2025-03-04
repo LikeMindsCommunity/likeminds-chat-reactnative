@@ -28,6 +28,7 @@ import {
   CAPITAL_GIF_TEXT,
   CONFIRM_BUTTON,
   DELETED_MESSAGE,
+  DELETED_MESSAGE_BY_USER,
   IMAGE_TEXT,
   MESSAGE_NOT_SUPPORTED,
   PDF_TEXT,
@@ -395,6 +396,7 @@ const HomeFeedItem: React.FC<Props> = ({
     }
   };
 
+
   return (
     <Pressable
       onPress={() => {
@@ -511,7 +513,8 @@ const HomeFeedItem: React.FC<Props> = ({
           >
             {deletedBy !== "null" &&
             deletedBy !== null &&
-            deletedBy !== undefined ? (
+            deletedBy !== undefined ? 
+            deletedBy == user?.sdkClientInfo?.user ? <Text style={styles.deletedMessage}>{DELETED_MESSAGE_BY_USER}</Text> : (
               <Text style={styles.deletedMessage}>{DELETED_MESSAGE}</Text>
             ) : (
               <Text

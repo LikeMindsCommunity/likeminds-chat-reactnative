@@ -26,8 +26,9 @@ import {
 const GIFView = () => {
   const [isGifPlaying, setIsGifPlaying] = useState(false);
   const [isGifLoading, setIsGifLoading] = useState(false);
-  const { isIncluded, item, handleLongPress } = useMessageContext();
-  const { navigation, handleFileUpload } = useChatroomContext();
+  const { isIncluded, item, handleLongPress, showRetry, setShowRetry, setRetryUploadInProgress, retryUploadInProgress
+   } = useMessageContext();
+  const { navigation, handleFileUpload, onRetryButtonClicked } = useChatroomContext();
   const dispatch = useAppDispatch();
   const { selectedMessages, stateArr, isLongPress }: any = useAppSelector(
     (state) => state.chatroom
@@ -163,15 +164,15 @@ const GIFView = () => {
         />
       )}
 
-      {item?.isInProgress === SUCCESS ? (
+      {((item?.isInProgress) === SUCCESS && !showRetry) || retryUploadInProgress ? (
         <View style={styles.uploadingIndicator}>
           <ActivityIndicator size="large" color={STYLES.$COLORS.SECONDARY} />
         </View>
-      ) : item?.isInProgress === FAILED ? (
+      ) : showRetry ? (
         <View style={styles.uploadingIndicator}>
           <Pressable
             onPress={() => {
-              handleFileUpload(item?.id, true);
+              onRetryButtonClicked(item, setShowRetry, setRetryUploadInProgress, retryUploadInProgress);
             }}
             style={({ pressed }) => [
               {
@@ -182,9 +183,9 @@ const GIFView = () => {
           >
             <Image
               style={styles.retryIcon}
-              source={require("../../assets/images/retry_file_upload3x.png")}
+              source={require("../../assets/images/retry_upload_3x.png")}
             />
-            <Text style={styles.retryText}>RETRY</Text>
+            <Text style={styles.retryText}>Retry</Text>
           </Pressable>
         </View>
       ) : null}

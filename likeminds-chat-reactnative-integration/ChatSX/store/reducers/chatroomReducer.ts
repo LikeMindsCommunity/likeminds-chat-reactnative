@@ -44,6 +44,10 @@ import {
   HIDE_SHIMMER,
   ADD_SHIMMER_MESSAGE,
   REMOVE_SHIMMER_MESSAGE,
+  SET_FAILED_MESSAGE_ID,
+  CLEAR_FAILED_MESSAGE_ID,
+  SET_MESSAGE_IN_PROGRESS_ID,
+  CLEAR_MESSAGE_IN_PROGRESS_ID,
 } from "../types/types";
 
 export interface ChatroomReducerState {
@@ -68,6 +72,8 @@ export interface ChatroomReducerState {
   temporaryStateMessage: any;
   shimmerVisible: boolean;
   messageId: string;
+  failedMessageId: string;
+  messageUploadInProgressId: string;
 }
 
 export const initialState: ChatroomReducerState = {
@@ -91,7 +97,9 @@ export const initialState: ChatroomReducerState = {
   currentChatroomTopic: {},
   temporaryStateMessage: {},
   shimmerVisible: false,
-  messageId: ""
+  messageId: "",
+  failedMessageId: "",
+  messageUploadInProgressId: ""
 };
 
 export function chatroomReducer(state = initialState, action: any) {
@@ -129,6 +137,40 @@ export function chatroomReducer(state = initialState, action: any) {
         ...state,
         conversations: newArr,
       };
+    }
+    case SET_FAILED_MESSAGE_ID: {
+      const { id } = action?.body;
+      return (
+        {
+          ...state,
+          failedMessageId: id
+        }
+      )
+    }
+    case SET_MESSAGE_IN_PROGRESS_ID: {
+      const { id } = action?.body;
+      return (
+        {
+          ...state,
+          messageUploadInProgressId: id
+        }
+      )
+    }
+    case CLEAR_MESSAGE_IN_PROGRESS_ID: {
+      return (
+        {
+          ...state,
+          messageUploadInProgressId: ""
+        }
+      )
+    }
+    case CLEAR_FAILED_MESSAGE_ID: {
+      return (
+        {
+          ...state,
+          failedMessageId: ""
+        }
+      )
     }
     case ADD_SHIMMER_MESSAGE: {
       let isShimmerPresent = state?.conversations?.findIndex(
