@@ -34,6 +34,7 @@ import { Client } from "../client";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SHOW_LIST_REGEX } from "../commonFuctions";
+import { LMSeverity } from "@likeminds.community/chat-js"
 
 export interface DmFeedContextProps {
   children?: ReactNode;
@@ -94,23 +95,31 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
   let endTime = 0;
 
   async function fetchData() {
-    if (community?.id) {
-      const payload = {
-        page: 1,
-      };
-      const apiRes = await myClient?.checkDMStatus({
-        requestFrom: "dm_feed_v2",
-      });
-      const response = apiRes?.data;
-      if (response) {
-        const routeURL = response?.cta;
-        const hasShowList = SHOW_LIST_REGEX.test(routeURL);
-        if (hasShowList) {
-          const showListValue = routeURL.match(SHOW_LIST_REGEX)[1];
-          setShowList(showListValue);
+    try {
+      if (community?.id) {
+        const payload = {
+          page: 1,
+        };
+        const apiRes = await myClient?.checkDMStatus({
+          requestFrom: "dm_feed_v2",
+        });
+        const response = apiRes?.data;
+        if (response) {
+          const routeURL = response?.cta;
+          const hasShowList = SHOW_LIST_REGEX.test(routeURL);
+          if (hasShowList) {
+            const showListValue = routeURL.match(SHOW_LIST_REGEX)[1];
+            setShowList(showListValue);
+          }
+          setShowDM(response?.showDm);
         }
-        setShowDM(response?.showDm);
       }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   }
 
@@ -129,12 +138,20 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
 
   useEffect(() => {
     const token = async () => {
-      const isPermissionEnabled = await requestUserPermission();
-      if (isPermissionEnabled) {
-        const fcmToken = await fetchFCMToken();
-        if (fcmToken) {
-          setFCMToken(fcmToken);
+      try {
+        const isPermissionEnabled = await requestUserPermission();
+        if (isPermissionEnabled) {
+          const fcmToken = await fetchFCMToken();
+          if (fcmToken) {
+            setFCMToken(fcmToken);
+          }
         }
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
     };
     token();
@@ -142,84 +159,124 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
 
   // Fetching already existing chatrooms from Realm
   const getChatroomFromLocalDB = async () => {
-    const existingChatrooms: any = await myClient?.getFilteredChatrooms(true);
-    if (!!existingChatrooms && existingChatrooms.length !== 0) {
-      setShimmerIsLoading(false);
-      dispatch({
-        type: SET_INITIAL_DMFEED_CHATROOM,
-        body: { dmFeedChatrooms: existingChatrooms },
-      });
-    } else {
-      dispatch({
-        type: SET_INITIAL_DMFEED_CHATROOM,
-        body: { dmFeedChatrooms: [] }
-      })
+    try {
+      const existingChatrooms: any = await myClient?.getFilteredChatrooms(true);
+      if (!!existingChatrooms && existingChatrooms.length !== 0) {
+        setShimmerIsLoading(false);
+        dispatch({
+          type: SET_INITIAL_DMFEED_CHATROOM,
+          body: { dmFeedChatrooms: existingChatrooms },
+        });
+      } else {
+        dispatch({
+          type: SET_INITIAL_DMFEED_CHATROOM,
+          body: { dmFeedChatrooms: [] }
+        })
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   const getAppConfig = async () => {
-    const appConfig = await myClient?.getAppConfig();
-    if (appConfig?.isDmFeedChatroomsSynced === undefined) {
-      startTime = Date.now() / 1000;
-      setTimeout(() => {
-        myClient?.initiateAppConfig();
-        myClient?.setAppConfig(true);
-      }, 200);
-    } else {
-      setShimmerIsLoading(false);
+    try {
+      const appConfig = await myClient?.getAppConfig();
+      if (appConfig?.isDmFeedChatroomsSynced === undefined) {
+        startTime = Date.now() / 1000;
+        setTimeout(() => {
+          myClient?.initiateAppConfig();
+          myClient?.setAppConfig(true);
+        }, 200);
+      } else {
+        setShimmerIsLoading(false);
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   useEffect(() => {
     const query = ref(db, `/community/${community?.id}`);
     return onValue(query, (snapshot) => {
-      if (snapshot.exists()) {
-        if (!user?.sdkClientInfo?.community) {
-          return;
+      try {
+        if (snapshot.exists()) {
+          if (!user?.sdkClientInfo?.community) {
+            return;
+          }
+          if (isFocused) {
+            paginatedSyncAPI(INITIAL_SYNC_PAGE, user, true);
+            setShimmerIsLoading(false);
+            setTimeout(() => {
+              getChatroomFromLocalDB();
+            }, 500);
+          }
         }
-        if (isFocused) {
-          paginatedSyncAPI(INITIAL_SYNC_PAGE, user, true);
-          setShimmerIsLoading(false);
-          setTimeout(() => {
-            getChatroomFromLocalDB();
-          }, 500);
-        }
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
     });
   }, [user, isFocused]);
 
   useEffect(() => {
     const initiate = async () => {
-      await getAppConfig();
-      if (!user?.sdkClientInfo?.community) {
-        return;
+      try {
+        await getAppConfig();
+        if (!user?.sdkClientInfo?.community) {
+          return;
+        }
+        await paginatedSyncAPI(INITIAL_SYNC_PAGE, user, true);
+        if (shimmerIsLoading == true && isFocused) {
+          endTime = Date.now() / 1000;
+          LMChatAnalytics.track(
+            Events.SYNC_COMPLETE,
+            new Map<string, string>([
+              [Keys.SYNC_COMPLETE, true?.toString()],
+              [Keys.TIME_TAKEN, (endTime - startTime)?.toString()],
+            ])
+          );
+        }
+        setShimmerIsLoading(false);
+        setTimeout(() => {
+          getChatroomFromLocalDB();
+        }, 500);
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
-      await paginatedSyncAPI(INITIAL_SYNC_PAGE, user, true);
-      if (shimmerIsLoading == true && isFocused) {
-        endTime = Date.now() / 1000;
-        LMChatAnalytics.track(
-          Events.SYNC_COMPLETE,
-          new Map<string, string>([
-            [Keys.SYNC_COMPLETE, true?.toString()],
-            [Keys.TIME_TAKEN, (endTime - startTime)?.toString()],
-          ])
-        );
-      }
-      setShimmerIsLoading(false);
-      setTimeout(() => {
-        getChatroomFromLocalDB();
-      }, 500);
     };
     initiate();
   }, [user, isFocused, shimmerIsLoading, startTime]);
 
   //function calls updateDMFeedData action to update myDMChatrooms array with the new data.
   async function updateData(newPage: number) {
-    const payload = {
-      page: newPage,
-    };
-    const response = await dispatch(updateDMFeedData(payload, false) as any);
-    return response;
+    try {
+      const payload = {
+        page: newPage,
+      };
+      const response = await dispatch(updateDMFeedData(payload, false) as any);
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   }
 
   // function shows loader in between calling the API and getting the response

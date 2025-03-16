@@ -21,9 +21,10 @@ import {
   TIME_TEXT,
 } from "../constants/Strings";
 import { Client } from "../client";
+import { LMSeverity } from "@likeminds.community/chat-js"
 
 interface CreatePollContextProps {
-  children: ReactNode;
+  children?: ReactNode;
   navigation: any;
   route: any;
 }
@@ -266,7 +267,7 @@ export const CreatePollContextProvider = ({
       let shouldBreak = false;
       optionsArray.forEach((element: any) => {
         const value = element?.text?.trim()
-        if(!value){
+        if (!value) {
           dispatch({
             type: SHOW_TOAST,
             body: { isToast: true, msg: EMPTY_OPTIONS_WARNING },
@@ -300,12 +301,12 @@ export const CreatePollContextProvider = ({
           };
         }
       });
-      
+
       if (shouldBreak) {
         return;
       }
 
-      if(time < new Date()){
+      if (time < new Date()) {
         dispatch({
           type: SHOW_TOAST,
           body: { isToast: true, msg: PAST_TIME_WARNING },
@@ -349,6 +350,11 @@ export const CreatePollContextProvider = ({
       handleOnCancel();
       return res;
     } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
       // process error
     }
   }

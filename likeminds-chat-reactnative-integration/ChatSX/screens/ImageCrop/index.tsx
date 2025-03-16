@@ -16,7 +16,7 @@ const ImageCropScreen: FC<ImageCropScreenProps> = ({ navigation, route }) => {
     (state) => state.chatroom
   );
   const dispatch = useAppDispatch();
-  const cropViewRef = useRef<CropView>(null);
+  const cropViewRef = useRef<any>(null);
   const { uri, fileName } = route?.params;
 
   // this function is used to replace the old image with cropped image
@@ -49,6 +49,7 @@ const ImageCropScreen: FC<ImageCropScreenProps> = ({ navigation, route }) => {
       {/* Crop View */}
       {uri ? (
         <>
+        {/* @ts-ignore */}
           <CropView
             sourceUrl={uri}
             style={styles.cropView}

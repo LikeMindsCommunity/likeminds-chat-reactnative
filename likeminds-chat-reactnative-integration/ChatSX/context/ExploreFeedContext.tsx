@@ -16,9 +16,11 @@ import {
 } from "../store/actions/explorefeed";
 import { ActivityIndicator, View } from "react-native";
 import STYLES from "../constants/Styles";
+import { Client } from "../client"
+import { LMSeverity } from "@likeminds.community/chat-js"
 
 interface ExploreFeedContextProps {
-  children: ReactNode;
+  children?: React.ReactNode;
 }
 
 interface ExploreFeedContextValues {
@@ -32,7 +34,7 @@ interface ExploreFeedContextValues {
   setFilterState: Dispatch<SetStateAction<number>>;
   setChats: Dispatch<SetStateAction<any[]>>;
   handleLoadMore: () => void;
-  renderFooterExploreFeed: () => React.JSX.Element | null;
+  renderFooterExploreFeed: () => React.ReactElement | null;
 }
 
 const ExploreFeedContext = createContext<ExploreFeedContextValues | undefined>(
@@ -68,22 +70,38 @@ export const ExploreFeedContextProvider = ({
   }, [filterState]);
 
   async function fetchData() {
-    dispatch({ type: SET_EXPLORE_FEED_PAGE, body: 1 });
-    const payload = {
-      orderType: filterState,
-      page: 1,
-    };
-    const response = await dispatch(getExploreFeedData(payload, true) as any);
-    return response;
+    try {
+      dispatch({ type: SET_EXPLORE_FEED_PAGE, body: 1 });
+      const payload = {
+        orderType: filterState,
+        page: 1,
+      };
+      const response = await dispatch(getExploreFeedData(payload, true) as any);
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   }
 
   async function updateData(newPage: number) {
-    const payload = {
-      orderType: filterState,
-      page: newPage,
-    };
-    const response = await dispatch(updateExploreFeedData(payload) as any);
-    return response;
+    try {
+      const payload = {
+        orderType: filterState,
+        page: newPage,
+      };
+      const response = await dispatch(updateExploreFeedData(payload) as any);
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   }
 
   useEffect(() => {

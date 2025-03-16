@@ -53,7 +53,7 @@ import {
   LogBox,
   View,
 } from "react-native";
-import STYLES from "../constants/Styles";
+import { LMSeverity } from "@likeminds.community/chat-js"
 import {
   CommonActions,
   StackActions,
@@ -140,7 +140,7 @@ interface UploadResourceRetry {
 }
 
 interface ChatroomContextProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export interface ChatroomContextValues {
@@ -428,24 +428,32 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   // This method is to call setChatroomTopic API and update local db as well followed by updation of redux for local handling
   const setChatroomTopic = async () => {
-    const currentSelectedMessage = selectedMessages[0];
-    const payload = {
-      chatroomId: chatroomID,
-      conversationId: currentSelectedMessage?.id,
-    };
-    const response = await myClient?.setChatroomTopic(
-      payload,
-      currentSelectedMessage
-    );
-    if (response?.success === true) {
-      dispatch({
-        type: SET_CHATROOM_TOPIC,
-        body: { currentChatroomTopic: currentSelectedMessage },
-      });
-      dispatch({
-        type: CLEAR_SELECTED_MESSAGES,
-      });
-      return currentSelectedMessage;
+    try {
+      const currentSelectedMessage = selectedMessages[0];
+      const payload = {
+        chatroomId: chatroomID,
+        conversationId: currentSelectedMessage?.id,
+      };
+      const response = await myClient?.setChatroomTopic(
+        payload,
+        currentSelectedMessage
+      );
+      if (response?.success === true) {
+        dispatch({
+          type: SET_CHATROOM_TOPIC,
+          body: { currentChatroomTopic: currentSelectedMessage },
+        });
+        dispatch({
+          type: CLEAR_SELECTED_MESSAGES,
+        });
+        return currentSelectedMessage;
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
@@ -469,17 +477,25 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     minTimeStamp: number,
     conversationId?: string
   ) {
-    const res = myClient?.syncConversation(
-      SyncConversationRequest.builder()
-        .setChatroomId(chatroomID)
-        .setPage(page)
-        .setMinTimestamp(minTimeStamp)
-        .setMaxTimestamp(maxTimeStamp)
-        .setPageSize(500)
-        .setConversationId(conversationId)
-        .build()
-    );
-    return res;
+    try {
+      const res = myClient?.syncConversation(
+        SyncConversationRequest.builder()
+          .setChatroomId(chatroomID)
+          .setPage(page)
+          .setMinTimestamp(minTimeStamp)
+          .setMaxTimestamp(maxTimeStamp)
+          .setPageSize(500)
+          .setConversationId(conversationId)
+          .build()
+      );
+      return res;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   }
 
   // pagination call for sync conversation
@@ -489,137 +505,161 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     maxTimeStamp: number,
     conversationId?: string
   ) => {
-    const val = await syncConversationAPI(
-      page,
-      maxTimeStamp,
-      minTimeStamp,
-      conversationId
-    );
-
-    const DB_RESPONSE = val?.data;
-
-    if (DB_RESPONSE?.conversationsData.length !== 0) {
-      // This is to get chatroomCreator of current chatroom which will be later used to give permission that who can set chatroom topic
-      const chatroomCreatorUserId =
-        DB_RESPONSE?.chatroomMeta[chatroomID]?.userId;
-      const chatroomCreator = DB_RESPONSE?.userMeta[chatroomCreatorUserId];
-
-      dispatch({
-        type: SET_CHATROOM_CREATOR,
-        body: { chatroomCreator: chatroomCreator },
-      });
-
-      await myClient?.saveConversationData(
-        DB_RESPONSE,
-        DB_RESPONSE?.chatroomMeta,
-        DB_RESPONSE?.conversationsData,
-        user?.sdkClientInfo?.community?.toString()
-      );
-    }
-
-    if (page === 1) {
-      const payload = GetConversationsRequestBuilder.builder()
-        .setChatroomId(chatroomID?.toString())
-        .setLimit(PAGE_SIZE)
-        .build();
-
-      const conversationsFromRealm = await myClient?.getConversations(payload);
-
-      dispatch({
-        type: GET_CONVERSATIONS_SUCCESS,
-        body: { conversations: conversationsFromRealm },
-      });
-    }
-
-    if (DB_RESPONSE?.conversationsData?.length === 0) {
-      return;
-    } else {
-      paginatedConversationSyncAPI(
-        page + 1,
-        minTimeStamp,
+    try {
+      const val = await syncConversationAPI(
+        page,
         maxTimeStamp,
+        minTimeStamp,
         conversationId
       );
+  
+      const DB_RESPONSE = val?.data;
+  
+      if (DB_RESPONSE?.conversationsData.length !== 0) {
+        // This is to get chatroomCreator of current chatroom which will be later used to give permission that who can set chatroom topic
+        const chatroomCreatorUserId =
+          DB_RESPONSE?.chatroomMeta[chatroomID]?.userId;
+        const chatroomCreator = DB_RESPONSE?.userMeta[chatroomCreatorUserId];
+  
+        dispatch({
+          type: SET_CHATROOM_CREATOR,
+          body: { chatroomCreator: chatroomCreator },
+        });
+  
+        await myClient?.saveConversationData(
+          DB_RESPONSE,
+          DB_RESPONSE?.chatroomMeta,
+          DB_RESPONSE?.conversationsData,
+          user?.sdkClientInfo?.community?.toString()
+        );
+      }
+  
+      if (page === 1) {
+        const payload = GetConversationsRequestBuilder.builder()
+          .setChatroomId(chatroomID?.toString())
+          .setLimit(PAGE_SIZE)
+          .build();
+  
+        const conversationsFromRealm = await myClient?.getConversations(payload);
+  
+        dispatch({
+          type: GET_CONVERSATIONS_SUCCESS,
+          body: { conversations: conversationsFromRealm },
+        });
+      }
+  
+      if (DB_RESPONSE?.conversationsData?.length === 0) {
+        return;
+      } else {
+        paginatedConversationSyncAPI(
+          page + 1,
+          minTimeStamp,
+          maxTimeStamp,
+          conversationId
+        );
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   // this function fetchConversations when we first move inside Chatroom
   async function fetchData(chatroomDetails: any, showLoaderVal?: boolean) {
-    const maxTimeStamp = Math.floor(Date.now() * 1000);
-
-    if (chatroomDetails === undefined) {
-      //Cold start in case of initiating on a new DM or viewing chatroom from ExploreFeed
-      await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE, 0, maxTimeStamp);
-      await myClient?.updateChatroomViewed(chatroomID);
-      setShimmerIsLoading(false);
-      fetchChatroomDetails();
-    } else {
-      let conversationsFromRealm;
-
-      // Warm start
-      if (chatroomDetails?.isChatroomVisited) {
-        const payload = GetConversationsRequestBuilder.builder()
-          .setChatroomId(chatroomID?.toString())
-          .setLimit(PAGE_SIZE)
-          .build();
-
-        conversationsFromRealm = await myClient?.getConversations(payload);
-
-        dispatch({
-          type: GET_CONVERSATIONS_SUCCESS,
-          body: { conversations: conversationsFromRealm },
-        });
-        const minTimeStamp =
-          chatroomDetails?.lastSeenConversation?.lastUpdatedAt ?? 0;
-        await paginatedConversationSyncAPI(
-          INITIAL_SYNC_PAGE,
-          minTimeStamp,
-          maxTimeStamp
-        );
-      } else {
-        // Cold start
+    try {
+      const maxTimeStamp = Math.floor(Date.now() * 1000);
+  
+      if (chatroomDetails === undefined) {
+        //Cold start in case of initiating on a new DM or viewing chatroom from ExploreFeed
         await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE, 0, maxTimeStamp);
         await myClient?.updateChatroomViewed(chatroomID);
         setShimmerIsLoading(false);
+        fetchChatroomDetails();
+      } else {
+        let conversationsFromRealm;
+  
+        // Warm start
+        if (chatroomDetails?.isChatroomVisited) {
+          const payload = GetConversationsRequestBuilder.builder()
+            .setChatroomId(chatroomID?.toString())
+            .setLimit(PAGE_SIZE)
+            .build();
+  
+          conversationsFromRealm = await myClient?.getConversations(payload);
+  
+          dispatch({
+            type: GET_CONVERSATIONS_SUCCESS,
+            body: { conversations: conversationsFromRealm },
+          });
+          const minTimeStamp =
+            chatroomDetails?.lastSeenConversation?.lastUpdatedAt ?? 0;
+          await paginatedConversationSyncAPI(
+            INITIAL_SYNC_PAGE,
+            minTimeStamp,
+            maxTimeStamp
+          );
+        } else {
+          // Cold start
+          await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE, 0, maxTimeStamp);
+          await myClient?.updateChatroomViewed(chatroomID);
+          setShimmerIsLoading(false);
+        }
       }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   }
 
   //this function fetchChatroomDetails when we first move inside Chatroom
   async function fetchChatroomDetails() {
-    const payload = { chatroomId: chatroomID };
-    const chatroom = await myClient?.getChatroom(chatroomID?.toString());
-    const DB_DATA = chatroom?.data;
-    if (DB_DATA?.isChatroomVisited) {
-      setShimmerIsLoading(false);
-    }
-    if (DB_DATA) {
-      dispatch({
-        type: GET_CHATROOM_DB_SUCCESS,
-        body: { chatroomDBDetails: DB_DATA },
-      });
-      setIsRealmDataPresent(true);
-      // This is to set chatroom topic if its already in API response
-      if (DB_DATA?.topicId) {
-        const conversation = await myClient?.getConversation(DB_DATA?.topicId);
-        dispatch({
-          type: SET_CHATROOM_TOPIC,
-          body: {
-            currentChatroomTopic: conversation[0],
-          },
-        });
-      } else if (!DB_DATA?.topicId) {
-        dispatch({
-          type: CLEAR_CHATROOM_TOPIC,
-        });
+    try {
+      const payload = { chatroomId: chatroomID };
+      const chatroom = await myClient?.getChatroom(chatroomID?.toString());
+      const DB_DATA = chatroom?.data;
+      if (DB_DATA?.isChatroomVisited) {
+        setShimmerIsLoading(false);
       }
+      if (DB_DATA) {
+        dispatch({
+          type: GET_CHATROOM_DB_SUCCESS,
+          body: { chatroomDBDetails: DB_DATA },
+        });
+        setIsRealmDataPresent(true);
+        // This is to set chatroom topic if its already in API response
+        if (DB_DATA?.topicId) {
+          const conversation = await myClient?.getConversation(DB_DATA?.topicId);
+          dispatch({
+            type: SET_CHATROOM_TOPIC,
+            body: {
+              currentChatroomTopic: conversation[0],
+            },
+          });
+        } else if (!DB_DATA?.topicId) {
+          dispatch({
+            type: CLEAR_CHATROOM_TOPIC,
+          });
+        }
+      }
+      const response = await myClient?.getChatroomActions(payload);
+      dispatch({
+        type: GET_CHATROOM_ACTIONS_SUCCESS,
+        body: response?.data,
+      });
+      return DB_DATA;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
-    const response = await myClient?.getChatroomActions(payload);
-    dispatch({
-      type: GET_CHATROOM_ACTIONS_SUCCESS,
-      body: response?.data,
-    });
-    return DB_DATA;
   }
 
   // this function fetch initiate API
@@ -672,22 +712,30 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   // local handling for chatroom topic updation's state message
   useEffect(() => {
     const addChatroomTopic = async () => {
-      const tempStateMessage = createTemporaryStateMessage(
-        currentChatroomTopic,
-        user
-      );
-      dispatch({
-        type: ADD_STATE_MESSAGE,
-        body: { conversation: tempStateMessage },
-      });
-      dispatch({
-        type: SET_TEMP_STATE_MESSAGE,
-        body: { temporaryStateMessage: tempStateMessage },
-      });
-      await myClient?.saveNewConversation(
-        chatroomID?.toString(),
-        tempStateMessage
-      );
+      try {
+        const tempStateMessage = createTemporaryStateMessage(
+          currentChatroomTopic,
+          user
+        );
+        dispatch({
+          type: ADD_STATE_MESSAGE,
+          body: { conversation: tempStateMessage },
+        });
+        dispatch({
+          type: SET_TEMP_STATE_MESSAGE,
+          body: { temporaryStateMessage: tempStateMessage },
+        });
+        await myClient?.saveNewConversation(
+          chatroomID?.toString(),
+          tempStateMessage
+        );
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
+      }
     };
     if (selectedMessages.length !== 0 && isChatroomTopic) {
       addChatroomTopic();
@@ -757,11 +805,19 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   // this useEffect set unseenCount to zero when closing the chatroom
   useEffect(() => {
     const closingChatroom = async () => {
-      await myClient?.markReadChatroom({
-        chatroomId: chatroomID,
-      });
-      await myClient?.updateUnseenCount(chatroomID?.toString());
-      await myClient?.deleteConversationFromRealm(temporaryStateMessage?.id);
+      try {
+        await myClient?.markReadChatroom({
+          chatroomId: chatroomID,
+        });
+        await myClient?.updateUnseenCount(chatroomID?.toString());
+        await myClient?.deleteConversationFromRealm(temporaryStateMessage?.id);
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
+      }
     };
     return () => {
       if (previousRoute?.name !== EXPLORE_FEED) {
@@ -773,45 +829,38 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   // this useEffect is to stop audio player when going out of chatroom, if any audio is running
   useEffect(() => {
     return () => {
-      AudioPlayer ? AudioPlayer?.default?.reset() : null;
+      try {
+        AudioPlayer ? AudioPlayer?.default?.reset() : null;
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
+      }
     };
   }, [chatroomID]);
 
   // this useEffect is to stop audio player when the app is in background
   useEffect(() => {
     if (!isFocused) {
-      AudioPlayer ? AudioPlayer?.default?.reset() : null;
+      try {
+        AudioPlayer ? AudioPlayer?.default?.reset() : null;
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
+      }
     }
   }, [isFocused, chatroomID]);
 
   //Logic for navigation backAction
   function backAction() {
-    dispatch({ type: SELECTED_MESSAGES, body: [] });
-    dispatch({ type: LONG_PRESSED, body: false });
-    if (chatroomType === ChatroomType.DMCHATROOM) {
-      if (previousRoute?.name === DM_ALL_MEMBERS) {
-        const popAction = StackActions.pop(2);
-        navigation.dispatch(popAction);
-      } else {
-        if (previousChatroomID) {
-          const popAction = StackActions.pop(1);
-          navigation.dispatch(popAction);
-          navigation?.push(CHATROOM, {
-            chatroomID: previousChatroomID,
-          });
-        } else {
-          navigation.goBack();
-        }
-      }
-    } else {
-      navigation.goBack();
-    }
-  }
-
-  //Navigation gesture back handler for android
-  useEffect(() => {
-    function backActionCall() {
-      Keyboard.dismiss();
+    try {
+      dispatch({ type: SELECTED_MESSAGES, body: [] });
+      dispatch({ type: LONG_PRESSED, body: false });
       if (chatroomType === ChatroomType.DMCHATROOM) {
         if (previousRoute?.name === DM_ALL_MEMBERS) {
           const popAction = StackActions.pop(2);
@@ -830,7 +879,46 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       } else {
         navigation.goBack();
       }
-      return true;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
+  }
+
+  //Navigation gesture back handler for android
+  useEffect(() => {
+    function backActionCall() {
+      try {
+        Keyboard.dismiss();
+        if (chatroomType === ChatroomType.DMCHATROOM) {
+          if (previousRoute?.name === DM_ALL_MEMBERS) {
+            const popAction = StackActions.pop(2);
+            navigation.dispatch(popAction);
+          } else {
+            if (previousChatroomID) {
+              const popAction = StackActions.pop(1);
+              navigation.dispatch(popAction);
+              navigation?.push(CHATROOM, {
+                chatroomID: previousChatroomID,
+              });
+            } else {
+              navigation.goBack();
+            }
+          }
+        } else {
+          navigation.goBack();
+        }
+        return true;
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
+      }
     }
 
     const backHandlerAndroid = BackHandler.addEventListener(
@@ -843,25 +931,33 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   // this useEffect call API to show InputBox based on showDM key.
   useEffect(() => {
     async function callApi() {
-      if (chatroomType == ChatroomType.DMCHATROOM) {
-        const apiRes = await myClient?.canDmFeed({
-          reqFrom: "chatroom",
-          chatroomId: chatroomID,
-          uuid: chatroomWithUser?.sdkClientInfo?.uuid,
-        });
-        const response = apiRes?.data;
-        if (response?.cta) {
-          setShowDM(response?.showDm);
+      try {
+        if (chatroomType == ChatroomType.DMCHATROOM) {
+          const apiRes = await myClient?.canDmFeed({
+            reqFrom: "chatroom",
+            chatroomId: chatroomID,
+            uuid: chatroomWithUser?.sdkClientInfo?.uuid,
+          });
+          const response = apiRes?.data;
+          if (response?.cta) {
+            setShowDM(response?.showDm);
+          }
+        } else if (
+          chatroomType == ChatroomType.OPENCHATROOM ||
+          chatroomType == ChatroomType.ANNOUNCEMENTROOM
+        ) {
+          if (community?.id) {
+            const payload = {
+              page: 1,
+            };
+          }
         }
-      } else if (
-        chatroomType == ChatroomType.OPENCHATROOM ||
-        chatroomType == ChatroomType.ANNOUNCEMENTROOM
-      ) {
-        if (community?.id) {
-          const payload = {
-            page: 1,
-          };
-        }
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
     }
 
@@ -880,18 +976,26 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     }
 
     async function callAPI() {
-      const apiRes = await myClient?.canDmFeed({
-        reqFrom: "group_channel",
-        chatroomId: chatroomID,
-        uuid: selectedMessages[0]?.member?.sdkClientInfo?.uuid,
-      });
-      const response = apiRes?.data;
-      if (response?.cta) {
-        const match = response?.cta?.match(/show_list=([^&]+)/);
-        if (match && match[1]) {
-          setShowList(match[1]);
+      try {
+        const apiRes = await myClient?.canDmFeed({
+          reqFrom: "group_channel",
+          chatroomId: chatroomID,
+          uuid: selectedMessages[0]?.member?.sdkClientInfo?.uuid,
+        });
+        const response = apiRes?.data;
+        if (response?.cta) {
+          const match = response?.cta?.match(/show_list=([^&]+)/);
+          if (match && match[1]) {
+            setShowList(match[1]);
+          }
+          setShowDM(response?.showDm);
         }
-        setShowDM(response?.showDm);
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
     }
   }, [chatroomID, chatroomDBDetails, selectedMessages])
@@ -903,56 +1007,64 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     maxTimeStamp: number,
     conversationId?: string
   ) => {
-    const val = await syncConversationAPI(
-      page,
-      maxTimeStamp,
-      minTimeStamp,
-      conversationId
-    );
-    const DB_RESPONSE = val?.data;
-    if ((DB_RESPONSE?.chatroomMeta[chatroomID])?.chatRequestState == 1) {
-      await myClient?.updateChatRequestState(
-        chatroomID?.toString(),
-        ChatroomChatRequestState.ACCEPTED
+    try {
+      const val = await syncConversationAPI(
+        page,
+        maxTimeStamp,
+        minTimeStamp,
+        conversationId
       );
-    }
-    let flagForShimmer = shimmerVisibleForChatbot
-    if (DB_RESPONSE?.conversationsData?.length !== 0) {
-      await myClient?.saveConversationData(
-        DB_RESPONSE,
-        DB_RESPONSE?.chatroomMeta,
-        DB_RESPONSE?.conversationsData,
-        community?.id
-      );
-
-      if (messageSentByUserId != conversationId) {
-        setShimmerVisibleForChatbot(() => false);
-        flagForShimmer = false;
+      const DB_RESPONSE = val?.data;
+      if ((DB_RESPONSE?.chatroomMeta[chatroomID])?.chatRequestState == 1) {
+        await myClient?.updateChatRequestState(
+          chatroomID?.toString(),
+          ChatroomChatRequestState.ACCEPTED
+        );
       }
+      let flagForShimmer = shimmerVisibleForChatbot
+      if (DB_RESPONSE?.conversationsData?.length !== 0) {
+        await myClient?.saveConversationData(
+          DB_RESPONSE,
+          DB_RESPONSE?.chatroomMeta,
+          DB_RESPONSE?.conversationsData,
+          community?.id
+        );
 
-      if (messageId != conversationId) {
+        if (messageSentByUserId != conversationId) {
+          setShimmerVisibleForChatbot(() => false);
+          flagForShimmer = false;
+        }
+
+        if (messageId != conversationId) {
+          dispatch({
+            type: HIDE_SHIMMER
+          })
+          setShimmerVisibleForChatbot(false);
+        }
+      }
+      if (page === 1) {
+        const payload = GetConversationsRequestBuilder.builder()
+          .setChatroomId(chatroomID?.toString())
+          .setLimit(PAGE_SIZE)
+          .build();
+        let conversationsFromRealm = await myClient?.getConversations(payload);
+        // if uploadingFilesMessages is not empty then add those messages to the conversation list
+        if (Object.keys(uploadingFilesMessages)?.length > 0) {
+          conversationsFromRealm = [...Object.values(uploadingFilesMessages), ...conversationsFromRealm]
+        }
         dispatch({
-          type: HIDE_SHIMMER
-        })
-        setShimmerVisibleForChatbot(false);
+          type: GET_CONVERSATIONS_SUCCESS,
+          body: { conversations: conversationsFromRealm, shimmer: flagForShimmer },
+        });
       }
+      return;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
-    if (page === 1) {
-      const payload = GetConversationsRequestBuilder.builder()
-        .setChatroomId(chatroomID?.toString())
-        .setLimit(PAGE_SIZE)
-        .build();
-      let conversationsFromRealm = await myClient?.getConversations(payload);
-      // if uploadingFilesMessages is not empty then add those messages to the conversation list
-      if (Object.keys(uploadingFilesMessages)?.length > 0) {
-        conversationsFromRealm = [...Object.values(uploadingFilesMessages), ...conversationsFromRealm]
-      }
-      dispatch({
-        type: GET_CONVERSATIONS_SUCCESS,
-        body: { conversations: conversationsFromRealm, shimmer: flagForShimmer },
-      });
-    }
-    return;
   };
 
   //useffect includes firebase realtime listener
@@ -964,17 +1076,25 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     const query = ref(db, `/collabcards/${chatroomID}`);
     return onValue(query, async (snapshot: DataSnapshot) => {
       if (snapshot.exists()) {
-        const firebaseData = snapshot.val();
-        const conversationID = firebaseData?.collabcard?.answer_id;
-        if (conversationID) {
-          const maxTimeStamp = Math.floor(Date.now() * 1000);
-          await firebaseConversationSyncAPI(
-            INITIAL_SYNC_PAGE,
-            0,
-            maxTimeStamp,
-            conversationID
-          );
-          fetchChatroomDetails();
+        try {
+          const firebaseData = snapshot.val();
+          const conversationID = firebaseData?.collabcard?.answer_id;
+          if (conversationID) {
+            const maxTimeStamp = Math.floor(Date.now() * 1000);
+            await firebaseConversationSyncAPI(
+              INITIAL_SYNC_PAGE,
+              0,
+              maxTimeStamp,
+              conversationID
+            );
+            fetchChatroomDetails();
+          }
+        } catch (error) {
+          Client?.myClient?.handleException(
+            error,
+            error?.stack,
+            LMSeverity.INFO
+          )
         }
       }
     });
@@ -1085,7 +1205,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           }, 300);
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
         Alert.alert("Leave Chatroom failed");
       });
 
@@ -1154,7 +1279,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           }, 300);
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
         Alert.alert("Leave Chatroom failed");
       });
     return res;
@@ -1199,7 +1329,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           })
         );
       })
-      .catch(() => {
+      .catch((error) => {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
         Alert.alert("Join Chatroom failed");
       });
 
@@ -1249,7 +1384,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           updatePageInRedux();
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
         Alert.alert("Join Secret Chatroom failed");
       });
 
@@ -1274,7 +1414,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         setMsg("Notifications muted for this chatroom");
         setIsToast(true);
       })
-      .catch(() => {
+      .catch((error) => {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
         Alert.alert("Mute Notification failed");
       });
   };
@@ -1297,85 +1442,108 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         setMsg("Notifications unmuted for this chatroom");
         setIsToast(true);
       })
-      .catch(() => {
+      .catch((error) => {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
         Alert.alert("Unmute Notification failed");
       });
   };
 
   // method to show join button alert
-  const showJoinAlert = () =>
-    Alert.alert(
-      JOIN_CHATROOM,
-      JOIN_CHATROOM_MESSAGE,
-      [
-        {
-          text: CANCEL_BUTTON,
-          style: "default",
-        },
-        {
-          text: CONFIRM_BUTTON,
-          onPress: async () => {
-            const res = await myClient?.inviteAction({
-              channelId: `${chatroomID}`,
-              inviteStatus: 1,
-            });
-            dispatch({
-              type: SHOW_TOAST,
-              body: { isToast: true, msg: "Invitation accepted" },
-            });
-
-            dispatch({ type: ACCEPT_INVITE_SUCCESS, body: chatroomID });
-            updatePageInRedux();
-            await dispatch(getChatroom({ chatroomId: chatroomID }) as any);
+  const showJoinAlert = () => {
+    try {
+      Alert.alert(
+        JOIN_CHATROOM,
+        JOIN_CHATROOM_MESSAGE,
+        [
+          {
+            text: CANCEL_BUTTON,
+            style: "default",
           },
-          style: "default",
-        },
-      ],
-      {
-        cancelable: false,
-      }
-    );
+          {
+            text: CONFIRM_BUTTON,
+            onPress: async () => {
+              const res = await myClient?.inviteAction({
+                channelId: `${chatroomID}`,
+                inviteStatus: 1,
+              });
+              dispatch({
+                type: SHOW_TOAST,
+                body: { isToast: true, msg: "Invitation accepted" },
+              });
+
+              dispatch({ type: ACCEPT_INVITE_SUCCESS, body: chatroomID });
+              updatePageInRedux();
+              await dispatch(getChatroom({ chatroomId: chatroomID }) as any);
+            },
+            style: "default",
+          },
+        ],
+        {
+          cancelable: false,
+        }
+      );
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
+  }
 
   // method to show reject button alert
-  const showRejectAlert = () =>
-    Alert.alert(
-      REJECT_INVITATION,
-      REJECT_INVITATION_MESSAGE,
-      [
-        {
-          text: CANCEL_BUTTON,
-          style: "cancel",
-        },
-        {
-          text: CONFIRM_BUTTON,
-          onPress: async () => {
-            const res = await myClient?.inviteAction({
-              channelId: `${chatroomID}`,
-              inviteStatus: 2,
-            });
-            dispatch({
-              type: SHOW_TOAST,
-              body: { isToast: true, msg: "Invitation rejected" },
-            });
-
-            dispatch({
-              type: CLEAR_CHATROOM_CONVERSATION,
-              body: { conversations: [] },
-            });
-            dispatch({
-              type: CLEAR_CHATROOM_DETAILS,
-              body: { chatroomDBDetails: {} },
-            });
-            dispatch({ type: REJECT_INVITE_SUCCESS, body: chatroomID });
-            navigation.goBack();
+  const showRejectAlert = () => {
+    try {
+      Alert.alert(
+        REJECT_INVITATION,
+        REJECT_INVITATION_MESSAGE,
+        [
+          {
+            text: CANCEL_BUTTON,
+            style: "cancel",
           },
-          style: "default",
-        },
-      ],
-      {
-        cancelable: false,
-      }
-    );
+          {
+            text: CONFIRM_BUTTON,
+            onPress: async () => {
+              const res = await myClient?.inviteAction({
+                channelId: `${chatroomID}`,
+                inviteStatus: 2,
+              });
+              dispatch({
+                type: SHOW_TOAST,
+                body: { isToast: true, msg: "Invitation rejected" },
+              });
+
+              dispatch({
+                type: CLEAR_CHATROOM_CONVERSATION,
+                body: { conversations: [] },
+              });
+              dispatch({
+                type: CLEAR_CHATROOM_DETAILS,
+                body: { chatroomDBDetails: {} },
+              });
+              dispatch({ type: REJECT_INVITE_SUCCESS, body: chatroomID });
+              navigation.goBack();
+            },
+            style: "default",
+          },
+        ],
+        {
+          cancelable: false,
+        }
+      );
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
+  }
 
   // this function calls sendReactionAPI
   const sendReactionAPI = async (
@@ -1383,25 +1551,33 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     reaction: string,
     isReactionButton: boolean
   ) => {
-    const res = await myClient?.putReaction({
-      conversationId: conversationID,
-      reaction: reaction,
-    });
-    let from;
-    if (isReactionButton) {
-      from = "reaction button";
-    } else {
-      from = "long press";
+    try {
+      const res = await myClient?.putReaction({
+        conversationId: conversationID,
+        reaction: reaction,
+      });
+      let from;
+      if (isReactionButton) {
+        from = "reaction button";
+      } else {
+        from = "long press";
+      }
+      LMChatAnalytics.track(
+        Events.REACTION_ADDED,
+        new Map<string, string>([
+          [Keys.REACTION, reaction],
+          [Keys.FROM, from],
+          [Keys.MESSAGE_ID, conversationID?.toString()],
+          [Keys.CHATROOM_ID, chatroomID?.toString()],
+        ])
+      );
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
-    LMChatAnalytics.track(
-      Events.REACTION_ADDED,
-      new Map<string, string>([
-        [Keys.REACTION, reaction],
-        [Keys.FROM, from],
-        [Keys.MESSAGE_ID, conversationID?.toString()],
-        [Keys.CHATROOM_ID, chatroomID?.toString()],
-      ])
-    );
   };
 
   // this function calls removeReactionAPI
@@ -1409,27 +1585,78 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     conversationID: number,
     reaction: string
   ) => {
-    const res = await myClient?.deleteReaction({
-      chatroomId: chatroomID,
-      conversationId: conversationID,
-      reaction: reaction,
-    });
+    try {
+      const res = await myClient?.deleteReaction({
+        chatroomId: chatroomID,
+        conversationId: conversationID,
+        reaction: reaction,
+      });
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // this function is for sending a reaction from conversation
   const sendReaction = (val: string, isReactionButton: boolean) => {
-    const previousMsg = selectedMessages[0];
-    let changedMsg;
-    if (selectedMessages[0]?.reactions?.length > 0) {
-      const isReactedArr = selectedMessages[0]?.reactions.filter(
-        (val: any) => val?.member?.id == user?.id
-      );
-      if (isReactedArr?.length > 0) {
-        // Reacted different emoji
-        if (isReactedArr[0].reaction !== val) {
-          const resultArr = selectedMessages[0]?.reactions.map((element: any) =>
-            element?.member?.id == user?.id
-              ? {
+    try {
+      const previousMsg = selectedMessages[0];
+      let changedMsg;
+      if (selectedMessages[0]?.reactions?.length > 0) {
+        const isReactedArr = selectedMessages[0]?.reactions.filter(
+          (val: any) => val?.member?.id == user?.id
+        );
+        if (isReactedArr?.length > 0) {
+          // Reacted different emoji
+          if (isReactedArr[0].reaction !== val) {
+            const resultArr = selectedMessages[0]?.reactions.map((element: any) =>
+              element?.member?.id == user?.id
+                ? {
+                  member: {
+                    id: user?.id,
+                    name: user?.name,
+                    imageUrl: "",
+                  },
+                  reaction: val,
+                  updatedAt: Date.now(),
+                }
+                : element
+            );
+            changedMsg = {
+              ...selectedMessages[0],
+              reactions: resultArr,
+            };
+            //API call
+          } else if (isReactedArr[0].reaction === val) {
+            // Reacted same emoji
+            const resultArr = selectedMessages[0]?.reactions.map((element: any) =>
+              element?.member?.id == user?.id
+                ? {
+                  member: {
+                    id: user?.id,
+                    name: user?.name,
+                    imageUrl: "",
+                  },
+                  reaction: val,
+                  updatedAt: Date.now(),
+                }
+                : element
+            );
+            changedMsg = {
+              ...selectedMessages[0],
+              reactions: resultArr,
+            };
+            // No API call
+          }
+        } else {
+          changedMsg = {
+            ...selectedMessages[0],
+            reactions: [
+              ...selectedMessages[0]?.reactions,
+              {
                 member: {
                   id: user?.id,
                   name: user?.name,
@@ -1437,34 +1664,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
                 },
                 reaction: val,
                 updatedAt: Date.now(),
-              }
-              : element
-          );
-          changedMsg = {
-            ...selectedMessages[0],
-            reactions: resultArr,
+              },
+            ],
           };
           //API call
-        } else if (isReactedArr[0].reaction === val) {
-          // Reacted same emoji
-          const resultArr = selectedMessages[0]?.reactions.map((element: any) =>
-            element?.member?.id == user?.id
-              ? {
-                member: {
-                  id: user?.id,
-                  name: user?.name,
-                  imageUrl: "",
-                },
-                reaction: val,
-                updatedAt: Date.now(),
-              }
-              : element
-          );
-          changedMsg = {
-            ...selectedMessages[0],
-            reactions: resultArr,
-          };
-          // No API call
         }
       } else {
         changedMsg = {
@@ -1482,37 +1685,26 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             },
           ],
         };
-        //API call
       }
-    } else {
-      changedMsg = {
-        ...selectedMessages[0],
-        reactions: [
-          ...selectedMessages[0]?.reactions,
-          {
-            member: {
-              id: user?.id,
-              name: user?.name,
-              imageUrl: "",
-            },
-            reaction: val,
-            updatedAt: Date.now(),
-          },
-        ],
-      };
-    }
 
-    dispatch({
-      type: REACTION_SENT,
-      body: {
-        previousMsg: previousMsg,
-        changedMsg: changedMsg,
-      },
-    });
-    dispatch({ type: SELECTED_MESSAGES, body: [] });
-    dispatch({ type: LONG_PRESSED, body: false });
-    setIsReact(false);
-    sendReactionAPI(previousMsg?.id, val, isReactionButton);
+      dispatch({
+        type: REACTION_SENT,
+        body: {
+          previousMsg: previousMsg,
+          changedMsg: changedMsg,
+        },
+      });
+      dispatch({ type: SELECTED_MESSAGES, body: [] });
+      dispatch({ type: LONG_PRESSED, body: false });
+      setIsReact(false);
+      sendReactionAPI(previousMsg?.id, val, isReactionButton);
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // this function is for removing a reaction from conversation
@@ -1521,48 +1713,56 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     reactionArr: any,
     removeFromList?: any
   ) => {
-    const previousMsg = item;
-    let changedMsg;
-    let val;
+    try {
+      const previousMsg = item;
+      let changedMsg;
+      let val;
 
-    if (item?.reactions?.length > 0) {
-      const index = item?.reactions.findIndex(
-        (val: any) => val?.member?.id == user?.id
-      );
+      if (item?.reactions?.length > 0) {
+        const index = item?.reactions.findIndex(
+          (val: any) => val?.member?.id == user?.id
+        );
 
-      // this condition checks if clicked reaction ID matches the findIndex ID
-      const isIndexMatches =
-        item?.reactions[index]?.member?.id === reactionArr?.id;
+        // this condition checks if clicked reaction ID matches the findIndex ID
+        const isIndexMatches =
+          item?.reactions[index]?.member?.id === reactionArr?.id;
 
-      const isIndexExist = index !== -1 ? true : false;
+        const isIndexExist = index !== -1 ? true : false;
 
-      // check condition user has a reaction && isIndexMatches(true if clicked reaction ID is same as findReactionID)
-      if (
-        (isIndexExist && isIndexMatches) || // condition to remove reaction from list of all reactions
-        (isIndexExist && !!removeFromList && isIndexMatches) // condition to remove reaction from list specific reaction
-      ) {
-        const tempArr = [...item?.reactions];
+        // check condition user has a reaction && isIndexMatches(true if clicked reaction ID is same as findReactionID)
+        if (
+          (isIndexExist && isIndexMatches) || // condition to remove reaction from list of all reactions
+          (isIndexExist && !!removeFromList && isIndexMatches) // condition to remove reaction from list specific reaction
+        ) {
+          const tempArr = [...item?.reactions];
 
-        val = tempArr[index];
+          val = tempArr[index];
 
-        if (index !== undefined || isIndexExist) {
-          tempArr.splice(index, 1);
+          if (index !== undefined || isIndexExist) {
+            tempArr.splice(index, 1);
+          }
+
+          changedMsg = {
+            ...item,
+            reactions: tempArr,
+          };
+
+          dispatch({
+            type: REACTION_SENT,
+            body: {
+              previousMsg: previousMsg,
+              changedMsg: changedMsg,
+            },
+          });
+          removeReactionAPI(previousMsg?.id, val?.reaction);
         }
-
-        changedMsg = {
-          ...item,
-          reactions: tempArr,
-        };
-
-        dispatch({
-          type: REACTION_SENT,
-          body: {
-            previousMsg: previousMsg,
-            changedMsg: changedMsg,
-          },
-        });
-        removeReactionAPI(previousMsg?.id, val?.reaction);
       }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
@@ -1581,26 +1781,34 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     item: any,
     selectedMessages: any
   ) => {
-    dispatch({ type: LONG_PRESSED, body: true });
-    if (isIncluded) {
-      const filterdMessages = selectedMessages.filter(
-        (val: any) => val?.id !== item?.id && !isStateIncluded
-      );
-      dispatch({
-        type: SELECTED_MESSAGES,
-        body: [...filterdMessages],
-      });
-    } else {
-      if (!isStateIncluded) {
+    try {
+      if (isIncluded) {
+        const filterdMessages = selectedMessages.filter(
+          (val: any) => val?.id !== item?.id && !isStateIncluded
+        );
         dispatch({
           type: SELECTED_MESSAGES,
-          body: [...selectedMessages, item],
+          body: [...filterdMessages],
         });
+      } else {
+        if (!isStateIncluded) {
+          dispatch({
+            type: SELECTED_MESSAGES,
+            body: [...selectedMessages, item],
+          });
+        }
       }
-    }
 
-    if (!isStateIncluded && !item?.deletedBy) {
-      setIsReact(true);
+      if (!isStateIncluded && !item?.deletedBy) {
+        setIsReact(true);
+      }
+      dispatch({ type: LONG_PRESSED, body: true });
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
@@ -1612,195 +1820,243 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     emojiClicked: boolean,
     selectedMessages: any
   ) => {
-    if (isLongPress) {
-      if (isIncluded) {
-        const filterdMessages = selectedMessages.filter(
-          (val: any) => val?.id !== item?.id && !isStateIncluded
-        );
-        if (filterdMessages?.length > 0) {
-          dispatch({
-            type: SELECTED_MESSAGES,
-            body: [...filterdMessages],
-          });
+    try {
+      if (isLongPress) {
+        if (isIncluded) {
+          const filterdMessages = selectedMessages.filter(
+            (val: any) => val?.id !== item?.id && !isStateIncluded
+          );
+          if (filterdMessages?.length > 0) {
+            dispatch({
+              type: SELECTED_MESSAGES,
+              body: [...filterdMessages],
+            });
+          } else {
+            dispatch({
+              type: SELECTED_MESSAGES,
+              body: [...filterdMessages],
+            });
+            dispatch({ type: LONG_PRESSED, body: false });
+          }
         } else {
-          dispatch({
-            type: SELECTED_MESSAGES,
-            body: [...filterdMessages],
-          });
-          dispatch({ type: LONG_PRESSED, body: false });
+          if (!isStateIncluded) {
+            dispatch({
+              type: SELECTED_MESSAGES,
+              body: [...selectedMessages, item],
+            });
+          }
         }
-      } else {
-        if (!isStateIncluded) {
-          dispatch({
-            type: SELECTED_MESSAGES,
-            body: [...selectedMessages, item],
-          });
+      } else if (emojiClicked) {
+        dispatch({ type: LONG_PRESSED, body: true });
+        if (isIncluded) {
+          const filterdMessages = selectedMessages.filter(
+            (val: any) => val?.id !== item?.id && !stateArr.includes(val?.state)
+          );
+          if (filterdMessages?.length > 0) {
+            dispatch({
+              type: SELECTED_MESSAGES,
+              body: [...filterdMessages],
+            });
+          } else {
+            dispatch({
+              type: SELECTED_MESSAGES,
+              body: [...filterdMessages],
+            });
+            dispatch({ type: LONG_PRESSED, body: false });
+          }
+        } else {
+          if (!isStateIncluded) {
+            dispatch({
+              type: SELECTED_MESSAGES,
+              body: [...selectedMessages, item],
+            });
+          }
+          setIsReact(true);
         }
       }
-    } else if (emojiClicked) {
-      dispatch({ type: LONG_PRESSED, body: true });
-      if (isIncluded) {
-        const filterdMessages = selectedMessages.filter(
-          (val: any) => val?.id !== item?.id && !stateArr.includes(val?.state)
-        );
-        if (filterdMessages?.length > 0) {
-          dispatch({
-            type: SELECTED_MESSAGES,
-            body: [...filterdMessages],
-          });
-        } else {
-          dispatch({
-            type: SELECTED_MESSAGES,
-            body: [...filterdMessages],
-          });
-          dispatch({ type: LONG_PRESSED, body: false });
-        }
-      } else {
-        if (!isStateIncluded) {
-          dispatch({
-            type: SELECTED_MESSAGES,
-            body: [...selectedMessages, item],
-          });
-        }
-        setIsReact(true);
-      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   // this function calls API to approve DM request
   const onApprove = async () => {
-    const response = await myClient?.sendDMRequest({
-      chatroomId: chatroomID,
-      chatRequestState: ChatroomChatRequestState.ACCEPTED,
-    });
+    try {
+      const response = await myClient?.sendDMRequest({
+        chatroomId: chatroomID,
+        chatRequestState: ChatroomChatRequestState.ACCEPTED,
+      });
 
-    //dispatching redux action for local handling of chatRequestState
-    dispatch({
-      type: UPDATE_CHAT_REQUEST_STATE,
-      body: { chatRequestState: 1 },
-    });
-    await myClient?.updateChatRequestState(
-      chatroomID?.toString(),
-      ChatroomChatRequestState.ACCEPTED
-    );
-    await fetchChatroomDetails();
+      //dispatching redux action for local handling of chatRequestState
+      dispatch({
+        type: UPDATE_CHAT_REQUEST_STATE,
+        body: { chatRequestState: 1 },
+      });
+      await myClient?.updateChatRequestState(
+        chatroomID?.toString(),
+        ChatroomChatRequestState.ACCEPTED
+      );
+      await fetchChatroomDetails();
 
-    dispatch({
-      type: ADD_STATE_MESSAGE,
-      body: { conversation: response?.data?.conversation },
-    });
-    await myClient?.saveNewConversation(
-      chatroomID?.toString(),
-      response?.data?.conversation
-    );
+      dispatch({
+        type: ADD_STATE_MESSAGE,
+        body: { conversation: response?.data?.conversation },
+      });
+      await myClient?.saveNewConversation(
+        chatroomID?.toString(),
+        response?.data?.conversation
+      );
 
-    return response;
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // this function calls API to reject DM request
   const onReject = async () => {
-    const response = await myClient?.sendDMRequest({
-      chatroomId: chatroomID,
-      chatRequestState: ChatroomChatRequestState.REJECTED,
-    });
+    try {
+      const response = await myClient?.sendDMRequest({
+        chatroomId: chatroomID,
+        chatRequestState: ChatroomChatRequestState.REJECTED,
+      });
 
-    //dispatching redux action for local handling of chatRequestState
-    dispatch({
-      type: UPDATE_CHAT_REQUEST_STATE,
-      body: { chatRequestState: 2 },
-    });
-    dispatch({
-      type: ADD_STATE_MESSAGE,
-      body: { conversation: response?.data?.conversation },
-    });
+      //dispatching redux action for local handling of chatRequestState
+      dispatch({
+        type: UPDATE_CHAT_REQUEST_STATE,
+        body: { chatRequestState: 2 },
+      });
+      dispatch({
+        type: ADD_STATE_MESSAGE,
+        body: { conversation: response?.data?.conversation },
+      });
 
-    await myClient?.updateChatRequestState(
-      chatroomID?.toString(),
-      ChatroomChatRequestState.REJECTED
-    );
+      await myClient?.updateChatRequestState(
+        chatroomID?.toString(),
+        ChatroomChatRequestState.REJECTED
+      );
 
-    await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
-      0,
-      Date.now() * 1000)
-    await fetchChatroomDetails();
+      await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
+        0,
+        Date.now() * 1000)
+      await fetchChatroomDetails();
 
-    return response;
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // this function calls API to approve DM request on click TapToUndo
   const onTapToUndo = async () => {
-    const response = await myClient?.blockMember({
-      chatroomId: chatroomID,
-      status: ChatroomChatRequestState.ACCEPTED,
-    });
+    try {
+      const response = await myClient?.blockMember({
+        chatroomId: chatroomID,
+        status: ChatroomChatRequestState.ACCEPTED,
+      });
 
-    //dispatching redux action for local handling of chatRequestState
-    dispatch({
-      type: UPDATE_CHAT_REQUEST_STATE,
-      body: { chatRequestState: 1 },
-    });
-    dispatch({
-      type: ADD_STATE_MESSAGE,
-      body: { conversation: response?.data?.conversation },
-    });
-    await myClient?.updateChatRequestState(
-      chatroomID?.toString(),
-      ChatroomChatRequestState.ACCEPTED
-    );
-    await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
-      0,
-      Date.now() * 1000)
-    await fetchChatroomDetails();
-    return response;
+      //dispatching redux action for local handling of chatRequestState
+      dispatch({
+        type: UPDATE_CHAT_REQUEST_STATE,
+        body: { chatRequestState: 1 },
+      });
+      dispatch({
+        type: ADD_STATE_MESSAGE,
+        body: { conversation: response?.data?.conversation },
+      });
+      await myClient?.updateChatRequestState(
+        chatroomID?.toString(),
+        ChatroomChatRequestState.ACCEPTED
+      );
+      await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
+        0,
+        Date.now() * 1000)
+      await fetchChatroomDetails();
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // this function calls API to block a member
   const blockMember = async () => {
-    const payload = {
-      chatroomId: chatroomID,
-      status: ChatroomChatRequestState.INITIATED,
-    };
-    dispatch({
-      type: SHOW_TOAST,
-      body: { isToast: true, msg: "Member blocked" },
-    });
-    const response = await myClient?.blockMember(payload);
-    dispatch({
-      type: ADD_STATE_MESSAGE,
-      body: { conversation: response?.data?.conversation },
-    });
-    await myClient?.updateChatRequestState(
-      chatroomID?.toString(),
-      ChatroomChatRequestState.REJECTED
-    );
-    await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
-      0,
-      Date.now() * 1000)
-    await fetchChatroomDetails();
-    return response;
+    try {
+      const payload = {
+        chatroomId: chatroomID,
+        status: ChatroomChatRequestState.INITIATED,
+      };
+      dispatch({
+        type: SHOW_TOAST,
+        body: { isToast: true, msg: "Member blocked" },
+      });
+      const response = await myClient?.blockMember(payload);
+      dispatch({
+        type: ADD_STATE_MESSAGE,
+        body: { conversation: response?.data?.conversation },
+      });
+      await myClient?.updateChatRequestState(
+        chatroomID?.toString(),
+        ChatroomChatRequestState.REJECTED
+      );
+      await paginatedConversationSyncAPI(INITIAL_SYNC_PAGE,
+        0,
+        Date.now() * 1000)
+      await fetchChatroomDetails();
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // this function calls API to unblock a member
   const unblockMember = async () => {
-    const payload = {
-      chatroomId: chatroomID,
-      status: ChatroomChatRequestState.ACCEPTED,
-    };
-    dispatch({
-      type: SHOW_TOAST,
-      body: { isToast: true, msg: "Member unblocked" },
-    });
-    const response = await myClient?.blockMember(payload);
-    dispatch({
-      type: ADD_STATE_MESSAGE,
-      body: { conversation: response?.data?.conversation },
-    });
-    await myClient?.updateChatRequestState(
-      chatroomID?.toString(),
-      ChatroomChatRequestState.ACCEPTED
-    );
-    fetchChatroomDetails();
-    return response;
+    try {
+      const payload = {
+        chatroomId: chatroomID,
+        status: ChatroomChatRequestState.ACCEPTED,
+      };
+      dispatch({
+        type: SHOW_TOAST,
+        body: { isToast: true, msg: "Member unblocked" },
+      });
+      const response = await myClient?.blockMember(payload);
+      dispatch({
+        type: ADD_STATE_MESSAGE,
+        body: { conversation: response?.data?.conversation },
+      });
+      await myClient?.updateChatRequestState(
+        chatroomID?.toString(),
+        ChatroomChatRequestState.ACCEPTED
+      );
+      fetchChatroomDetails();
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // this function shows confirm alert popup to approve DM request
@@ -2008,6 +2264,13 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           id?.toString(),
           JSON.stringify(message)
         );
+
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
+
         return error;
       }
       dipatch({
@@ -2203,8 +2466,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             .build()
         )
       }
-    } catch (e) {
-      console.log(e)
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     } finally {
       setRetryUploadInProgress(false);
     }
@@ -2367,6 +2634,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         type: CLEAR_MESSAGE_IN_PROGRESS_ID
       })
       failedUploads?.push(selectedImages);
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
     dipatch({
       type: CLEAR_MESSAGE_IN_PROGRESS_ID

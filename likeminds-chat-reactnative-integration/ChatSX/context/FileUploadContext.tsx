@@ -35,9 +35,10 @@ import { Client } from "../client";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Image as CompressedImage } from "react-native-compressor";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { LMSeverity } from "@likeminds.community/chat-js"
 
 interface FileUploadContextProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 interface UploadResource {
@@ -306,6 +307,11 @@ export const FileUploadContextProvider = ({
           );
         }
       } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
         dispatch({
           type: CLEAR_MESSAGE_IN_PROGRESS_ID,
         })
@@ -357,7 +363,7 @@ export const FileUploadContextProvider = ({
     try {
       dispatch({
         type: SET_MESSAGE_IN_PROGRESS_ID,
-        body : {
+        body: {
           id: `-${conversationID}`
         }
       })
@@ -374,6 +380,11 @@ export const FileUploadContextProvider = ({
       }
       return null;
     } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
       console.log(error)
       return null
     }

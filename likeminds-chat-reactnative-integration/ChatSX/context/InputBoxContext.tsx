@@ -128,7 +128,7 @@ import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
 import { useChatroomContext } from "./ChatroomContext";
 
 export interface InputBoxContextProps {
-  children: ReactNode;
+  children?: ReactNode;
   replyChatID?: any;
   chatroomID?: any;
   chatRequestState?: any;

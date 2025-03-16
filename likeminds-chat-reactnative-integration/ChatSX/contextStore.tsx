@@ -38,7 +38,7 @@ interface AppContextProps {
 }
 
 interface ContextProviderProps {
-  children: ReactNode;
+  children?: React.ReactNode;
 }
 
 // Create a context for the combined state

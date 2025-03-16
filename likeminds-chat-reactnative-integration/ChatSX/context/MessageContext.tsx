@@ -15,7 +15,7 @@ import { Credentials } from "../credentials";
 import { ChatroomContextValues, useChatroomContext } from "./ChatroomContext";
 
 interface MessageContextProps {
-  children: ReactNode;
+  children?: ReactNode;
   item: any;
   index: number;
   isStateIncluded: boolean;

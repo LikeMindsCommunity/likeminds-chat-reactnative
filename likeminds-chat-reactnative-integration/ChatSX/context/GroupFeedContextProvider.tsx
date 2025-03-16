@@ -34,6 +34,7 @@ import { Client } from "../client";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SHOW_LIST_REGEX } from "../commonFuctions";
+import { LMSeverity } from "@likeminds.community/chat-js"
 
 export interface GroupFeedContextProps {
   children?: ReactNode;
@@ -104,8 +105,16 @@ export const GroupFeedContextProvider = ({
   let endTime = 0;
 
   const getExploreTabCount = async () => {
-    const exploreTabCount = await myClient?.getExploreTabCount();
-    dispatch({ type: GET_HOMEFEED_CHAT_SUCCESS, body: exploreTabCount?.data });
+    try {
+      const exploreTabCount = await myClient?.getExploreTabCount();
+      dispatch({ type: GET_HOMEFEED_CHAT_SUCCESS, body: exploreTabCount?.data });
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   useEffect(() => {
@@ -115,50 +124,74 @@ export const GroupFeedContextProvider = ({
 
   // Fetching already existing groupfeed chatrooms from Realm
   const getChatroomFromLocalDB = async () => {
-    const existingChatrooms: any = await myClient?.getFilteredChatrooms(false);
-    if (!!existingChatrooms && existingChatrooms.length != 0) {
-      setShimmerIsLoading(false);
-      dispatch({
-        type: SET_INITIAL_GROUPFEED_CHATROOM,
-        body: { groupFeedChatrooms: existingChatrooms },
-      });
+    try {
+      const existingChatrooms: any = await myClient?.getFilteredChatrooms(false);
+      if (!!existingChatrooms && existingChatrooms.length != 0) {
+        setShimmerIsLoading(false);
+        dispatch({
+          type: SET_INITIAL_GROUPFEED_CHATROOM,
+          body: { groupFeedChatrooms: existingChatrooms },
+        });
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   const getAppConfig = async () => {
-    const appConfig = await myClient?.getAppConfig();
-    if (appConfig?.isGroupFeedChatroomsSynced === undefined) {
-      startTime = Date.now() / 1000;
-      setTimeout(() => {
-        myClient?.initiateAppConfig();
-        myClient?.setAppConfig(false);
-      }, 200);
-    } else {
-      setShimmerIsLoading(false);
+    try {
+      const appConfig = await myClient?.getAppConfig();
+      if (appConfig?.isGroupFeedChatroomsSynced === undefined) {
+        startTime = Date.now() / 1000;
+        setTimeout(() => {
+          myClient?.initiateAppConfig();
+          myClient?.setAppConfig(false);
+        }, 200);
+      } else {
+        setShimmerIsLoading(false);
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   useEffect(() => {
     const initiate = async () => {
-      await getAppConfig();
-      if (!user?.sdkClientInfo?.community) {
-        return;
+      try {
+        await getAppConfig();
+        if (!user?.sdkClientInfo?.community) {
+          return;
+        }
+        await paginatedSyncAPI(INITIAL_SYNC_PAGE, user, false);
+        if (shimmerIsLoading == true) {
+          endTime = Date.now() / 1000;
+          LMChatAnalytics.track(
+            Events.SYNC_COMPLETE,
+            new Map<string, string>([
+              [Keys.SYNC_COMPLETE, true?.toString()],
+              [Keys.TIME_TAKEN, (endTime - startTime)?.toString()],
+            ])
+          );
+        }
+        setShimmerIsLoading(false);
+        setTimeout(() => {
+          getChatroomFromLocalDB();
+        }, 500);
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
-      await paginatedSyncAPI(INITIAL_SYNC_PAGE, user, false);
-      if (shimmerIsLoading == true) {
-        endTime = Date.now() / 1000;
-        LMChatAnalytics.track(
-          Events.SYNC_COMPLETE,
-          new Map<string, string>([
-            [Keys.SYNC_COMPLETE, true?.toString()],
-            [Keys.TIME_TAKEN, (endTime - startTime)?.toString()],
-          ])
-        );
-      }
-      setShimmerIsLoading(false);
-      setTimeout(() => {
-        getChatroomFromLocalDB();
-      }, 500);
     };
     initiate();
   }, [user, startTime, shimmerIsLoading]);
@@ -166,39 +199,55 @@ export const GroupFeedContextProvider = ({
   useEffect(() => {
     const query = ref(db, `/community/${community?.id}`);
     return onValue(query, (snapshot) => {
-      if (snapshot.exists()) {
-        if (!user?.sdkClientInfo?.community) {
-          return;
+      try {
+        if (snapshot.exists()) {
+          if (!user?.sdkClientInfo?.community) {
+            return;
+          }
+          if (isFocused) {
+            paginatedSyncAPI(INITIAL_SYNC_PAGE, user, false);
+            setShimmerIsLoading(false);
+            setTimeout(() => {
+              getChatroomFromLocalDB();
+            }, 500);
+          }
         }
-        if (isFocused) {
-          paginatedSyncAPI(INITIAL_SYNC_PAGE, user, false);
-          setShimmerIsLoading(false);
-          setTimeout(() => {
-            getChatroomFromLocalDB();
-          }, 500);
-        }
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
     });
   }, [user, isFocused]);
 
   async function fetchData() {
-    const invitesRes: any = await dispatch(
-      getInvites({ channelType: 1, page: 1, pageSize: 10 }, false) as any
-    );
+    try {
+      const invitesRes: any = await dispatch(
+        getInvites({ channelType: 1, page: 1, pageSize: 10 }, false) as any
+      );
 
-    if (invitesRes?.userInvites) {
-      if (invitesRes?.userInvites?.length < 10) {
-        const payload = {
-          page: 1,
-        };
-      } else {
-        await dispatch(
-          updateInvites({ channelType: 1, page: 2, pageSize: 10 }, false) as any
-        );
-        setInvitePage((invitePage) => {
-          return invitePage + 1;
-        });
+      if (invitesRes?.userInvites) {
+        if (invitesRes?.userInvites?.length < 10) {
+          const payload = {
+            page: 1,
+          };
+        } else {
+          await dispatch(
+            updateInvites({ channelType: 1, page: 2, pageSize: 10 }, false) as any
+          );
+          setInvitePage((invitePage) => {
+            return invitePage + 1;
+          });
+        }
       }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   }
 
@@ -220,11 +269,19 @@ export const GroupFeedContextProvider = ({
   }, []);
 
   async function updateData(newPage: number) {
-    const payload = {
-      page: newPage,
-    };
-    const response = await dispatch(updateHomeFeedData(payload, false) as any);
-    return response;
+    try {
+      const payload = {
+        page: newPage,
+      };
+      const response = await dispatch(updateHomeFeedData(payload, false) as any);
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   }
 
   const loadData = async (newPage: number) => {

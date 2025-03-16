@@ -37,9 +37,10 @@ import { CAPITAL_GIF_TEXT, VOICE_NOTE_STRING } from "../constants/Strings";
 import { getCurrentConversation } from "../utils/chatroomUtils";
 import { convertToChatroomTopicSchema } from "../assets/chatSchema";
 import { useIsFocused } from "@react-navigation/native";
+import { LMSeverity } from "@likeminds.community/chat-js"
 
 interface MessageListContextProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export interface MessageListContextValues {
@@ -109,22 +110,30 @@ export const MessageListContextProvider = ({
   const isFocused = useIsFocused();
 
   const scrollToBottom = async () => {
-    const payload = GetConversationsRequestBuilder.builder()
-      .setChatroomId(chatroomID?.toString())
-      .setLimit(100)
-      .setType(GetConversationsType.ALL)
-      .build();
+    try {
+      const payload = GetConversationsRequestBuilder.builder()
+        .setChatroomId(chatroomID?.toString())
+        .setLimit(100)
+        .setType(GetConversationsType.ALL)
+        .build();
 
-    const conversationsFromRealm = await myClient?.getConversations(payload);
+      const conversationsFromRealm = await myClient?.getConversations(payload);
 
-    if (conversationsFromRealm[0]?.id !== conversations[0]?.id) {
-      dispatch({
-        type: GET_CONVERSATIONS_SUCCESS,
-        body: { conversations: conversationsFromRealm },
-      });
+      if (conversationsFromRealm[0]?.id !== conversations[0]?.id) {
+        dispatch({
+          type: GET_CONVERSATIONS_SUCCESS,
+          body: { conversations: conversationsFromRealm },
+        });
+      }
+
+      flatlistRef.current.scrollToIndex({ animated: true, index: 0 });
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
-
-    flatlistRef.current.scrollToIndex({ animated: true, index: 0 });
   };
 
   // this useEffect scroll to Index of latest message when we send the message.
@@ -164,62 +173,78 @@ export const MessageListContextProvider = ({
 
   // function shows loader in between calling the API and getting the response
   const loadData = async (newPage?: number) => {
-    setIsLoading(true);
-    const payload = GetConversationsRequestBuilder.builder()
-      .setChatroomId(chatroomID?.toString())
-      .setLimit(PAGE_SIZE)
-      .setMedianConversation(conversations[conversations.length - 1])
-      .build();
-    const newConversations = await myClient.getConversations(payload);
-    dispatch({
-      type: GET_CONVERSATIONS_SUCCESS,
-      body: { conversations: [...conversations, ...newConversations] },
-    });
-    if (newConversations.length == 0) {
-      setShouldLoadMoreChatEnd(false);
-    }
-    if (newConversations) {
-      setIsLoading(false);
+    try {
+      setIsLoading(true);
+      const payload = GetConversationsRequestBuilder.builder()
+        .setChatroomId(chatroomID?.toString())
+        .setLimit(PAGE_SIZE)
+        .setMedianConversation(conversations[conversations.length - 1])
+        .build();
+      const newConversations = await myClient.getConversations(payload);
+      dispatch({
+        type: GET_CONVERSATIONS_SUCCESS,
+        body: { conversations: [...conversations, ...newConversations] },
+      });
+      if (newConversations.length == 0) {
+        setShouldLoadMoreChatEnd(false);
+      }
+      if (newConversations) {
+        setIsLoading(false);
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   // function shows loader in between calling the API and getting the response
   const loadStartData = async (newPage?: number) => {
-    setIsLoading(true);
-    const payload = GetConversationsRequestBuilder.builder()
-      .setChatroomId(chatroomID?.toString())
-      .setLimit(PAGE_SIZE)
-      .setMedianConversation(conversations[0])
-      .setType(GetConversationsType.BELOW)
-      .build();
+    try {
+      setIsLoading(true);
+      const payload = GetConversationsRequestBuilder.builder()
+        .setChatroomId(chatroomID?.toString())
+        .setLimit(PAGE_SIZE)
+        .setMedianConversation(conversations[0])
+        .setType(GetConversationsType.BELOW)
+        .build();
 
-    let newConversations = await myClient.getConversations(payload);
-    newConversations = newConversations.reverse();
-    dispatch({
-      type: GET_CONVERSATIONS_SUCCESS,
-      body: { conversations: [...newConversations, ...conversations] },
-    });
+      let newConversations = await myClient.getConversations(payload);
+      newConversations = newConversations.reverse();
+      dispatch({
+        type: GET_CONVERSATIONS_SUCCESS,
+        body: { conversations: [...newConversations, ...conversations] },
+      });
 
-    if (newConversations.length !== 0 && !isFound) {
-      const length = newConversations.length;
-      let index = length;
-      if (
-        conversations[index + 1].attachmentCount == 0 &&
-        conversations[index + 1].polls == undefined
-      ) {
-        index = length - 2;
-      } else if (length < PAGE_SIZE) {
-        index = length;
-      } else {
-        index = length + 8;
+      if (newConversations.length !== 0 && !isFound) {
+        const length = newConversations.length;
+        let index = length;
+        if (
+          conversations[index + 1].attachmentCount == 0 &&
+          conversations[index + 1].polls == undefined
+        ) {
+          index = length - 2;
+        } else if (length < PAGE_SIZE) {
+          index = length;
+        } else {
+          index = length + 8;
+        }
+        scrollToVisibleIndex(index);
       }
-      scrollToVisibleIndex(index);
-    }
-    if (newConversations.length == 0) {
-      setShouldLoadMoreChatStart(false);
-    }
-    if (newConversations) {
-      setIsLoading(false);
+      if (newConversations.length == 0) {
+        setShouldLoadMoreChatStart(false);
+      }
+      if (newConversations) {
+        setIsLoading(false);
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
@@ -247,17 +272,25 @@ export const MessageListContextProvider = ({
 
   // Function calls paginatedConversationsEnd action which internally calls getConversations to update conversation array with the new data.
   async function endOfPaginatedData() {
-    const payload = {
-      chatroomID: chatroomID,
-      conversationID: conversations[conversations?.length - 1]?.id,
-      scrollDirection: 0, //scroll up -> 0
-      paginateBy: 50,
-      topNavigate: false,
-    };
-    const response = await dispatch(
-      paginatedConversationsEnd(payload, true) as any
-    );
-    return response;
+    try {
+      const payload = {
+        chatroomID: chatroomID,
+        conversationID: conversations[conversations?.length - 1]?.id,
+        scrollDirection: 0, //scroll up -> 0
+        paginateBy: 50,
+        topNavigate: false,
+      };
+      const response = await dispatch(
+        paginatedConversationsEnd(payload, true) as any
+      );
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   }
 
   // Function shows loader in between calling the API and getting the response
@@ -289,37 +322,53 @@ export const MessageListContextProvider = ({
 
   // Function calls paginatedConversationsStart action which internally calls getConversations to update conversation array with the new data.
   async function startOfPaginatedData() {
-    const payload = {
-      chatroomID: chatroomID,
-      conversationID: conversations[0]?.id,
-      scrollDirection: 1, //scroll down -> 1
-      paginateBy: 50,
-      topNavigate: false,
-    };
-    const response = await dispatch(
-      paginatedConversationsStart(payload, true) as any
-    );
-    return response;
+    try {
+      const payload = {
+        chatroomID: chatroomID,
+        conversationID: conversations[0]?.id,
+        scrollDirection: 1, //scroll down -> 1
+        paginateBy: 50,
+        topNavigate: false,
+      };
+      const response = await dispatch(
+        paginatedConversationsStart(payload, true) as any
+      );
+      return response;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   }
 
   // this useEffect is used to jump to searched conversation
   useEffect(() => {
     async function scrollToSearchedConversation() {
-      const newConversation = await getCurrentConversation(
-        convertToChatroomTopicSchema(searchedConversation),
-        chatroomID?.toString()
-      );
-      dispatch({
-        type: GET_CONVERSATIONS_SUCCESS,
-        body: { conversations: newConversation },
-      });
-      const index = newConversation.findIndex(
-        (element) => element?.id == searchedConversation?.id
-      );
-      if (index >= 0) {
-        scrollToIndex(index);
-        setReplyConversationId(searchedConversation?.id);
-        setIsFound(true);
+      try {
+        const newConversation = await getCurrentConversation(
+          convertToChatroomTopicSchema(searchedConversation),
+          chatroomID?.toString()
+        );
+        dispatch({
+          type: GET_CONVERSATIONS_SUCCESS,
+          body: { conversations: newConversation },
+        });
+        const index = newConversation.findIndex(
+          (element) => element?.id == searchedConversation?.id
+        );
+        if (index >= 0) {
+          scrollToIndex(index);
+          setReplyConversationId(searchedConversation?.id);
+          setIsFound(true);
+        }
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
     }
     if (isNavigationToSearchedConversation) {

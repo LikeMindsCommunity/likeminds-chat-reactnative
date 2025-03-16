@@ -18,7 +18,7 @@ interface Data {
 }
 
 interface ChatRoomProps {
-  children: ReactNode;
+  children?: ReactNode;
   customReplyBox?: (item: any, chatroomName: string) => JSX.Element;
   customMessageHeader?: ReactNode;
   customMessageFooter?: ReactNode;
@@ -61,7 +61,7 @@ interface ChatRoomProps {
 }
 
 interface ChatRoomComponentProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const ChatRoom = ({
