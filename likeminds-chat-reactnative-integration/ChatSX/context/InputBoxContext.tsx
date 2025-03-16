@@ -126,6 +126,7 @@ import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
 import { useChatroomContext } from "./ChatroomContext";
+import {  LMSeverity } from "@likeminds.community/chat-js"
 
 export interface InputBoxContextProps {
   children?: ReactNode;
@@ -590,41 +591,57 @@ export const InputBoxContextProvider = ({
   // to ask audio recording permission
   useEffect(() => {
     async function checkAndroidPermission() {
-      const isAtLeastAndroid13 = atLeastAndroid13();
-      if (isAtLeastAndroid13) {
-        const isRecordAudioPermission = await PermissionsAndroid.check(
-          "android.permission.RECORD_AUDIO"
-        );
-        const isReadMediaAudioPermission = await PermissionsAndroid.check(
-          "android.permission.READ_MEDIA_AUDIO"
-        );
-        if (isRecordAudioPermission && isReadMediaAudioPermission) {
-          setIsRecordingPermission(true);
+      try {
+        const isAtLeastAndroid13 = atLeastAndroid13();
+        if (isAtLeastAndroid13) {
+          const isRecordAudioPermission = await PermissionsAndroid.check(
+            "android.permission.RECORD_AUDIO"
+          );
+          const isReadMediaAudioPermission = await PermissionsAndroid.check(
+            "android.permission.READ_MEDIA_AUDIO"
+          );
+          if (isRecordAudioPermission && isReadMediaAudioPermission) {
+            setIsRecordingPermission(true);
+          }
+        } else {
+          const isRecordAudioPermission = await PermissionsAndroid.check(
+            "android.permission.RECORD_AUDIO"
+          );
+          const isReadExternalStoragePermission = await PermissionsAndroid.check(
+            "android.permission.READ_EXTERNAL_STORAGE"
+          );
+          const isWriteExternalStoragePermission = await PermissionsAndroid.check(
+            "android.permission.WRITE_EXTERNAL_STORAGE"
+          );
+          if (
+            isRecordAudioPermission &&
+            isReadExternalStoragePermission &&
+            isWriteExternalStoragePermission
+          ) {
+            setIsRecordingPermission(true);
+          }
         }
-      } else {
-        const isRecordAudioPermission = await PermissionsAndroid.check(
-          "android.permission.RECORD_AUDIO"
-        );
-        const isReadExternalStoragePermission = await PermissionsAndroid.check(
-          "android.permission.READ_EXTERNAL_STORAGE"
-        );
-        const isWriteExternalStoragePermission = await PermissionsAndroid.check(
-          "android.permission.WRITE_EXTERNAL_STORAGE"
-        );
-        if (
-          isRecordAudioPermission &&
-          isReadExternalStoragePermission &&
-          isWriteExternalStoragePermission
-        ) {
-          setIsRecordingPermission(true);
-        }
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
     }
 
     async function checkIosPermission() {
-      const val = await check(PERMISSIONS.IOS.MICROPHONE);
-      if (val === GRANTED) {
-        setIsRecordingPermission(true);
+      try {
+        const val = await check(PERMISSIONS.IOS.MICROPHONE);
+        if (val === GRANTED) {
+          setIsRecordingPermission(true);
+        }
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
       }
     }
 
@@ -671,124 +688,156 @@ export const InputBoxContextProvider = ({
   // Handling GIFs selection in GiphyDialog
   useEffect(() => {
     if (GIFPicker) {
-      GiphyDialog.configure({
-        mediaTypeConfig: [GiphyContentType.Recents, GiphyContentType.Gif],
-      });
-      const handler: GiphyDialogMediaSelectEventHandlerType = (e) => {
-        selectGIF(e.media, message);
-        GiphyDialog.hide();
-      };
-      const listener = GiphyDialog.addListener(
-        GiphyDialogEvent.MediaSelected,
-        handler
-      );
-      return () => {
-        listener.remove();
-      };
+      try {
+        GiphyDialog.configure({
+          mediaTypeConfig: [GiphyContentType.Recents, GiphyContentType.Gif],
+        });
+        const handler: GiphyDialogMediaSelectEventHandlerType = (e) => {
+          selectGIF(e.media, message);
+          GiphyDialog.hide();
+        };
+        const listener = GiphyDialog.addListener(
+          GiphyDialogEvent.MediaSelected,
+          handler
+        );
+        return () => {
+          listener.remove();
+        };
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
+      }
     }
   }, [message]);
 
   // to handle video thumbnail
   const handleVideoThumbnail = async (images: any) => {
-    const res = await getVideoThumbnail({
-      selectedImages: images,
-      initial: true,
-    });
-    dispatch({
-      type: SELECTED_FILES_TO_UPLOAD_THUMBNAILS,
-      body: {
-        images: res?.selectedFilesToUploadThumbnails,
-      },
-    });
-    dispatch({
-      type: SELECTED_FILES_TO_UPLOAD,
-      body: {
-        images: res?.selectedFilesToUpload,
-      },
-    });
+    try {
+      const res = await getVideoThumbnail({
+        selectedImages: images,
+        initial: true,
+      });
+      dispatch({
+        type: SELECTED_FILES_TO_UPLOAD_THUMBNAILS,
+        body: {
+          images: res?.selectedFilesToUploadThumbnails,
+        },
+      });
+      dispatch({
+        type: SELECTED_FILES_TO_UPLOAD,
+        body: {
+          images: res?.selectedFilesToUpload,
+        },
+      });
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // this method sets image and video to upload on FileUpload screen via redux.
   const handleImageAndVideoUpload = async (selectedImages: Asset[]) => {
-    if (selectedImages) {
-      if (isUploadScreen === false) {
-        // to select images and videos from chatroom.
-        await handleVideoThumbnail(selectedImages);
-        dispatch({
-          type: SELECTED_FILE_TO_VIEW,
-          body: { image: selectedImages[0] },
-        });
-        dispatch({
-          type: STATUS_BAR_STYLE,
-          body: { color: STYLES.$STATUS_BAR_STYLE["light-content"] },
-        });
-      } else {
-        // to select more images and videos on FileUpload screen (isUploadScreen === true)
-        const res = await getVideoThumbnail({
-          // selected files will be saved in redux inside get video function
-          selectedImages,
-          selectedFilesToUpload,
-          selectedFilesToUploadThumbnails,
-          initial: false,
-        });
-        dispatch({
-          type: SELECTED_FILES_TO_UPLOAD_THUMBNAILS,
-          body: {
-            images: res?.selectedFilesToUploadThumbnails,
-          },
-        });
-        dispatch({
-          type: SELECTED_FILES_TO_UPLOAD,
-          body: {
-            images: res?.selectedFilesToUpload,
-          },
-        });
+    try {
+      if (selectedImages) {
+        if (isUploadScreen === false) {
+          // to select images and videos from chatroom.
+          await handleVideoThumbnail(selectedImages);
+          dispatch({
+            type: SELECTED_FILE_TO_VIEW,
+            body: { image: selectedImages[0] },
+          });
+          dispatch({
+            type: STATUS_BAR_STYLE,
+            body: { color: STYLES.$STATUS_BAR_STYLE["light-content"] },
+          });
+        } else {
+          // to select more images and videos on FileUpload screen (isUploadScreen === true)
+          const res = await getVideoThumbnail({
+            // selected files will be saved in redux inside get video function
+            selectedImages,
+            selectedFilesToUpload,
+            selectedFilesToUploadThumbnails,
+            initial: false,
+          });
+          dispatch({
+            type: SELECTED_FILES_TO_UPLOAD_THUMBNAILS,
+            body: {
+              images: res?.selectedFilesToUploadThumbnails,
+            },
+          });
+          dispatch({
+            type: SELECTED_FILES_TO_UPLOAD,
+            body: {
+              images: res?.selectedFilesToUpload,
+            },
+          });
+        }
       }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   //select Images and videoes From Gallery
   const selectGallery = async () => {
-    let limit =
-      chatroomType == ChatroomType.DMCHATROOM && isUserChatbot ? 1 : 0;
-    let mediaType: MediaType =
-      chatroomType == 10 && isUserChatbot ? "photo" : "mixed";
-    const options: LaunchActivityProps = {
-      mediaType,
-      selectionLimit: limit,
-    };
-    navigation.navigate(FILE_UPLOAD, {
-      chatroomID: chatroomID,
-      previousMessage: message, // to keep message on uploadScreen InputBox
-      limit,
-      communityId: community?.id?.toString()
-    });
-    await launchImageLibrary(options, async (response: ImagePickerResponse) => {
-      if (response?.didCancel) {
-        if (selectedFilesToUpload.length === 0) {
-          navigation.goBack();
-        }
-      } else if (response.errorCode) {
-        return;
-      } else {
-        const selectedImages: Asset[] | undefined = response.assets; // selectedImages can be anything images or videos or both
-        if (!selectedImages) {
-          return;
-        }
-        for (let i = 0; i < selectedImages?.length; i++) {
-          const fileSize = selectedImages[i]?.fileSize;
-          if (Number(fileSize) >= MAX_FILE_SIZE) {
-            dispatch({
-              type: SHOW_TOAST,
-              body: { isToast: true, msg: "Files above 100 MB is not allowed" },
-            });
+    try {
+      let limit =
+        chatroomType == ChatroomType.DMCHATROOM && isUserChatbot ? 1 : 0;
+      let mediaType: MediaType =
+        chatroomType == 10 && isUserChatbot ? "photo" : "mixed";
+      const options: LaunchActivityProps = {
+        mediaType,
+        selectionLimit: limit,
+      };
+      navigation.navigate(FILE_UPLOAD, {
+        chatroomID: chatroomID,
+        previousMessage: message, // to keep message on uploadScreen InputBox
+        limit,
+        communityId: community?.id?.toString()
+      });
+      await launchImageLibrary(options, async (response: ImagePickerResponse) => {
+        if (response?.didCancel) {
+          if (selectedFilesToUpload.length === 0) {
             navigation.goBack();
+          }
+        } else if (response.errorCode) {
+          return;
+        } else {
+          const selectedImages: Asset[] | undefined = response.assets; // selectedImages can be anything images or videos or both
+          if (!selectedImages) {
             return;
           }
+          for (let i = 0; i < selectedImages?.length; i++) {
+            const fileSize = selectedImages[i]?.fileSize;
+            if (Number(fileSize) >= MAX_FILE_SIZE) {
+              dispatch({
+                type: SHOW_TOAST,
+                body: { isToast: true, msg: "Files above 100 MB is not allowed" },
+              });
+              navigation.goBack();
+              return;
+            }
+          }
+          handleImageAndVideoUpload(selectedImages);
         }
-        handleImageAndVideoUpload(selectedImages);
-      }
-    });
+      });
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   //select Documents From Gallery
@@ -871,6 +920,11 @@ export const InputBoxContextProvider = ({
         }
       }
     } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
       if (selectedFilesToUpload.length === 0) {
         navigation.goBack();
       }
@@ -919,6 +973,11 @@ export const InputBoxContextProvider = ({
         communityId: community?.id?.toString()
       });
     } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
       if (selectedFilesToUpload.length === 0) {
         navigation.goBack();
       }
@@ -957,7 +1016,13 @@ export const InputBoxContextProvider = ({
           body: { color: STYLES.$STATUS_BAR_STYLE["light-content"] },
         });
       })
-      .catch((err) => { });
+      .catch((error) => { 
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
+      });
   };
 
   const handleModalClose = () => {
@@ -993,13 +1058,21 @@ export const InputBoxContextProvider = ({
 
   // function handles opening of camera functionality
   const handleCamera = async () => {
-    if (isIOS) {
-      await openCamera();
-    } else {
-      const res = await requestCameraPermission();
-      if (res === true) {
+    try {
+      if (isIOS) {
         await openCamera();
+      } else {
+        const res = await requestCameraPermission();
+        if (res === true) {
+          await openCamera();
+        }
       }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
@@ -1039,17 +1112,25 @@ export const InputBoxContextProvider = ({
     minTimeStamp: number,
     conversationId?: string
   ) {
-    const res = myClient?.syncConversation(
-      SyncConversationRequest.builder()
-        .setChatroomId(chatroomID)
-        .setPage(page)
-        .setMinTimestamp(minTimeStamp)
-        .setMaxTimestamp(maxTimeStamp)
-        .setPageSize(500)
-        .setConversationId(conversationId)
-        .build()
-    );
-    return res;
+    try {
+      const res = myClient?.syncConversation(
+        SyncConversationRequest.builder()
+          .setChatroomId(chatroomID)
+          .setPage(page)
+          .setMinTimestamp(minTimeStamp)
+          .setMaxTimestamp(maxTimeStamp)
+          .setPageSize(500)
+          .setConversationId(conversationId)
+          .build()
+      );
+      return res;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   }
 
   // this method is trigerred whenever user presses the send button
@@ -1059,397 +1140,540 @@ export const InputBoxContextProvider = ({
     voiceNote?: any,
     isSendWhileVoiceNoteRecorderPlayerRunning?: boolean
   ) => {
-    if (isUserChatbot) {
-      setShimmerVisibleForChatbot(true);
-      dispatch({
-        type: SHOW_SHIMMER,
+    try {
+      if (isUserChatbot) {
+        setShimmerVisibleForChatbot(true);
+        dispatch({
+          type: SHOW_SHIMMER,
+        });
+      }
+      setClosedPreview(true);
+      setShowLinkPreview(false);
+      setMessage("");
+      setInputHeight(25);
+      setIsVoiceResult(false);
+      setVoiceNotes({
+        recordSecs: 0,
+        recordTime: "",
+        name: "",
       });
-    }
-    setClosedPreview(true);
-    setShowLinkPreview(false);
-    setMessage("");
-    setInputHeight(25);
-    setIsVoiceResult(false);
-    setVoiceNotes({
-      recordSecs: 0,
-      recordTime: "",
-      name: "",
-    });
-    // -- Code for local message handling for normal and reply for now
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const time = new Date(Date.now());
-    const hr = time.getHours();
-    const min = time.getMinutes();
-    const ID = Date.now();
-    const filesToUpload = selectedFilesToUpload?.length;
-    const voiceNotesToUpload =
-      voiceNote?.length > 0 ? voiceNote : selectedVoiceNoteFilesToUpload;
-    const attachmentsCount =
-      filesToUpload > 0 ? filesToUpload : voiceNotesToUpload?.length; //if any
-    let dummySelectedFileArr: any = []; //if any
-    let dummyAttachmentsArr: any = []; //if any
-    // for making data for `images`, `videos` and `pdf` key
-    if (attachmentsCount > 0) {
-      for (let i = 0; i < attachmentsCount; i++) {
-        const attachmentType = selectedFilesToUpload[i]?.type?.split("/")[0];
-        const docAttachmentType = selectedFilesToUpload[i]?.type?.split("/")[1];
-        if (attachmentType === IMAGE_TEXT) {
-          const obj = {
-            imageUrl: selectedFilesToUpload[i].uri,
-            index: i + 1,
-          };
-          dummySelectedFileArr = [...dummySelectedFileArr, obj];
-        } else if (attachmentType === VIDEO_TEXT) {
-          const obj = {
-            videoUrl: selectedFilesToUpload[i].uri,
-            index: i + 1,
-            thumbnailUrl: selectedFilesToUpload[i].thumbanil,
-          };
-          dummySelectedFileArr = [...dummySelectedFileArr, obj];
-        } else if (docAttachmentType === PDF_TEXT) {
-          const obj = {
-            pdfFile: selectedFilesToUpload[i].uri,
-            index: i + 1,
-          };
-          dummySelectedFileArr = [...dummySelectedFileArr, obj];
+      // -- Code for local message handling for normal and reply for now
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const time = new Date(Date.now());
+      const hr = time.getHours();
+      const min = time.getMinutes();
+      const ID = Date.now();
+      const filesToUpload = selectedFilesToUpload?.length;
+      const voiceNotesToUpload =
+        voiceNote?.length > 0 ? voiceNote : selectedVoiceNoteFilesToUpload;
+      const attachmentsCount =
+        filesToUpload > 0 ? filesToUpload : voiceNotesToUpload?.length; //if any
+      let dummySelectedFileArr: any = []; //if any
+      let dummyAttachmentsArr: any = []; //if any
+      // for making data for `images`, `videos` and `pdf` key
+      if (attachmentsCount > 0) {
+        for (let i = 0; i < attachmentsCount; i++) {
+          const attachmentType = selectedFilesToUpload[i]?.type?.split("/")[0];
+          const docAttachmentType = selectedFilesToUpload[i]?.type?.split("/")[1];
+          if (attachmentType === IMAGE_TEXT) {
+            const obj = {
+              imageUrl: selectedFilesToUpload[i].uri,
+              index: i + 1,
+            };
+            dummySelectedFileArr = [...dummySelectedFileArr, obj];
+          } else if (attachmentType === VIDEO_TEXT) {
+            const obj = {
+              videoUrl: selectedFilesToUpload[i].uri,
+              index: i + 1,
+              thumbnailUrl: selectedFilesToUpload[i].thumbanil,
+            };
+            dummySelectedFileArr = [...dummySelectedFileArr, obj];
+          } else if (docAttachmentType === PDF_TEXT) {
+            const obj = {
+              pdfFile: selectedFilesToUpload[i].uri,
+              index: i + 1,
+            };
+            dummySelectedFileArr = [...dummySelectedFileArr, obj];
+          }
         }
       }
-    }
-    // for making data for `attachments` key
-    if (attachmentsCount > 0) {
-      for (let i = 0; i < attachmentsCount; i++) {
-        const attachmentType = selectedFilesToUpload[i]?.data?.type
-          ? selectedFilesToUpload[i]?.data?.type
-          : selectedFilesToUpload[i]?.type?.split("/")[0];
-        const docAttachmentType = selectedFilesToUpload[i]?.type?.split("/")[1];
-        const audioAttachmentType = voiceNotesToUpload[i]?.type;
-        const audioURI = voiceNotesToUpload[i]?.uri;
-        const URI = selectedFilesToUpload[i]?.uri;
-        if (attachmentType === IMAGE_TEXT) {
-          const obj = {
-            ...selectedFilesToUpload[i],
-            type: attachmentType,
-            url: URI,
-            index: i + 1,
-            name: selectedFilesToUpload[i]?.fileName,
-            meta: {
-              size: selectedFilesToUpload[i]?.fileSize,
-            }
-          };
-          dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
-        } else if (attachmentType === VIDEO_TEXT) {
-          const obj = {
-            ...selectedFilesToUpload[i],
-            type: attachmentType,
-            url: URI,
-            thumbnailUrl: selectedFilesToUpload[i].thumbnailUrl,
-            index: i + 1,
-            name: selectedFilesToUpload[i].fileName,
-            meta: {
-              size: selectedFilesToUpload[i]?.fileSize,
-              duration: selectedFilesToUpload[i]?.duration,
-            }
-          };
-          dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
-        } else if (docAttachmentType === PDF_TEXT) {
-          const obj = {
-            ...selectedFilesToUpload[i],
-            type: docAttachmentType,
-            url: URI,
-            index: i + 1,
-            name: selectedFilesToUpload[i].name,
-            meta: {
-              size: selectedFilesToUpload[i]?.size,
-            }
-          };
-          dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
-        } else if (audioAttachmentType === VOICE_NOTE_TEXT) {
-          const obj = {
-            ...voiceNotesToUpload[i],
-            type: audioAttachmentType,
-            url: audioURI,
-            index: i + 1,
-            name: voiceNotesToUpload[i].name,
-            chatroomId: chatroomID,
-            metaRO: {
-              size: null,
-              duration: voiceNotesToUpload[i].duration,
-            },
-          };
-          dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
-        } else if (attachmentType === GIF_TEXT) {
-          let obj = {
-            ...selectedFilesToUpload[i],
-            type: attachmentType,
-            url: selectedFilesToUpload[i]?.url,
-            thumbnailUrl: selectedFilesToUpload[i].thumbnailUrl,
-            index: i + 1,
-            name: selectedFilesToUpload[i].name,
-          };
-          dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
+      // for making data for `attachments` key
+      if (attachmentsCount > 0) {
+        for (let i = 0; i < attachmentsCount; i++) {
+          const attachmentType = selectedFilesToUpload[i]?.data?.type
+            ? selectedFilesToUpload[i]?.data?.type
+            : selectedFilesToUpload[i]?.type?.split("/")[0];
+          const docAttachmentType = selectedFilesToUpload[i]?.type?.split("/")[1];
+          const audioAttachmentType = voiceNotesToUpload[i]?.type;
+          const audioURI = voiceNotesToUpload[i]?.uri;
+          const URI = selectedFilesToUpload[i]?.uri;
+          if (attachmentType === IMAGE_TEXT) {
+            const obj = {
+              ...selectedFilesToUpload[i],
+              type: attachmentType,
+              url: URI,
+              index: i + 1,
+              name: selectedFilesToUpload[i]?.fileName,
+              meta: {
+                size: selectedFilesToUpload[i]?.fileSize,
+              }
+            };
+            dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
+          } else if (attachmentType === VIDEO_TEXT) {
+            const obj = {
+              ...selectedFilesToUpload[i],
+              type: attachmentType,
+              url: URI,
+              thumbnailUrl: selectedFilesToUpload[i].thumbnailUrl,
+              index: i + 1,
+              name: selectedFilesToUpload[i].fileName,
+              meta: {
+                size: selectedFilesToUpload[i]?.fileSize,
+                duration: selectedFilesToUpload[i]?.duration,
+              }
+            };
+            dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
+          } else if (docAttachmentType === PDF_TEXT) {
+            const obj = {
+              ...selectedFilesToUpload[i],
+              type: docAttachmentType,
+              url: URI,
+              index: i + 1,
+              name: selectedFilesToUpload[i].name,
+              meta: {
+                size: selectedFilesToUpload[i]?.size,
+              }
+            };
+            dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
+          } else if (audioAttachmentType === VOICE_NOTE_TEXT) {
+            const obj = {
+              ...voiceNotesToUpload[i],
+              type: audioAttachmentType,
+              url: audioURI,
+              index: i + 1,
+              name: voiceNotesToUpload[i].name,
+              chatroomId: chatroomID,
+              metaRO: {
+                size: null,
+                duration: voiceNotesToUpload[i].duration,
+              },
+            };
+            dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
+          } else if (attachmentType === GIF_TEXT) {
+            let obj = {
+              ...selectedFilesToUpload[i],
+              type: attachmentType,
+              url: selectedFilesToUpload[i]?.url,
+              thumbnailUrl: selectedFilesToUpload[i].thumbnailUrl,
+              index: i + 1,
+              name: selectedFilesToUpload[i].name,
+            };
+            dummyAttachmentsArr = [...dummyAttachmentsArr, obj];
+          }
         }
       }
-    }
-    const conversationText = replaceMentionValues(
-      conversation,
-      ({ id, name }) => {
-        // example ID = `user_profile/8619d45e-9c4c-4730-af8e-4099fe3dcc4b`
-        const PATH = extractPathfromRouteQuery(id);
-        if (!PATH) {
-          const newName = name.substring(1);
-          isGroupTag = true;
-          taggedUserNames.push(name);
-          return `<<${name}|route://${newName}>>`;
-        } else {
-          taggedUserNames.push(name);
-          return `<<${name}|route://${id}>>`;
+      const conversationText = replaceMentionValues(
+        conversation,
+        ({ id, name }) => {
+          // example ID = `user_profile/8619d45e-9c4c-4730-af8e-4099fe3dcc4b`
+          const PATH = extractPathfromRouteQuery(id);
+          if (!PATH) {
+            const newName = name.substring(1);
+            isGroupTag = true;
+            taggedUserNames.push(name);
+            return `<<${name}|route://${newName}>>`;
+          } else {
+            taggedUserNames.push(name);
+            return `<<${name}|route://${id}>>`;
+          }
         }
-      }
-    );
-    const isMessageTrimmed =
-      !!conversation.trim() ||
-      isVoiceResult ||
-      isSendWhileVoiceNoteRecorderPlayerRunning ||
-      metaData;
-    // check if message is empty string or not
-    if ((isMessageTrimmed && !isUploadScreen) || isUploadScreen) {
-      const replyObj = chatSchema.reply;
-      if (isReply) {
-        replyObj.replyConversation = replyMessage?.id?.toString();
-        replyObj.replyConversationObject = replyMessage;
-        replyObj.member.name = user?.name;
-        replyObj.createdEpoch = Date.now();
-        replyObj.member.id = user?.id?.toString();
-        replyObj.member.sdkClientInfo = user?.sdkClientInfo;
-        replyObj.member.uuid = user?.uuid;
-        replyObj.answer = conversationText?.trim()?.toString();
-        replyObj.createdAt = `${hr.toLocaleString("en-US", {
+      );
+      const isMessageTrimmed =
+        !!conversation.trim() ||
+        isVoiceResult ||
+        isSendWhileVoiceNoteRecorderPlayerRunning ||
+        metaData;
+      // check if message is empty string or not
+      if ((isMessageTrimmed && !isUploadScreen) || isUploadScreen) {
+        const replyObj = chatSchema.reply;
+        if (isReply) {
+          replyObj.replyConversation = replyMessage?.id?.toString();
+          replyObj.replyConversationObject = replyMessage;
+          replyObj.member.name = user?.name;
+          replyObj.createdEpoch = Date.now();
+          replyObj.member.id = user?.id?.toString();
+          replyObj.member.sdkClientInfo = user?.sdkClientInfo;
+          replyObj.member.uuid = user?.uuid;
+          replyObj.answer = conversationText?.trim()?.toString();
+          replyObj.createdAt = `${hr.toLocaleString("en-US", {
+            minimumIntegerDigits: 2,
+            useGrouping: false,
+          })}:${min.toLocaleString("en-US", {
+            minimumIntegerDigits: 2,
+            useGrouping: false,
+          })}`;
+          replyObj.id = `-${ID?.toString()}`;
+          replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString() ?? chatroomID?.toString();;
+          replyObj.communityId = community?.id?.toString();
+          replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+            } ${months[time.getMonth()]} ${time.getFullYear()}`;
+          replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
+          replyObj.communityId = community?.id?.toString();
+          replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+            } ${months[time.getMonth()]} ${time.getFullYear()}`;
+          replyObj.attachmentCount = attachmentsCount;
+          replyObj.attachments = dummyAttachmentsArr;
+          replyObj.attachmentUploadedEpoch = 0;
+          replyObj.attachmentSavedEpoch = ID;
+          replyObj.localCreatedEpoch = ID;
+          replyObj.inProgress = true;
+          replyObj.hasFiles = attachmentsCount > 0 ? true : false;
+          replyObj.attachmentsUploaded = attachmentsCount > 0 ? true : false;
+          replyObj.images = dummySelectedFileArr;
+          replyObj.videos = dummySelectedFileArr;
+          replyObj.pdf = dummySelectedFileArr;
+          replyObj.temporaryId = ID.toString();
+          if (!closedOnce || !closedPreview) {
+            replyObj.ogTags = ogTagsState;
+          }
+        }
+        const obj = chatSchema.normal;
+        obj.member.name = user?.name;
+        obj.createdEpoch = Date.now();
+        obj.member.id = user?.id?.toString();
+        obj.member.sdkClientInfo = user?.sdkClientInfo;
+        obj.member.uuid = user?.uuid;
+        obj.answer = conversationText?.trim()?.toString();
+        obj.createdAt = `${hr.toLocaleString("en-US", {
           minimumIntegerDigits: 2,
           useGrouping: false,
         })}:${min.toLocaleString("en-US", {
           minimumIntegerDigits: 2,
           useGrouping: false,
         })}`;
-        replyObj.id = `-${ID?.toString()}`;
-        replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString() ?? chatroomID?.toString();;
-        replyObj.communityId = community?.id?.toString();
-        replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
+        obj.id = `-${ID?.toString()}`;
+        obj.chatroomId = chatroomDetails?.chatroom?.id?.toString() ?? chatroomID?.toString();
+        obj.communityId = community?.id?.toString();
+        obj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
           } ${months[time.getMonth()]} ${time.getFullYear()}`;
-        replyObj.chatroomId = chatroomDetails?.chatroom?.id?.toString();
-        replyObj.communityId = community?.id?.toString();
-        replyObj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-          } ${months[time.getMonth()]} ${time.getFullYear()}`;
-        replyObj.attachmentCount = attachmentsCount;
-        replyObj.attachments = dummyAttachmentsArr;
-        replyObj.attachmentUploadedEpoch = 0;
-        replyObj.attachmentSavedEpoch = ID;
-        replyObj.localCreatedEpoch = ID;
-        replyObj.inProgress = true;
-        replyObj.hasFiles = attachmentsCount > 0 ? true : false;
-        replyObj.attachmentsUploaded = attachmentsCount > 0 ? true : false;
-        replyObj.images = dummySelectedFileArr;
-        replyObj.videos = dummySelectedFileArr;
-        replyObj.pdf = dummySelectedFileArr;
-        replyObj.temporaryId = ID.toString();
+        obj.attachmentCount = attachmentsCount;
+        obj.attachments = dummyAttachmentsArr;
+        obj.hasFiles = attachmentsCount > 0 ? true : false;
+        obj.attachmentsUploaded = attachmentsCount > 0 ? true : false;
+        obj.images = dummySelectedFileArr;
+        obj.videos = dummySelectedFileArr;
+        obj.pdf = dummySelectedFileArr;
+        obj.localCreatedEpoch = ID
+        obj.attachmentUploadedEpoch = 0;
+        obj.inProgress = true;
+        obj.temporaryId = ID.toString()
+        obj.widget =
+          Object.keys(metaData ?? {}).length > 0
+            ? {
+              metadata: metaData,
+              parentEntityId: "",
+              parentEntityType: "",
+              createdAt: ID,
+              updatedAt: ID,
+            }
+            : null;
+        obj.widgetId =
+          Object.keys(metaData ?? {}).length > 0 ? ID?.toString() : "";
         if (!closedOnce || !closedPreview) {
-          replyObj.ogTags = ogTagsState;
+          obj.ogTags = ogTagsState;
         }
-      }
-      const obj = chatSchema.normal;
-      obj.member.name = user?.name;
-      obj.createdEpoch = Date.now();
-      obj.member.id = user?.id?.toString();
-      obj.member.sdkClientInfo = user?.sdkClientInfo;
-      obj.member.uuid = user?.uuid;
-      obj.answer = conversationText?.trim()?.toString();
-      obj.createdAt = `${hr.toLocaleString("en-US", {
-        minimumIntegerDigits: 2,
-        useGrouping: false,
-      })}:${min.toLocaleString("en-US", {
-        minimumIntegerDigits: 2,
-        useGrouping: false,
-      })}`;
-      obj.id = `-${ID?.toString()}`;
-      obj.chatroomId = chatroomDetails?.chatroom?.id?.toString() ?? chatroomID?.toString();
-      obj.communityId = community?.id?.toString();
-      obj.date = `${time.getDate() < 10 ? `0${time.getDate()}` : time.getDate()
-        } ${months[time.getMonth()]} ${time.getFullYear()}`;
-      obj.attachmentCount = attachmentsCount;
-      obj.attachments = dummyAttachmentsArr;
-      obj.hasFiles = attachmentsCount > 0 ? true : false;
-      obj.attachmentsUploaded = attachmentsCount > 0 ? true : false;
-      obj.images = dummySelectedFileArr;
-      obj.videos = dummySelectedFileArr;
-      obj.pdf = dummySelectedFileArr;
-      obj.localCreatedEpoch = ID
-      obj.attachmentUploadedEpoch = 0;
-      obj.inProgress = true;
-      obj.temporaryId = ID.toString()
-      obj.widget =
-        Object.keys(metaData ?? {}).length > 0
-          ? {
-            metadata: metaData,
-            parentEntityId: "",
-            parentEntityType: "",
-            createdAt: ID,
-            updatedAt: ID,
-          }
-          : null;
-      obj.widgetId =
-        Object.keys(metaData ?? {}).length > 0 ? ID?.toString() : "";
-      if (!closedOnce || !closedPreview) {
-        obj.ogTags = ogTagsState;
-      }
-      dispatch({
-        type: UPDATE_CONVERSATIONS,
-        body: isReply
-          ? { obj: { ...replyObj, isInProgress: SUCCESS } }
-          : { obj: { ...obj, isInProgress: SUCCESS } },
-      });
-      dispatch({
-        type: MESSAGE_SENT,
-        body: isReply ? { id: replyObj?.id } : { id: obj?.id },
-      });
-      if (isUploadScreen) {
         dispatch({
-          type: CLEAR_SELECTED_FILES_TO_UPLOAD,
+          type: UPDATE_CONVERSATIONS,
+          body: isReply
+            ? { obj: { ...replyObj, isInProgress: SUCCESS } }
+            : { obj: { ...obj, isInProgress: SUCCESS } },
         });
         dispatch({
-          type: CLEAR_SELECTED_FILE_TO_VIEW,
+          type: MESSAGE_SENT,
+          body: isReply ? { id: replyObj?.id } : { id: obj?.id },
         });
-      }
-      if (isReply) {
-        dispatch({ type: SET_IS_REPLY, body: { isReply: false } });
-        dispatch({ type: SET_REPLY_MESSAGE, body: { replyMessage: "" } });
-      }
-      // -- Code for local message handling ended
-      // condition for request DM for the first time
-      if (
-        chatroomType === ChatroomType.DMCHATROOM && // if DM
-        (chatRequestState === null || chatRequestState === undefined) &&
-        isPrivateMember // isPrivateMember = false when none of the member on both sides is CM.
-      ) {
-        const response = await myClient?.sendDMRequest({
-          chatroomId: chatroomID,
-          chatRequestState: ChatroomChatRequestState.INITIATED,
-          text: conversation?.trim(),
-        });
-        const val = await syncConversationAPI(
-          page,
-          Math.floor(Date.now() * 1000),
-          0
-        );
-        const conversationData = val?.data?.conversationsData;
-        let matchingObject = conversationData.find(
-          (obj) => obj.answer === conversation
-        );
-        matchingObject.member = user;
-        // saving the first message to localDB
-        await myClient?.saveNewConversation(
-          chatroomID?.toString(),
-          matchingObject
-        );
-        dispatch({
-          type: SHOW_TOAST,
-          body: { isToast: true, msg: "Direct messaging request sent" },
-        });
-        //dispatching redux action for local handling of chatRequestState
-        dispatch({
-          type: UPDATE_CHAT_REQUEST_STATE,
-          body: { chatRequestState: ChatroomChatRequestState.INITIATED },
-        });
-        await myClient?.saveNewConversation(
-          chatroomID?.toString(),
-          response?.data?.conversation
-        );
-        await myClient?.updateChatRequestState(
-          chatroomID?.toString(),
-          ChatroomChatRequestState.INITIATED
-        );
-      } else if (
-        chatroomType === ChatroomType.DMCHATROOM && // if DM
-        (chatRequestState === null || chatRequestState === undefined) &&
-        !isPrivateMember // isPrivateMember = false when none of the member on both sides is CM.
-      ) {
-        const response = await myClient?.sendDMRequest({
-          chatroomId: chatroomID,
-          chatRequestState: ChatroomChatRequestState.ACCEPTED,
-          text: conversation?.trim(),
-        });
-        const val = await syncConversationAPI(
-          page,
-          Math.floor(Date.now() * 1000),
-          0
-        );
-        const conversationData = val?.data?.conversationsData;
-        let matchingObject = conversationData.find(
-          (obj) => obj.answer === conversation
-        );
-        matchingObject.member = user;
-        // saving the first message to localDB
-        await myClient?.saveNewConversation(
-          chatroomID?.toString(),
-          matchingObject
-        );
-        dispatch({
-          type: UPDATE_CHAT_REQUEST_STATE,
-          body: { chatRequestState: ChatroomChatRequestState.ACCEPTED },
-        });
-        await myClient?.saveNewConversation(
-          chatroomID?.toString(),
-          response?.data?.conversation
-        );
-        await myClient?.updateChatRequestState(
-          chatroomID?.toString(),
-          ChatroomChatRequestState.ACCEPTED
-        );
-      } else {
+        if (isUploadScreen) {
+          dispatch({
+            type: CLEAR_SELECTED_FILES_TO_UPLOAD,
+          });
+          dispatch({
+            type: CLEAR_SELECTED_FILE_TO_VIEW,
+          });
+        }
         if (isReply) {
-          if (attachmentsCount > 0) {
-            const editedReplyObj = { ...replyObj, isInProgress: SUCCESS };
-            await myClient?.saveNewConversation(
-              chatroomID?.toString(),
-              editedReplyObj
-            );
-          } else {
-            await myClient?.saveNewConversation(
-              chatroomID?.toString(),
-              replyObj
-            );
-          }
-        } else {
-          if (attachmentsCount > 0) {
-            const editedObj = { ...obj, isInProgress: SUCCESS };
-            await myClient?.saveNewConversation(
-              chatroomID?.toString(),
-              editedObj
-            );
-          } else {
-            await myClient?.saveNewConversation(chatroomID?.toString(), obj);
-          }
+          dispatch({ type: SET_IS_REPLY, body: { isReply: false } });
+          dispatch({ type: SET_REPLY_MESSAGE, body: { replyMessage: "" } });
         }
-        if (!isUploadScreen) {
-
-          if (isUserChatbot) {
-            dispatch({
-              type: ADD_SHIMMER_MESSAGE,
-            });
+        // -- Code for local message handling ended
+        // condition for request DM for the first time
+        if (
+          chatroomType === ChatroomType.DMCHATROOM && // if DM
+          (chatRequestState === null || chatRequestState === undefined) &&
+          isPrivateMember // isPrivateMember = false when none of the member on both sides is CM.
+        ) {
+          const response = await myClient?.sendDMRequest({
+            chatroomId: chatroomID,
+            chatRequestState: ChatroomChatRequestState.INITIATED,
+            text: conversation?.trim(),
+          });
+          const val = await syncConversationAPI(
+            page,
+            Math.floor(Date.now() * 1000),
+            0
+          );
+          const conversationData = val?.data?.conversationsData;
+          let matchingObject = conversationData.find(
+            (obj) => obj.answer === conversation
+          );
+          matchingObject.member = user;
+          // saving the first message to localDB
+          await myClient?.saveNewConversation(
+            chatroomID?.toString(),
+            matchingObject
+          );
+          dispatch({
+            type: SHOW_TOAST,
+            body: { isToast: true, msg: "Direct messaging request sent" },
+          });
+          //dispatching redux action for local handling of chatRequestState
+          dispatch({
+            type: UPDATE_CHAT_REQUEST_STATE,
+            body: { chatRequestState: ChatroomChatRequestState.INITIATED },
+          });
+          await myClient?.saveNewConversation(
+            chatroomID?.toString(),
+            response?.data?.conversation
+          );
+          await myClient?.updateChatRequestState(
+            chatroomID?.toString(),
+            ChatroomChatRequestState.INITIATED
+          );
+        } else if (
+          chatroomType === ChatroomType.DMCHATROOM && // if DM
+          (chatRequestState === null || chatRequestState === undefined) &&
+          !isPrivateMember // isPrivateMember = false when none of the member on both sides is CM.
+        ) {
+          const response = await myClient?.sendDMRequest({
+            chatroomId: chatroomID,
+            chatRequestState: ChatroomChatRequestState.ACCEPTED,
+            text: conversation?.trim(),
+          });
+          const val = await syncConversationAPI(
+            page,
+            Math.floor(Date.now() * 1000),
+            0
+          );
+          const conversationData = val?.data?.conversationsData;
+          let matchingObject = conversationData.find(
+            (obj) => obj.answer === conversation
+          );
+          matchingObject.member = user;
+          // saving the first message to localDB
+          await myClient?.saveNewConversation(
+            chatroomID?.toString(),
+            matchingObject
+          );
+          dispatch({
+            type: UPDATE_CHAT_REQUEST_STATE,
+            body: { chatRequestState: ChatroomChatRequestState.ACCEPTED },
+          });
+          await myClient?.saveNewConversation(
+            chatroomID?.toString(),
+            response?.data?.conversation
+          );
+          await myClient?.updateChatRequestState(
+            chatroomID?.toString(),
+            ChatroomChatRequestState.ACCEPTED
+          );
+        } else {
+          if (isReply) {
+            if (attachmentsCount > 0) {
+              const editedReplyObj = { ...replyObj, isInProgress: SUCCESS };
+              await myClient?.saveNewConversation(
+                chatroomID?.toString(),
+                editedReplyObj
+              );
+            } else {
+              await myClient?.saveNewConversation(
+                chatroomID?.toString(),
+                replyObj
+              );
+            }
+          } else {
+            if (attachmentsCount > 0) {
+              const editedObj = { ...obj, isInProgress: SUCCESS };
+              await myClient?.saveNewConversation(
+                chatroomID?.toString(),
+                editedObj
+              );
+            } else {
+              await myClient?.saveNewConversation(chatroomID?.toString(), obj);
+            }
           }
-          let attachments;
-          if (attachmentsCount > 0) {
+          if (!isUploadScreen) {
+  
+            if (isUserChatbot) {
+              dispatch({
+                type: ADD_SHIMMER_MESSAGE,
+              });
+            }
+            let attachments;
+            if (attachmentsCount > 0) {
+              // start uploading
+              dispatch({
+                type: SET_FILE_UPLOADING_MESSAGES,
+                body: {
+                  message: isReply
+                    ? {
+                        ...replyObj,
+                        id: ID,
+                        temporaryId: ID,
+                        isInProgress: SUCCESS,
+                      }
+                    : {
+                        ...obj,
+                        id: ID,
+                        temporaryId: ID,
+                        isInProgress: SUCCESS,
+                      },
+                  ID: ID,
+                },
+              });
+  
+              const message = isReply
+                ? {
+                    ...replyObj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  }
+                : {
+                    ...obj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  };
+  
+              if (voiceNotesToUpload?.length > 0) {
+                attachments = await handleFileUpload(
+                  ID,
+                  false,
+                  true,
+                  voiceNotesToUpload
+                );
+              }
+            }
+  
+            if (voiceNotesToUpload?.length > 0 && (attachments == undefined || attachments == null)) {
+              dispatch({
+                type: SET_FAILED_MESSAGE_ID,
+                body: {
+                  id: `-${ID?.toString()}`
+                }
+              })
+              return;
+            }
+  
+            if (isReply) {
+              replyObj.attachmentUploadedEpoch = Date.now()
+            } else {
+              obj.attachmentUploadedEpoch = Date.now()
+            }
+  
+            await Client?.myClient?.updateConversationData(
+              UpdateConversationDataRequest.builder()
+                .setConversation(
+                  isReply ? replyObj : obj
+                )
+                .build()
+            )
+  
+            let payload: any = {
+              chatroomId: chatroomID,
+              hasFiles: attachments?.length > 0 ? true : false,
+              text: conversationText?.trim(),
+              temporaryId: ID?.toString(),
+              attachmentCount: attachmentsCount,
+              repliedConversationId: replyMessage?.id,
+              attachments,
+              triggerBot: isUserChatbot ? true : false,
+            };
+  
+            if (metaData) {
+              payload = { ...payload, metadata: metaData };
+            }
+            if (
+              Object.keys(ogTagsState || {}).length !== 0 &&
+              url &&
+              (!closedOnce || !closedPreview)
+            ) {
+              payload.ogTags = ogTagsState;
+            } else if (url && (!closedOnce || !closedPreview)) {
+              payload.shareLink = url;
+            }
+            const response: any = await dispatch(
+              onConversationsCreate(payload) as any
+            );
+  
+            if (response?.conversation) {
+              setMessageSentByUserId(response?.conversation?.id ?? "");
+              dispatch({
+                type: SET_MESSAGE_ID,
+                body: {
+                  id: response?.conversation?.id,
+                },
+              });
+              await myClient?.replaceSavedConversation(
+                response?.conversation,
+                response?.widgets
+              );
+            } else {
+              dispatch({
+                type: SET_FAILED_MESSAGE_ID,
+                body: {
+                  id: `-${ID?.toString()}`
+                }
+              })
+            }
+  
+            //Handling conversation failed case
+            if (response === undefined) {
+              dispatch({
+                type: SHOW_TOAST,
+                body: {
+                  isToast: true,
+                  msg: BLOCKED_DM,
+                },
+              });
+              dispatch({
+                type: EMPTY_BLOCK_DELETION,
+                body: {},
+              });
+            }
+          } else {
+            if (isUserChatbot) {
+              dispatch({
+                type: ADD_SHIMMER_MESSAGE,
+              });
+            }
+            dispatch({
+              type: FILE_SENT,
+              body: { status: !fileSent },
+            });
+            navigation.goBack();
             // start uploading
             dispatch({
               type: SET_FILE_UPLOADING_MESSAGES,
@@ -1470,7 +1694,7 @@ export const InputBoxContextProvider = ({
                 ID: ID,
               },
             });
-
+  
             const message = isReply
               ? {
                   ...replyObj,
@@ -1484,264 +1708,129 @@ export const InputBoxContextProvider = ({
                   temporaryId: ID,
                   isInProgress: SUCCESS,
                 };
-
-            if (voiceNotesToUpload?.length > 0) {
-              attachments = await handleFileUpload(
-                ID,
-                false,
-                true,
-                voiceNotesToUpload
-              );
+  
+            const attachments = await handleFileUpload(ID, false);
+            if (attachments == null) {
+              dispatch({
+                type: SET_FAILED_MESSAGE_ID,
+                body: {
+                  id: `-${ID?.toString()}`
+                }
+              })
+              return;
             }
-          }
-
-          if (voiceNotesToUpload?.length > 0 && (attachments == undefined || attachments == null)) {
-            dispatch({
-              type: SET_FAILED_MESSAGE_ID,
-              body: {
-                id: `-${ID?.toString()}`
-              }
-            })
-            return;
-          }
-
-          if (isReply) {
-            replyObj.attachmentUploadedEpoch = Date.now()
-          } else {
-            obj.attachmentUploadedEpoch = Date.now()
-          }
-
-          await Client?.myClient?.updateConversationData(
-            UpdateConversationDataRequest.builder()
-              .setConversation(
-                isReply ? replyObj : obj
-              )
-              .build()
-          )
-
-          let payload: any = {
-            chatroomId: chatroomID,
-            hasFiles: attachments?.length > 0 ? true : false,
-            text: conversationText?.trim(),
-            temporaryId: ID?.toString(),
-            attachmentCount: attachmentsCount,
-            repliedConversationId: replyMessage?.id,
-            attachments,
-            triggerBot: isUserChatbot ? true : false,
-          };
-
-          if (metaData) {
-            payload = { ...payload, metadata: metaData };
-          }
-          if (
-            Object.keys(ogTagsState || {}).length !== 0 &&
-            url &&
-            (!closedOnce || !closedPreview)
-          ) {
-            payload.ogTags = ogTagsState;
-          } else if (url && (!closedOnce || !closedPreview)) {
-            payload.shareLink = url;
-          }
-          const response: any = await dispatch(
-            onConversationsCreate(payload) as any
-          );
-
-          if (response?.conversation) {
-            setMessageSentByUserId(response?.conversation?.id ?? "");
-            dispatch({
-              type: SET_MESSAGE_ID,
-              body: {
-                id: response?.conversation?.id,
-              },
-            });
+  
+            if (isReply) {
+              replyObj.attachmentUploadedEpoch = Date.now()
+            } else {
+              obj.attachmentUploadedEpoch = Date.now()
+            }
+  
+  
+            await Client?.myClient?.updateConversationData(
+              UpdateConversationDataRequest.builder()
+                .setConversation(
+                  isReply ? replyObj : obj
+                )
+                .build()
+            )
+  
+            let payload: any = {
+              chatroomId: chatroomID,
+              hasFiles: attachments?.length > 0 ? true : false,
+              text: conversationText?.trim(),
+              temporaryId: ID?.toString(),
+              attachmentCount: attachmentsCount,
+              repliedConversationId: replyMessage?.id,
+              attachments,
+              triggerBot: isUserChatbot ? true : false,
+            };
+  
+            if (metaData) {
+              payload = { ...payload, metadata: metaData };
+            }
+  
+            if (
+              Object.keys(ogTagsState).length !== 0 &&
+              url &&
+              (!closedOnce || !closedPreview)
+            ) {
+              payload.ogTags = ogTagsState;
+            } else if (url && (!closedOnce || !closedPreview)) {
+              payload.shareLink = url;
+            }
+            const response: any = await dispatch(
+              onConversationsCreate(payload) as any
+            );
+  
+            if (response) {
+              setMessageSentByUserId(response?.conversation?.id ?? "");
+              dispatch({
+                type: SET_MESSAGE_ID,
+                body: {
+                  id: response?.conversation?.id,
+                },
+              });
+            }
+  
             await myClient?.replaceSavedConversation(
               response?.conversation,
               response?.widgets
             );
-          } else {
+  
+            if (response === undefined) {
+              dispatch({
+                type: SHOW_TOAST,
+                body: {
+                  isToast: true,
+                  msg: "Message not sent. Please check your internet connection",
+                },
+              });
+            }
             dispatch({
-              type: SET_FAILED_MESSAGE_ID,
-              body: {
-                id: `-${ID?.toString()}`
-              }
-            })
-          }
-
-          //Handling conversation failed case
-          if (response === undefined) {
-            dispatch({
-              type: SHOW_TOAST,
-              body: {
-                isToast: true,
-                msg: BLOCKED_DM,
-              },
-            });
-            dispatch({
-              type: EMPTY_BLOCK_DELETION,
-              body: {},
+              type: STATUS_BAR_STYLE,
+              body: { color: STYLES.$STATUS_BAR_STYLE.default },
             });
           }
-        } else {
-          if (isUserChatbot) {
-            dispatch({
-              type: ADD_SHIMMER_MESSAGE,
-            });
-          }
-          dispatch({
-            type: FILE_SENT,
-            body: { status: !fileSent },
-          });
-          navigation.goBack();
-          // start uploading
-          dispatch({
-            type: SET_FILE_UPLOADING_MESSAGES,
-            body: {
-              message: isReply
-                ? {
-                    ...replyObj,
-                    id: ID,
-                    temporaryId: ID,
-                    isInProgress: SUCCESS,
-                  }
-                : {
-                    ...obj,
-                    id: ID,
-                    temporaryId: ID,
-                    isInProgress: SUCCESS,
-                  },
-              ID: ID,
-            },
-          });
-
-          const message = isReply
-            ? {
-                ...replyObj,
-                id: ID,
-                temporaryId: ID,
-                isInProgress: SUCCESS,
-              }
-            : {
-                ...obj,
-                id: ID,
-                temporaryId: ID,
-                isInProgress: SUCCESS,
-              };
-
-          const attachments = await handleFileUpload(ID, false);
-          if (attachments == null) {
-            dispatch({
-              type: SET_FAILED_MESSAGE_ID,
-              body: {
-                id: `-${ID?.toString()}`
-              }
-            })
-            return;
-          }
-
-          if (isReply) {
-            replyObj.attachmentUploadedEpoch = Date.now()
-          } else {
-            obj.attachmentUploadedEpoch = Date.now()
-          }
-
-
-          await Client?.myClient?.updateConversationData(
-            UpdateConversationDataRequest.builder()
-              .setConversation(
-                isReply ? replyObj : obj
-              )
-              .build()
-          )
-
-          let payload: any = {
-            chatroomId: chatroomID,
-            hasFiles: attachments?.length > 0 ? true : false,
-            text: conversationText?.trim(),
-            temporaryId: ID?.toString(),
-            attachmentCount: attachmentsCount,
-            repliedConversationId: replyMessage?.id,
-            attachments,
-            triggerBot: isUserChatbot ? true : false,
-          };
-
-          if (metaData) {
-            payload = { ...payload, metadata: metaData };
-          }
-
-          if (
-            Object.keys(ogTagsState).length !== 0 &&
-            url &&
-            (!closedOnce || !closedPreview)
-          ) {
-            payload.ogTags = ogTagsState;
-          } else if (url && (!closedOnce || !closedPreview)) {
-            payload.shareLink = url;
-          }
-          const response: any = await dispatch(
-            onConversationsCreate(payload) as any
-          );
-
-          if (response) {
-            setMessageSentByUserId(response?.conversation?.id ?? "");
-            dispatch({
-              type: SET_MESSAGE_ID,
-              body: {
-                id: response?.conversation?.id,
-              },
-            });
-          }
-
-          await myClient?.replaceSavedConversation(
-            response?.conversation,
-            response?.widgets
-          );
-
-          if (response === undefined) {
-            dispatch({
-              type: SHOW_TOAST,
-              body: {
-                isToast: true,
-                msg: "Message not sent. Please check your internet connection",
-              },
-            });
-          }
-          dispatch({
-            type: STATUS_BAR_STYLE,
-            body: { color: STYLES.$STATUS_BAR_STYLE.default },
-          });
         }
+        let selectedType;
+        if (isReply) {
+          selectedType = getConversationType(replyObj);
+        } else {
+          selectedType = getConversationType(obj);
+        }
+        LMChatAnalytics.track(
+          Events.CHATROOM_RESPONDED,
+          new Map<string, string>([
+            [
+              Keys.CHATROOM_TYPE,
+              getChatroomType(
+                chatroomDBDetails?.type?.toString(),
+                chatroomDBDetails?.isSecret
+              ),
+            ],
+            [Keys.COMMUNITY_ID, user?.sdkClientInfo?.community?.toString()],
+            [Keys.CHATROOM_NAME, chatroomName?.toString()],
+            [Keys.CHATROOM_LAST_CONVERSATION_TYPE, selectedType?.toString()],
+            ["count_tagged_users", taggedUserNames?.length?.toString()],
+            ["name_tagged_users", taggedUserNames?.toString()],
+            ["is_group_tag", isGroupTag?.toString()],
+          ])
+        );
       }
-      let selectedType;
-      if (isReply) {
-        selectedType = getConversationType(replyObj);
-      } else {
-        selectedType = getConversationType(obj);
-      }
-      LMChatAnalytics.track(
-        Events.CHATROOM_RESPONDED,
-        new Map<string, string>([
-          [
-            Keys.CHATROOM_TYPE,
-            getChatroomType(
-              chatroomDBDetails?.type?.toString(),
-              chatroomDBDetails?.isSecret
-            ),
-          ],
-          [Keys.COMMUNITY_ID, user?.sdkClientInfo?.community?.toString()],
-          [Keys.CHATROOM_NAME, chatroomName?.toString()],
-          [Keys.CHATROOM_LAST_CONVERSATION_TYPE, selectedType?.toString()],
-          ["count_tagged_users", taggedUserNames?.length?.toString()],
-          ["name_tagged_users", taggedUserNames?.toString()],
-          ["is_group_tag", isGroupTag?.toString()],
-        ])
-      );
+      dispatch({ type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD });
+      setIsRecordingLocked(false);
+      setOgTagsState({});
+      setUrl("");
+      setClosedOnce(false);
+      setClosedPreview(false);
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
-    dispatch({ type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD });
-    setIsRecordingLocked(false);
-    setOgTagsState({});
-    setUrl("");
-    setClosedOnce(false);
-    setClosedPreview(false);
   };
 
   const taggingAPI = async ({
@@ -1750,30 +1839,46 @@ export const InputBoxContextProvider = ({
     chatroomId,
     isSecret,
   }: any) => {
-    const res = await myClient?.getTaggingList({
-      page: page,
-      pageSize: 10,
-      searchName: searchName,
-      chatroomId: chatroomId,
-      isSecret: isSecret,
-    });
-    return res?.data;
+    try {
+      const res = await myClient?.getTaggingList({
+        page: page,
+        pageSize: 10,
+        searchName: searchName,
+        chatroomId: chatroomId,
+        isSecret: isSecret,
+      });
+      return res?.data;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // function shows loader in between calling the API and getting the response
   const loadData = async (newPage: number) => {
-    setIsLoading(true);
-    const res = await taggingAPI({
-      page: newPage,
-      searchName: taggedUserName,
-      chatroomId: chatroomID,
-      isSecret: isSecret,
-    });
-    if (res) {
-      isSecret
-        ? setUserTaggingList([...userTaggingList, ...res?.chatroomParticipants])
-        : setUserTaggingList([...userTaggingList, ...res?.communityMembers]);
-      setIsLoading(false);
+    try {
+      setIsLoading(true);
+      const res = await taggingAPI({
+        page: newPage,
+        searchName: taggedUserName,
+        chatroomId: chatroomID,
+        isSecret: isSecret,
+      });
+      if (res) {
+        isSecret
+          ? setUserTaggingList([...userTaggingList, ...res?.chatroomParticipants])
+          : setUserTaggingList([...userTaggingList, ...res?.communityMembers]);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
@@ -1801,210 +1906,234 @@ export const InputBoxContextProvider = ({
 
   // to detect link preview and call the decodeUrl API
   async function detectLinkPreview(link: string) {
-    const payload = {
-      url: link,
-    };
-    const decodeUrlResponse = await myClient?.decodeUrl(payload);
-    const ogTags = decodeUrlResponse?.data?.ogTags;
-    if (ogTags !== undefined) {
-      setOgTagsState(ogTags);
-    } else if (ogTags === undefined) {
-      setOgTagsState({});
+    try {
+      const payload = {
+        url: link,
+      };
+      const decodeUrlResponse = await myClient?.decodeUrl(payload);
+      const ogTags = decodeUrlResponse?.data?.ogTags;
+      if (ogTags !== undefined) {
+        setOgTagsState(ogTags);
+      } else if (ogTags === undefined) {
+        setOgTagsState({});
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   }
 
   // this mehthod is trigerred whenever there is any change in the input box
   const handleInputChange = async (event: string) => {
-    const parts = event.split(LINK_PREVIEW_REGEX);
-    if (parts?.length > 1) {
-      {
-        parts?.map((value: string) => {
-          if (LINK_PREVIEW_REGEX.test(value) && !isUploadScreen) {
-            clearTimeout(debounceLinkPreviewTimeout);
-            const timeoutId = setTimeout(() => {
-              for (let i = 0; i < parts.length; i++) {
-                if (LINK_PREVIEW_REGEX.test(parts[i]) && !closedPreview) {
-                  setShowLinkPreview(true);
-                  setUrl(parts[i]);
-                  detectLinkPreview(parts[i]);
-                  break;
+    try {
+      const parts = event.split(LINK_PREVIEW_REGEX);
+      if (parts?.length > 1) {
+        {
+          parts?.map((value: string) => {
+            if (LINK_PREVIEW_REGEX.test(value) && !isUploadScreen) {
+              clearTimeout(debounceLinkPreviewTimeout);
+              const timeoutId = setTimeout(() => {
+                for (let i = 0; i < parts.length; i++) {
+                  if (LINK_PREVIEW_REGEX.test(parts[i]) && !closedPreview) {
+                    setShowLinkPreview(true);
+                    setUrl(parts[i]);
+                    detectLinkPreview(parts[i]);
+                    break;
+                  }
                 }
-              }
-            }, 500);
-            setLinkPreviewDebounceTimeout(timeoutId);
-          }
-        });
-      }
-    } else {
-      setOgTagsState({});
-      setShowLinkPreview(false);
-    }
-    if (
-      chatroomType == ChatroomType.DMCHATROOM &&
-      (chatRequestState === 0 || chatRequestState === null)
-    ) {
-      if (event.length >= MAX_LENGTH) {
-        dispatch({
-          type: SHOW_TOAST,
-          body: {
-            isToast: true,
-            msg: CHARACTER_LIMIT_MESSAGE,
-          },
-        });
-      } else if (event.length < MAX_LENGTH) {
-        setMessage(event);
-      }
-    } else {
-      setMessage(event);
-
-      // chatroomType === ChatroomType.DMCHATROOM (if DM don't detect and show user tags)
-      const newMentions =
-        chatroomType === ChatroomType.DMCHATROOM ? [] : detectMentions(event);
-
-      if (newMentions.length > 0) {
-        const length = newMentions.length;
-        setTaggedUserName(newMentions[length - 1]);
-      }
-
-      // debouncing logic
-      clearTimeout(debounceTimeout);
-
-      const len = newMentions.length;
-      if (
-        len > 0 &&
-        !(chatroomType === ChatroomType.DMCHATROOM && isUploadScreen)
-      ) {
-        const timeoutID = setTimeout(async () => {
-          setPage(1);
-          const res = await taggingAPI({
-            page: 1,
-            searchName: newMentions[len - 1],
-            chatroomId: chatroomID,
-            isSecret: isSecret,
-          });
-          if (len > 0) {
-            const groupTagsLength = res?.groupTags?.length;
-            const communityMembersLength = isSecret
-              ? res?.chatroomParticipants.length
-              : res?.communityMembers.length;
-            const arrLength = communityMembersLength + groupTagsLength;
-            if (arrLength >= 5) {
-              setUserTaggingListHeight(5 * 58);
-            } else if (arrLength < 5) {
-              const height = communityMembersLength * 58 + groupTagsLength * 80;
-              setUserTaggingListHeight(height);
+              }, 500);
+              setLinkPreviewDebounceTimeout(timeoutId);
             }
-            isSecret
-              ? setUserTaggingList(res?.chatroomParticipants)
-              : setUserTaggingList(res?.communityMembers);
-            setGroupTags(res?.groupTags);
-            setIsUserTagging(true);
-          }
-        }, 500);
-
-        setDebounceTimeout(timeoutID);
+          });
+        }
       } else {
-        if (isUserTagging) {
-          setUserTaggingList([]);
-          setGroupTags([]);
-          setIsUserTagging(false);
+        setOgTagsState({});
+        setShowLinkPreview(false);
+      }
+      if (
+        chatroomType == ChatroomType.DMCHATROOM &&
+        (chatRequestState === 0 || chatRequestState === null)
+      ) {
+        if (event.length >= MAX_LENGTH) {
+          dispatch({
+            type: SHOW_TOAST,
+            body: {
+              isToast: true,
+              msg: CHARACTER_LIMIT_MESSAGE,
+            },
+          });
+        } else if (event.length < MAX_LENGTH) {
+          setMessage(event);
+        }
+      } else {
+        setMessage(event);
+  
+        // chatroomType === ChatroomType.DMCHATROOM (if DM don't detect and show user tags)
+        const newMentions =
+          chatroomType === ChatroomType.DMCHATROOM ? [] : detectMentions(event);
+  
+        if (newMentions.length > 0) {
+          const length = newMentions.length;
+          setTaggedUserName(newMentions[length - 1]);
+        }
+  
+        // debouncing logic
+        clearTimeout(debounceTimeout);
+  
+        const len = newMentions.length;
+        if (
+          len > 0 &&
+          !(chatroomType === ChatroomType.DMCHATROOM && isUploadScreen)
+        ) {
+          const timeoutID = setTimeout(async () => {
+            setPage(1);
+            const res = await taggingAPI({
+              page: 1,
+              searchName: newMentions[len - 1],
+              chatroomId: chatroomID,
+              isSecret: isSecret,
+            });
+            if (len > 0) {
+              const groupTagsLength = res?.groupTags?.length;
+              const communityMembersLength = isSecret
+                ? res?.chatroomParticipants.length
+                : res?.communityMembers.length;
+              const arrLength = communityMembersLength + groupTagsLength;
+              if (arrLength >= 5) {
+                setUserTaggingListHeight(5 * 58);
+              } else if (arrLength < 5) {
+                const height = communityMembersLength * 58 + groupTagsLength * 80;
+                setUserTaggingListHeight(height);
+              }
+              isSecret
+                ? setUserTaggingList(res?.chatroomParticipants)
+                : setUserTaggingList(res?.communityMembers);
+              setGroupTags(res?.groupTags);
+              setIsUserTagging(true);
+            }
+          }, 500);
+  
+          setDebounceTimeout(timeoutID);
+        } else {
+          if (isUserTagging) {
+            setUserTaggingList([]);
+            setGroupTags([]);
+            setIsUserTagging(false);
+          }
         }
       }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
   // this function is for editing a conversation
   const onEdit = async () => {
-    const selectedConversation = editConversation;
-
-    const conversationId = selectedConversation?.id;
-    const previousConversation = selectedConversation;
-
-    let changedConversation;
-    const conversationText = replaceMentionValues(message, ({ id, name }) => {
-      // example ID = `user_profile/8619d45e-9c4c-4730-af8e-4099fe3dcc4b`
-      const PATH = extractPathfromRouteQuery(id);
-      if (!PATH) {
-        return `<<${name}|route://${name}>>`;
-      } else {
-        return `<<${name}|route://${id}>>`;
+    try {
+      const selectedConversation = editConversation;
+  
+      const conversationId = selectedConversation?.id;
+      const previousConversation = selectedConversation;
+  
+      let changedConversation;
+      const conversationText = replaceMentionValues(message, ({ id, name }) => {
+        // example ID = `user_profile/8619d45e-9c4c-4730-af8e-4099fe3dcc4b`
+        const PATH = extractPathfromRouteQuery(id);
+        if (!PATH) {
+          return `<<${name}|route://${name}>>`;
+        } else {
+          return `<<${name}|route://${id}>>`;
+        }
+      });
+  
+      const editedConversation = conversationText;
+      changedConversation = {
+        ...selectedConversation,
+        answer: editedConversation,
+        isEdited: true,
+      };
+  
+      dispatch({
+        type: EDIT_CONVERSATION,
+        body: {
+          previousConversation: previousConversation,
+          changedConversation: changedConversation,
+        },
+      });
+  
+      dispatch({
+        type: SET_EDIT_MESSAGE,
+        body: {
+          editConversation: "",
+        },
+      });
+  
+      const index = conversations.findIndex((element: any) => {
+        return element?.id == selectedConversation?.id;
+      });
+  
+      if (index === 0) {
+        dispatch({
+          type: UPDATE_LAST_CONVERSATION,
+          body: {
+            lastConversationAnswer: editedConversation,
+            chatroomType: chatroomType,
+            chatroomID: chatroomID,
+          },
+        });
       }
-    });
-
-    const editedConversation = conversationText;
-    changedConversation = {
-      ...selectedConversation,
-      answer: editedConversation,
-      isEdited: true,
-    };
-
-    dispatch({
-      type: EDIT_CONVERSATION,
-      body: {
-        previousConversation: previousConversation,
-        changedConversation: changedConversation,
-      },
-    });
-
-    dispatch({
-      type: SET_EDIT_MESSAGE,
-      body: {
-        editConversation: "",
-      },
-    });
-
-    const index = conversations.findIndex((element: any) => {
-      return element?.id == selectedConversation?.id;
-    });
-
-    if (index === 0) {
-      dispatch({
-        type: UPDATE_LAST_CONVERSATION,
-        body: {
-          lastConversationAnswer: editedConversation,
-          chatroomType: chatroomType,
-          chatroomID: chatroomID,
-        },
-      });
-    }
-    dispatch({ type: SELECTED_MESSAGES, body: [] });
-    dispatch({ type: LONG_PRESSED, body: false });
-    setMessage("");
-    setInputHeight(25);
-    setIsEditable(false);
-
-    const payload = {
-      conversationId: conversationId,
-      text: editedConversation,
-    };
-
-    let editConversationResponse;
-    if (currentChatroomTopic) {
-      editConversationResponse = await myClient?.editConversation(
-        payload,
-        currentChatroomTopic
+      dispatch({ type: SELECTED_MESSAGES, body: [] });
+      dispatch({ type: LONG_PRESSED, body: false });
+      setMessage("");
+      setInputHeight(25);
+      setIsEditable(false);
+  
+      const payload = {
+        conversationId: conversationId,
+        text: editedConversation,
+      };
+  
+      let editConversationResponse;
+      if (currentChatroomTopic) {
+        editConversationResponse = await myClient?.editConversation(
+          payload,
+          currentChatroomTopic
+        );
+      } else {
+        editConversationResponse = await myClient?.editConversation(payload);
+      }
+      if (conversationId == currentChatroomTopic?.id) {
+        dispatch({
+          type: SET_CHATROOM_TOPIC,
+          body: {
+            currentChatroomTopic: editConversationResponse?.data?.conversation,
+          },
+        });
+      }
+      await myClient?.updateConversation(
+        conversationId?.toString(),
+        editConversationResponse?.data?.conversation
       );
-    } else {
-      editConversationResponse = await myClient?.editConversation(payload);
+      LMChatAnalytics.track(
+        Events.MESSAGE_EDITED,
+        new Map<string, string>([
+          [Keys.TYPE, getConversationType(selectedConversation)],
+          [Keys.DESCRIPTION_UPDATED, false?.toString()],
+        ])
+      );
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
-    if (conversationId == currentChatroomTopic?.id) {
-      dispatch({
-        type: SET_CHATROOM_TOPIC,
-        body: {
-          currentChatroomTopic: editConversationResponse?.data?.conversation,
-        },
-      });
-    }
-    await myClient?.updateConversation(
-      conversationId?.toString(),
-      editConversationResponse?.data?.conversation
-    );
-    LMChatAnalytics.track(
-      Events.MESSAGE_EDITED,
-      new Map<string, string>([
-        [Keys.TYPE, getConversationType(selectedConversation)],
-        [Keys.DESCRIPTION_UPDATED, false?.toString()],
-      ])
-    );
   };
 
   // this function is for adding tagged user in the input text.
@@ -2019,25 +2148,33 @@ export const InputBoxContextProvider = ({
     communityId: string;
     mentionUsername: string;
   }) => {
-    LMChatAnalytics.track(
-      Events.USER_TAGS_SOMEONE,
-      new Map<string, string>([
-        [Keys.COMMUNITY_ID, communityId?.toString()],
-        [Keys.CHATROOM_NAME, chatroomName?.toString()],
-        [Keys.TAGGED_USER_ID, uuid?.toString()],
-        [Keys.TAGGED_USER_NAME, userName?.toString()],
-      ])
-    );
-    const res = replaceLastMention(
-      message,
-      taggedUserName,
-      mentionUsername,
-      uuid ? `user_profile/${uuid}` : uuid
-    );
-    setMessage(res);
-    setUserTaggingList([]);
-    setGroupTags([]);
-    setIsUserTagging(false);
+    try {
+      LMChatAnalytics.track(
+        Events.USER_TAGS_SOMEONE,
+        new Map<string, string>([
+          [Keys.COMMUNITY_ID, communityId?.toString()],
+          [Keys.CHATROOM_NAME, chatroomName?.toString()],
+          [Keys.TAGGED_USER_ID, uuid?.toString()],
+          [Keys.TAGGED_USER_NAME, userName?.toString()],
+        ])
+      );
+      const res = replaceLastMention(
+        message,
+        taggedUserName,
+        mentionUsername,
+        uuid ? `user_profile/${uuid}` : uuid
+      );
+      setMessage(res);
+      setUserTaggingList([]);
+      setGroupTags([]);
+      setIsUserTagging(false);
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // Audio and play section
@@ -2053,187 +2190,259 @@ export const InputBoxContextProvider = ({
 
   // to start audio recording
   const startRecord = async () => {
-    if (!isVoiceNoteRecording) {
-      const audioSet = generateAudioSet();
-
-      const name = generateVoiceNoteName();
-      const path =
-        Platform.OS === "android"
-          ? `${ReactNativeBlobUtil.fs.dirs.CacheDir}/${name}.mp3`
-          : `${name}.m4a`;
-
-      const result = await audioRecorderPlayerAttachment?.startRecorder(
-        path,
-        audioSet
-      );
-      setIsVoiceNoteRecording(true);
-      setVoiceNotesLink(result);
-      audioRecorderPlayerAttachment?.addRecordBackListener((e) => {
-        const seconds = Math.floor(e.currentPosition / 1000);
-        if (seconds >= 900) {
-          setStopRecording(!stopRecording);
-        }
-        setVoiceNotes({
-          recordSecs: e.currentPosition,
-          recordTime: audioRecorderPlayerAttachment
-            ?.mmssss(Math.floor(e.currentPosition))
-            .slice(0, 5),
-          name: name,
+    try {
+      if (!isVoiceNoteRecording) {
+        const audioSet = generateAudioSet();
+  
+        const name = generateVoiceNoteName();
+        const path =
+          Platform.OS === "android"
+            ? `${ReactNativeBlobUtil.fs.dirs.CacheDir}/${name}.mp3`
+            : `${name}.m4a`;
+  
+        const result = await audioRecorderPlayerAttachment?.startRecorder(
+          path,
+          audioSet
+        );
+        setIsVoiceNoteRecording(true);
+        setVoiceNotesLink(result);
+        audioRecorderPlayerAttachment?.addRecordBackListener((e) => {
+          const seconds = Math.floor(e.currentPosition / 1000);
+          if (seconds >= 900) {
+            setStopRecording(!stopRecording);
+          }
+          setVoiceNotes({
+            recordSecs: e.currentPosition,
+            recordTime: audioRecorderPlayerAttachment
+              ?.mmssss(Math.floor(e.currentPosition))
+              .slice(0, 5),
+            name: name,
+          });
+          return;
         });
-        return;
-      });
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   // to stop audio recording
   const stopRecord = async () => {
-    if (isVoiceNoteRecording) {
-      await audioRecorderPlayerAttachment?.stopRecorder();
-      audioRecorderPlayerAttachment?.removeRecordBackListener();
-
-      // if isVoiceResult is true we show audio player instead of audio recorder
-      const voiceNote = {
-        uri: voiceNotesLink,
-        type: VOICE_NOTE_TEXT,
-        name: `${voiceNotes.name}.${isIOS ? "m4a" : "mp3"}`,
-        duration: Math.floor(voiceNotes.recordSecs / 1000),
-      };
-      dispatch({
-        type: SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
-        body: {
-          audio: [voiceNote],
-        },
-      });
-
-      setIsVoiceNoteRecording(false);
-
-      LMChatAnalytics.track(
-        Events.VOICE_NOTE_RECORDED,
-        new Map<string, string>([
-          [Keys.CHATROOM_TYPE, chatroomType?.toString()],
-          [Keys.CHATROOM_ID, chatroomID?.toString()],
-        ])
-      );
+    try {
+      if (isVoiceNoteRecording) {
+        await audioRecorderPlayerAttachment?.stopRecorder();
+        audioRecorderPlayerAttachment?.removeRecordBackListener();
+  
+        // if isVoiceResult is true we show audio player instead of audio recorder
+        const voiceNote = {
+          uri: voiceNotesLink,
+          type: VOICE_NOTE_TEXT,
+          name: `${voiceNotes.name}.${isIOS ? "m4a" : "mp3"}`,
+          duration: Math.floor(voiceNotes.recordSecs / 1000),
+        };
+        dispatch({
+          type: SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
+          body: {
+            audio: [voiceNote],
+          },
+        });
+  
+        setIsVoiceNoteRecording(false);
+  
+        LMChatAnalytics.track(
+          Events.VOICE_NOTE_RECORDED,
+          new Map<string, string>([
+            [Keys.CHATROOM_TYPE, chatroomType?.toString()],
+            [Keys.CHATROOM_ID, chatroomID?.toString()],
+          ])
+        );
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
   const handleStopRecord = async () => {
     // to give some time for initiating the start recorder, then only stop it
     setTimeout(async () => {
-      await stopRecord();
-      setIsVoiceResult(true);
-      setIsRecordingLocked(false);
+      try {
+        await stopRecord();
+        setIsVoiceResult(true);
+        setIsRecordingLocked(false);
+      } catch (error) {
+        Client?.myClient?.handleException(
+          error,
+          error?.stack,
+          LMSeverity.INFO
+        )
+      }
     }, 500);
   };
 
   // to reset all the recording data we had previously
   const clearVoiceRecord = async () => {
-    if (isVoiceNoteRecording) {
-      await stopRecord();
-    } else if (isVoiceNotePlaying) {
-      await stopPlay();
+    try {
+      if (isVoiceNoteRecording) {
+        await stopRecord();
+      } else if (isVoiceNotePlaying) {
+        await stopPlay();
+      }
+      setVoiceNotes({
+        recordSecs: 0,
+        recordTime: "",
+        name: "",
+      });
+      setVoiceNotesPlayer({
+        currentPositionSec: 0,
+        currentDurationSec: 0,
+        playTime: "",
+        duration: "",
+      });
+      setVoiceNotesLink("");
+      setIsRecordingLocked(false);
+  
+      dispatch({
+        type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
+      });
+  
+      // if isVoiceResult is false we show audio recorder instead of audio player
+      setIsVoiceResult(false);
+  
+      LMChatAnalytics.track(
+        Events.VOICE_NOTE_CANCELED,
+        new Map<string, string>([
+          [Keys.CHATROOM_TYPE, chatroomType?.toString()],
+          [Keys.CHATROOM_ID, chatroomID?.toString()],
+        ])
+      );
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
-    setVoiceNotes({
-      recordSecs: 0,
-      recordTime: "",
-      name: "",
-    });
-    setVoiceNotesPlayer({
-      currentPositionSec: 0,
-      currentDurationSec: 0,
-      playTime: "",
-      duration: "",
-    });
-    setVoiceNotesLink("");
-    setIsRecordingLocked(false);
-
-    dispatch({
-      type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
-    });
-
-    // if isVoiceResult is false we show audio recorder instead of audio player
-    setIsVoiceResult(false);
-
-    LMChatAnalytics.track(
-      Events.VOICE_NOTE_CANCELED,
-      new Map<string, string>([
-        [Keys.CHATROOM_TYPE, chatroomType?.toString()],
-        [Keys.CHATROOM_ID, chatroomID?.toString()],
-      ])
-    );
   };
 
   // to start playing audio recording
   const startPlay = async (path: string) => {
-    await audioRecorderPlayerAttachment?.startPlayer(path);
-    audioRecorderPlayerAttachment?.addPlayBackListener((e) => {
-      const playTime = audioRecorderPlayerAttachment?.mmssss(
-        Math.floor(e.currentPosition)
-      );
-      const duration = audioRecorderPlayerAttachment?.mmssss(
-        Math.floor(e.duration)
-      );
-      setVoiceNotesPlayer({
-        currentPositionSec: e.currentPosition,
-        currentDurationSec: e.duration,
-        playTime: audioRecorderPlayerAttachment
-          ?.mmssss(Math.floor(e.currentPosition))
-          .slice(0, 5),
-        duration: audioRecorderPlayerAttachment
-          ?.mmssss(Math.floor(e.duration))
-          .slice(0, 5),
-      });
-
-      // to reset the player after audio player completed it duration
-      if (playTime === duration) {
-        setIsVoiceNotePlaying(false);
+    try {
+      await audioRecorderPlayerAttachment?.startPlayer(path);
+      audioRecorderPlayerAttachment?.addPlayBackListener((e) => {
+        const playTime = audioRecorderPlayerAttachment?.mmssss(
+          Math.floor(e.currentPosition)
+        );
+        const duration = audioRecorderPlayerAttachment?.mmssss(
+          Math.floor(e.duration)
+        );
         setVoiceNotesPlayer({
-          currentPositionSec: 0,
-          currentDurationSec: 0,
-          playTime: "",
-          duration: "",
+          currentPositionSec: e.currentPosition,
+          currentDurationSec: e.duration,
+          playTime: audioRecorderPlayerAttachment
+            ?.mmssss(Math.floor(e.currentPosition))
+            .slice(0, 5),
+          duration: audioRecorderPlayerAttachment
+            ?.mmssss(Math.floor(e.duration))
+            .slice(0, 5),
         });
-      }
-      return;
-    });
-
-    LMChatAnalytics.track(
-      Events.VOICE_NOTE_PREVIEWED,
-      new Map<string, string>([
-        [Keys.CHATROOM_TYPE, chatroomType?.toString()],
-        [Keys.CHATROOM_ID, chatroomID?.toString()],
-      ])
-    );
-    setIsVoiceNotePlaying(true);
+  
+        // to reset the player after audio player completed it duration
+        if (playTime === duration) {
+          setIsVoiceNotePlaying(false);
+          setVoiceNotesPlayer({
+            currentPositionSec: 0,
+            currentDurationSec: 0,
+            playTime: "",
+            duration: "",
+          });
+        }
+        return;
+      });
+  
+      LMChatAnalytics.track(
+        Events.VOICE_NOTE_PREVIEWED,
+        new Map<string, string>([
+          [Keys.CHATROOM_TYPE, chatroomType?.toString()],
+          [Keys.CHATROOM_ID, chatroomID?.toString()],
+        ])
+      );
+      setIsVoiceNotePlaying(true);
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // to stop playing audio recording
   const stopPlay = async () => {
-    await audioRecorderPlayerAttachment?.stopPlayer();
-    setIsVoiceNotePlaying(false);
+    try {
+      await audioRecorderPlayerAttachment?.stopPlayer();
+      setIsVoiceNotePlaying(false);
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // to pause playing audio recording
   const onPausePlay = async () => {
-    await audioRecorderPlayerAttachment?.pausePlayer();
-    setIsVoiceNotePlaying(false);
+    try {
+      await audioRecorderPlayerAttachment?.pausePlayer();
+      setIsVoiceNotePlaying(false);
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   // to resume playing audio recording
   const onResumePlay = async () => {
-    await audioRecorderPlayerAttachment?.resumePlayer();
-    setIsVoiceNotePlaying(true);
+    try {
+      await audioRecorderPlayerAttachment?.resumePlayer();
+      setIsVoiceNotePlaying(true);
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
+    }
   };
 
   const askPermission = async () => {
-    if (!isIOS) {
-      const permission = await requestAudioRecordPermission();
-      setIsRecordingPermission(!!permission);
-    } else {
-      const permission = await request(PERMISSIONS.IOS.MICROPHONE);
-      if (permission === GRANTED) {
-        setIsRecordingPermission(true);
+    try {
+      if (!isIOS) {
+        const permission = await requestAudioRecordPermission();
+        setIsRecordingPermission(!!permission);
+      } else {
+        const permission = await request(PERMISSIONS.IOS.MICROPHONE);
+        if (permission === GRANTED) {
+          setIsRecordingPermission(true);
+        }
       }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        error?.stack,
+        LMSeverity.INFO
+      )
     }
   };
 
