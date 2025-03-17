@@ -53,6 +53,15 @@ export const LMChatBotProvider = ({
     CallBack.setLMChatInterface(lmChatInterface);
   }, [myClient, lmChatInterface])
 
+  useEffect(() => {
+    (async () => {
+      const logs = await myClient?.getLogs();
+      if (logs?.length) {
+        await myClient?.flushLogs()
+      }
+    })()
+  }, [myClient])
+
   return (
     <View style={styles.flexStyling}>{children}</View>
   )
@@ -153,6 +162,15 @@ export const LMChatProvider = ({
       callInitiateAPI();
     }
   }, [accessToken, refreshToken]);
+
+  useEffect(() => {
+    (async () => {
+      const logs = await myClient?.getLogs();
+      if (logs?.length) {
+        await myClient?.flushLogs()
+      }
+    })()
+  }, [myClient])
 
   return isInitiated ? (
     <View style={styles.flexStyling}>{children}</View>
