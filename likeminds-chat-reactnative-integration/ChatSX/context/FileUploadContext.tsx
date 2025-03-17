@@ -310,7 +310,7 @@ export const FileUploadContextProvider = ({
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
         dispatch({
           type: CLEAR_MESSAGE_IN_PROGRESS_ID,
@@ -386,7 +386,7 @@ export const FileUploadContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
       console.log(error)
       return null

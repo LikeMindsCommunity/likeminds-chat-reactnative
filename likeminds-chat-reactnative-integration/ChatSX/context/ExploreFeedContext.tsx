@@ -85,7 +85,7 @@ export const ExploreFeedContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -105,7 +105,7 @@ export const ExploreFeedContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }

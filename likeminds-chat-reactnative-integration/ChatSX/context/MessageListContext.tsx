@@ -134,7 +134,7 @@ export const MessageListContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -201,7 +201,7 @@ export const MessageListContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -252,7 +252,7 @@ export const MessageListContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -300,7 +300,7 @@ export const MessageListContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -353,7 +353,7 @@ export const MessageListContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -382,7 +382,7 @@ export const MessageListContextProvider = ({
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     }

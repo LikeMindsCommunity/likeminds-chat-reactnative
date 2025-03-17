@@ -455,7 +455,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -499,7 +499,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -571,7 +571,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -624,7 +624,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -672,7 +672,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -748,7 +748,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     };
@@ -830,7 +830,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     };
@@ -850,7 +850,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     };
@@ -865,7 +865,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     }
@@ -901,7 +901,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -934,7 +934,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     }
@@ -974,7 +974,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     }
@@ -1012,7 +1012,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     }
@@ -1083,7 +1083,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1114,7 +1114,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           Client?.myClient?.handleException(
             error,
             error?.stack,
-            LMSeverity.INFO
+            LMSeverity.ERROR
           )
         }
       }
@@ -1230,7 +1230,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
         Alert.alert("Leave Chatroom failed");
       });
@@ -1304,7 +1304,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
         Alert.alert("Leave Chatroom failed");
       });
@@ -1354,7 +1354,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
         Alert.alert("Join Chatroom failed");
       });
@@ -1409,7 +1409,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
         Alert.alert("Join Secret Chatroom failed");
       });
@@ -1439,7 +1439,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
         Alert.alert("Mute Notification failed");
       });
@@ -1467,7 +1467,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
         Alert.alert("Unmute Notification failed");
       });
@@ -1514,7 +1514,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -1567,7 +1567,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -1605,7 +1605,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1628,7 +1628,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1738,7 +1738,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1800,7 +1800,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1849,7 +1849,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1923,7 +1923,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1964,7 +1964,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2005,7 +2005,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2043,7 +2043,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2080,7 +2080,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2114,7 +2114,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2328,7 +2328,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
 
         return error;
@@ -2533,7 +2533,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     } finally {
       setRetryUploadInProgress(false);
@@ -2703,7 +2703,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
     dipatch({

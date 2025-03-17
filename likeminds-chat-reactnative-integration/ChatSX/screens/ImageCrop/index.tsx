@@ -11,12 +11,12 @@ import {
 } from "../../store/types/types";
 import { CANCEL_BUTTON, DONE_BUTTON } from "../../constants/Strings";
 
-const ImageCropScreen: FC<ImageCropScreenProps> = ({ navigation, route }) => {
+const ImageCropScreen = ({ navigation, route }) => {
   const { selectedFilesToUpload = [] }: any = useAppSelector(
     (state) => state.chatroom
   );
   const dispatch = useAppDispatch();
-  const cropViewRef = useRef<any>(null);
+  const cropViewRef = useRef<CropView>(null);
   const { uri, fileName } = route?.params;
 
   // this function is used to replace the old image with cropped image

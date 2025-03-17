@@ -625,7 +625,7 @@ export const InputBoxContextProvider = ({
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     }
@@ -640,7 +640,7 @@ export const InputBoxContextProvider = ({
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     }
@@ -707,7 +707,7 @@ export const InputBoxContextProvider = ({
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     }
@@ -739,7 +739,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -789,7 +789,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -844,7 +844,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -935,7 +935,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
       if (selectedFilesToUpload.length === 0) {
         navigation.goBack();
@@ -991,7 +991,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
       if (selectedFilesToUpload.length === 0) {
         navigation.goBack();
@@ -1035,7 +1035,7 @@ export const InputBoxContextProvider = ({
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       });
   };
@@ -1089,7 +1089,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1149,7 +1149,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -1852,7 +1852,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1879,7 +1879,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1907,7 +1907,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -1954,7 +1954,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -2065,7 +2065,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2170,7 +2170,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2214,7 +2214,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2270,7 +2270,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2313,7 +2313,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2329,7 +2329,7 @@ export const InputBoxContextProvider = ({
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     }, 500);
@@ -2378,7 +2378,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2433,7 +2433,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2450,7 +2450,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2467,7 +2467,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2484,7 +2484,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -2507,7 +2507,7 @@ export const InputBoxContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };

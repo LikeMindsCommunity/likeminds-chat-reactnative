@@ -356,7 +356,7 @@ export const CreatePollContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
       // process error
     }

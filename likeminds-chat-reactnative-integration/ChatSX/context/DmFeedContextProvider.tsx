@@ -121,7 +121,7 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }
@@ -153,7 +153,7 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     };
@@ -183,7 +183,7 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -207,7 +207,7 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -232,7 +232,7 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     });
@@ -264,7 +264,7 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
-          LMSeverity.INFO
+          LMSeverity.ERROR
         )
       }
     };
@@ -286,7 +286,7 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   }

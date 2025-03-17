@@ -95,7 +95,7 @@ export const SearchInChatroomContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
@@ -127,7 +127,7 @@ export const SearchInChatroomContextProvider = ({
           exception: error,
           trace: error?.stack
         },
-        LMSeverity.INFO
+        LMSeverity.ERROR
       )
     }
   };
