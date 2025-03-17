@@ -352,7 +352,10 @@ export const CreatePollContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
       // process error

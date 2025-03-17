@@ -34,7 +34,7 @@ interface ExploreFeedContextValues {
   setFilterState: Dispatch<SetStateAction<number>>;
   setChats: Dispatch<SetStateAction<any[]>>;
   handleLoadMore: () => void;
-  renderFooterExploreFeed: () => React.ReactElement | null;
+  renderFooterExploreFeed: () => React.JSX.Element | null;
 }
 
 const ExploreFeedContext = createContext<ExploreFeedContextValues | undefined>(
@@ -81,7 +81,10 @@ export const ExploreFeedContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -98,7 +101,10 @@ export const ExploreFeedContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }

@@ -126,7 +126,7 @@ import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
 import { useChatroomContext } from "./ChatroomContext";
-import {  LMSeverity } from "@likeminds.community/chat-js"
+import { LMSeverity } from "@likeminds.community/chat-js"
 
 export interface InputBoxContextProps {
   children?: ReactNode;
@@ -735,7 +735,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -782,7 +785,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -834,7 +840,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -922,7 +931,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
       if (selectedFilesToUpload.length === 0) {
@@ -975,7 +987,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
       if (selectedFilesToUpload.length === 0) {
@@ -1016,7 +1031,7 @@ export const InputBoxContextProvider = ({
           body: { color: STYLES.$STATUS_BAR_STYLE["light-content"] },
         });
       })
-      .catch((error) => { 
+      .catch((error) => {
         Client?.myClient?.handleException(
           error,
           error?.stack,
@@ -1070,7 +1085,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -1127,7 +1145,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -1524,7 +1545,7 @@ export const InputBoxContextProvider = ({
             }
           }
           if (!isUploadScreen) {
-  
+
             if (isUserChatbot) {
               dispatch({
                 type: ADD_SHIMMER_MESSAGE,
@@ -1538,35 +1559,35 @@ export const InputBoxContextProvider = ({
                 body: {
                   message: isReply
                     ? {
-                        ...replyObj,
-                        id: ID,
-                        temporaryId: ID,
-                        isInProgress: SUCCESS,
-                      }
+                      ...replyObj,
+                      id: ID,
+                      temporaryId: ID,
+                      isInProgress: SUCCESS,
+                    }
                     : {
-                        ...obj,
-                        id: ID,
-                        temporaryId: ID,
-                        isInProgress: SUCCESS,
-                      },
+                      ...obj,
+                      id: ID,
+                      temporaryId: ID,
+                      isInProgress: SUCCESS,
+                    },
                   ID: ID,
                 },
               });
-  
+
               const message = isReply
                 ? {
-                    ...replyObj,
-                    id: ID,
-                    temporaryId: ID,
-                    isInProgress: SUCCESS,
-                  }
+                  ...replyObj,
+                  id: ID,
+                  temporaryId: ID,
+                  isInProgress: SUCCESS,
+                }
                 : {
-                    ...obj,
-                    id: ID,
-                    temporaryId: ID,
-                    isInProgress: SUCCESS,
-                  };
-  
+                  ...obj,
+                  id: ID,
+                  temporaryId: ID,
+                  isInProgress: SUCCESS,
+                };
+
               if (voiceNotesToUpload?.length > 0) {
                 attachments = await handleFileUpload(
                   ID,
@@ -1576,7 +1597,7 @@ export const InputBoxContextProvider = ({
                 );
               }
             }
-  
+
             if (voiceNotesToUpload?.length > 0 && (attachments == undefined || attachments == null)) {
               dispatch({
                 type: SET_FAILED_MESSAGE_ID,
@@ -1586,13 +1607,13 @@ export const InputBoxContextProvider = ({
               })
               return;
             }
-  
+
             if (isReply) {
               replyObj.attachmentUploadedEpoch = Date.now()
             } else {
               obj.attachmentUploadedEpoch = Date.now()
             }
-  
+
             await Client?.myClient?.updateConversationData(
               UpdateConversationDataRequest.builder()
                 .setConversation(
@@ -1600,7 +1621,7 @@ export const InputBoxContextProvider = ({
                 )
                 .build()
             )
-  
+
             let payload: any = {
               chatroomId: chatroomID,
               hasFiles: attachments?.length > 0 ? true : false,
@@ -1611,7 +1632,7 @@ export const InputBoxContextProvider = ({
               attachments,
               triggerBot: isUserChatbot ? true : false,
             };
-  
+
             if (metaData) {
               payload = { ...payload, metadata: metaData };
             }
@@ -1627,7 +1648,7 @@ export const InputBoxContextProvider = ({
             const response: any = await dispatch(
               onConversationsCreate(payload) as any
             );
-  
+
             if (response?.conversation) {
               setMessageSentByUserId(response?.conversation?.id ?? "");
               dispatch({
@@ -1648,7 +1669,7 @@ export const InputBoxContextProvider = ({
                 }
               })
             }
-  
+
             //Handling conversation failed case
             if (response === undefined) {
               dispatch({
@@ -1680,35 +1701,35 @@ export const InputBoxContextProvider = ({
               body: {
                 message: isReply
                   ? {
-                      ...replyObj,
-                      id: ID,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    }
+                    ...replyObj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  }
                   : {
-                      ...obj,
-                      id: ID,
-                      temporaryId: ID,
-                      isInProgress: SUCCESS,
-                    },
+                    ...obj,
+                    id: ID,
+                    temporaryId: ID,
+                    isInProgress: SUCCESS,
+                  },
                 ID: ID,
               },
             });
-  
+
             const message = isReply
               ? {
-                  ...replyObj,
-                  id: ID,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                }
+                ...replyObj,
+                id: ID,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              }
               : {
-                  ...obj,
-                  id: ID,
-                  temporaryId: ID,
-                  isInProgress: SUCCESS,
-                };
-  
+                ...obj,
+                id: ID,
+                temporaryId: ID,
+                isInProgress: SUCCESS,
+              };
+
             const attachments = await handleFileUpload(ID, false);
             if (attachments == null) {
               dispatch({
@@ -1719,14 +1740,14 @@ export const InputBoxContextProvider = ({
               })
               return;
             }
-  
+
             if (isReply) {
               replyObj.attachmentUploadedEpoch = Date.now()
             } else {
               obj.attachmentUploadedEpoch = Date.now()
             }
-  
-  
+
+
             await Client?.myClient?.updateConversationData(
               UpdateConversationDataRequest.builder()
                 .setConversation(
@@ -1734,7 +1755,7 @@ export const InputBoxContextProvider = ({
                 )
                 .build()
             )
-  
+
             let payload: any = {
               chatroomId: chatroomID,
               hasFiles: attachments?.length > 0 ? true : false,
@@ -1745,11 +1766,11 @@ export const InputBoxContextProvider = ({
               attachments,
               triggerBot: isUserChatbot ? true : false,
             };
-  
+
             if (metaData) {
               payload = { ...payload, metadata: metaData };
             }
-  
+
             if (
               Object.keys(ogTagsState).length !== 0 &&
               url &&
@@ -1762,7 +1783,7 @@ export const InputBoxContextProvider = ({
             const response: any = await dispatch(
               onConversationsCreate(payload) as any
             );
-  
+
             if (response) {
               setMessageSentByUserId(response?.conversation?.id ?? "");
               dispatch({
@@ -1772,12 +1793,12 @@ export const InputBoxContextProvider = ({
                 },
               });
             }
-  
+
             await myClient?.replaceSavedConversation(
               response?.conversation,
               response?.widgets
             );
-  
+
             if (response === undefined) {
               dispatch({
                 type: SHOW_TOAST,
@@ -1827,7 +1848,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -1851,7 +1875,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -1876,7 +1903,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -1920,7 +1950,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -1970,19 +2003,19 @@ export const InputBoxContextProvider = ({
         }
       } else {
         setMessage(event);
-  
+
         // chatroomType === ChatroomType.DMCHATROOM (if DM don't detect and show user tags)
         const newMentions =
           chatroomType === ChatroomType.DMCHATROOM ? [] : detectMentions(event);
-  
+
         if (newMentions.length > 0) {
           const length = newMentions.length;
           setTaggedUserName(newMentions[length - 1]);
         }
-  
+
         // debouncing logic
         clearTimeout(debounceTimeout);
-  
+
         const len = newMentions.length;
         if (
           len > 0 &&
@@ -2015,7 +2048,7 @@ export const InputBoxContextProvider = ({
               setIsUserTagging(true);
             }
           }, 500);
-  
+
           setDebounceTimeout(timeoutID);
         } else {
           if (isUserTagging) {
@@ -2028,7 +2061,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2037,10 +2073,10 @@ export const InputBoxContextProvider = ({
   const onEdit = async () => {
     try {
       const selectedConversation = editConversation;
-  
+
       const conversationId = selectedConversation?.id;
       const previousConversation = selectedConversation;
-  
+
       let changedConversation;
       const conversationText = replaceMentionValues(message, ({ id, name }) => {
         // example ID = `user_profile/8619d45e-9c4c-4730-af8e-4099fe3dcc4b`
@@ -2051,14 +2087,14 @@ export const InputBoxContextProvider = ({
           return `<<${name}|route://${id}>>`;
         }
       });
-  
+
       const editedConversation = conversationText;
       changedConversation = {
         ...selectedConversation,
         answer: editedConversation,
         isEdited: true,
       };
-  
+
       dispatch({
         type: EDIT_CONVERSATION,
         body: {
@@ -2066,18 +2102,18 @@ export const InputBoxContextProvider = ({
           changedConversation: changedConversation,
         },
       });
-  
+
       dispatch({
         type: SET_EDIT_MESSAGE,
         body: {
           editConversation: "",
         },
       });
-  
+
       const index = conversations.findIndex((element: any) => {
         return element?.id == selectedConversation?.id;
       });
-  
+
       if (index === 0) {
         dispatch({
           type: UPDATE_LAST_CONVERSATION,
@@ -2093,12 +2129,12 @@ export const InputBoxContextProvider = ({
       setMessage("");
       setInputHeight(25);
       setIsEditable(false);
-  
+
       const payload = {
         conversationId: conversationId,
         text: editedConversation,
       };
-  
+
       let editConversationResponse;
       if (currentChatroomTopic) {
         editConversationResponse = await myClient?.editConversation(
@@ -2130,7 +2166,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2171,7 +2210,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2193,13 +2235,13 @@ export const InputBoxContextProvider = ({
     try {
       if (!isVoiceNoteRecording) {
         const audioSet = generateAudioSet();
-  
+
         const name = generateVoiceNoteName();
         const path =
           Platform.OS === "android"
             ? `${ReactNativeBlobUtil.fs.dirs.CacheDir}/${name}.mp3`
             : `${name}.m4a`;
-  
+
         const result = await audioRecorderPlayerAttachment?.startRecorder(
           path,
           audioSet
@@ -2224,7 +2266,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2236,7 +2281,7 @@ export const InputBoxContextProvider = ({
       if (isVoiceNoteRecording) {
         await audioRecorderPlayerAttachment?.stopRecorder();
         audioRecorderPlayerAttachment?.removeRecordBackListener();
-  
+
         // if isVoiceResult is true we show audio player instead of audio recorder
         const voiceNote = {
           uri: voiceNotesLink,
@@ -2250,9 +2295,9 @@ export const InputBoxContextProvider = ({
             audio: [voiceNote],
           },
         });
-  
+
         setIsVoiceNoteRecording(false);
-  
+
         LMChatAnalytics.track(
           Events.VOICE_NOTE_RECORDED,
           new Map<string, string>([
@@ -2264,7 +2309,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2308,14 +2356,14 @@ export const InputBoxContextProvider = ({
       });
       setVoiceNotesLink("");
       setIsRecordingLocked(false);
-  
+
       dispatch({
         type: CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
       });
-  
+
       // if isVoiceResult is false we show audio recorder instead of audio player
       setIsVoiceResult(false);
-  
+
       LMChatAnalytics.track(
         Events.VOICE_NOTE_CANCELED,
         new Map<string, string>([
@@ -2326,7 +2374,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2353,7 +2404,7 @@ export const InputBoxContextProvider = ({
             ?.mmssss(Math.floor(e.duration))
             .slice(0, 5),
         });
-  
+
         // to reset the player after audio player completed it duration
         if (playTime === duration) {
           setIsVoiceNotePlaying(false);
@@ -2366,7 +2417,7 @@ export const InputBoxContextProvider = ({
         }
         return;
       });
-  
+
       LMChatAnalytics.track(
         Events.VOICE_NOTE_PREVIEWED,
         new Map<string, string>([
@@ -2378,7 +2429,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2392,7 +2446,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2406,7 +2463,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2420,7 +2480,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -2440,7 +2503,10 @@ export const InputBoxContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }

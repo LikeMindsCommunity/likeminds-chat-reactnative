@@ -91,7 +91,10 @@ export const SearchInChatroomContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
@@ -120,7 +123,10 @@ export const SearchInChatroomContextProvider = ({
     } catch (error) {
       Client?.myClient?.handleException(
         error,
-        error?.stack,
+        {
+          exception: error,
+          trace: error?.stack
+        },
         LMSeverity.INFO
       )
     }
