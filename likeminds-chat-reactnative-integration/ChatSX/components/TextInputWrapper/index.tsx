@@ -5,7 +5,7 @@ import { styles } from "../InputBox/styles";
 import STYLES from "../../constants/Styles";
 import Layout from "../../constants/Layout";
 
-const TextInputWrapper = ({ children }: { children: React.ReactNode }) => {
+const TextInputWrapper = ({ children }: {  children?: React.ReactNode; }) => {
   const { isReply, isUserTagging, isIOS, isUploadScreen, isEditable } =
     useInputBoxContext();
   return (

@@ -1,6 +1,6 @@
 import { playbackService } from "./audio";
 import { ConversationState, LMChatClient } from "@likeminds.community/chat-rn";
-import { LMSeverity } from "@likeminds.community/chat-js"
+import { LMSeverity } from "@likeminds.community/chat-rn"
 import { Client } from "./client";
 import AudioPlayer from "./optionalDependecies/AudioPlayer";
 

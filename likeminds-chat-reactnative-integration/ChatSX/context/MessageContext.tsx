@@ -130,7 +130,7 @@ export const MessageContextProvider = ({
 
   // function handles event on longPress action on a message
   const handleLongPress = (event: GestureResponderEvent) => {
-    const { pageX, pageY } = event.nativeEvent;
+    const { pageX, pageY } = (event as any).nativeEvent;
     dispatch({
       type: SET_POSITION,
       body: { pageX: pageX, pageY: pageY },
@@ -140,7 +140,7 @@ export const MessageContextProvider = ({
 
   // function handles event on Press action on a message
   const handleOnPress = (event: GestureResponderEvent) => {
-    const { pageX, pageY } = event.nativeEvent;
+    const { pageX, pageY } = (event as any).nativeEvent;
     dispatch({
       type: SET_POSITION,
       body: { pageX: pageX, pageY: pageY },

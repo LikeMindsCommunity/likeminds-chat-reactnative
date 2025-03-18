@@ -212,6 +212,7 @@ export default function MyTabs({
             return (
               <PeopleWhoReacted
                 title={route?.title}
+                // @ts-ignore
                 item={route?.val}
                 removeReaction={removeReaction}
                 user={user}

@@ -17,7 +17,7 @@ import {
 import { ActivityIndicator, View } from "react-native";
 import STYLES from "../constants/Styles";
 import { Client } from "../client"
-import { LMSeverity } from "@likeminds.community/chat-js"
+import { LMSeverity } from "@likeminds.community/chat-rn"
 
 interface ExploreFeedContextProps {
   children?: React.ReactNode;

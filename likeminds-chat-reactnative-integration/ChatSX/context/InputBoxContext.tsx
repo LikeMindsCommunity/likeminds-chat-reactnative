@@ -126,7 +126,7 @@ import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
 import { useChatroomContext } from "./ChatroomContext";
-import { LMSeverity } from "@likeminds.community/chat-js"
+import { LMSeverity } from "@likeminds.community/chat-rn"
 
 export interface InputBoxContextProps {
   children?: ReactNode;

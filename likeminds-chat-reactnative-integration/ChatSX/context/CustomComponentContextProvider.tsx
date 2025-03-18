@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useContext } from "react";
 
 export interface CustomComponentsContextProps {
   children?: ReactNode;
-  customReplyBox?: (item: any, chatroomName: string) => JSX.Element;
+  customReplyBox?: (item: any, chatroomName: string) => React.JSX.Element;
   customMessageHeader?: ReactNode;
   customMessageFooter?: ReactNode;
   customVideoImageAttachmentConversation?: ReactNode;
@@ -20,7 +20,7 @@ export interface CustomComponentsContextProps {
 }
 
 export interface CustomComponentsContext {
-  customReplyBox?: (item: any, chatroomName: string) => JSX.Element;
+  customReplyBox?: (item: any, chatroomName: string) => React.JSX.Element;
   customMessageHeader?: ReactNode;
   customMessageFooter?: ReactNode;
   customVideoImageAttachmentConversation?: ReactNode;

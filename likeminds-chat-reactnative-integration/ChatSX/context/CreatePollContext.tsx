@@ -21,7 +21,7 @@ import {
   TIME_TEXT,
 } from "../constants/Strings";
 import { Client } from "../client";
-import { LMSeverity } from "@likeminds.community/chat-js"
+import { LMSeverity } from "@likeminds.community/chat-rn"
 
 interface CreatePollContextProps {
   children?: ReactNode;

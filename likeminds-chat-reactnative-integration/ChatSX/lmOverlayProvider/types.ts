@@ -5,7 +5,7 @@ import { Themes } from "../enums/Themes";
 
 export interface LMOverlayProviderProps {
   myClient: LMChatClient;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   userName?: string;
   userUniqueId?: string;
   apiKey?: string;
@@ -20,7 +20,7 @@ export interface LMOverlayProviderProps {
 
 export interface LMChatBotOverlayProviderProps {
   myClient: LMChatClient;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   lmChatInterface?: any;
   callbackClass?: LMCoreCallbacks;
 }

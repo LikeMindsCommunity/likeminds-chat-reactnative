@@ -37,7 +37,7 @@ import { CAPITAL_GIF_TEXT, VOICE_NOTE_STRING } from "../constants/Strings";
 import { getCurrentConversation } from "../utils/chatroomUtils";
 import { convertToChatroomTopicSchema } from "../assets/chatSchema";
 import { useIsFocused } from "@react-navigation/native";
-import { LMSeverity } from "@likeminds.community/chat-js"
+import { LMSeverity } from "@likeminds.community/chat-rn"
 
 interface MessageListContextProps {
   children?: ReactNode;
@@ -445,9 +445,9 @@ export const MessageListContextProvider = ({
 
   // For Scrolling Up
   const handleOnScroll: ScrollViewProps["onScroll"] = (event) => {
-    const offset = event.nativeEvent.contentOffset.y;
-    const visibleLength = event.nativeEvent.layoutMeasurement.height;
-    const contentLength = event.nativeEvent.contentSize.height;
+    const offset = (event as any).nativeEvent.contentOffset.y;
+    const visibleLength = (event as any).nativeEvent.layoutMeasurement.height;
+    const contentLength = (event as any).nativeEvent.contentSize.height;
     const onStartReachedThreshold = 10;
     const onEndReachedThreshold = 10;
 

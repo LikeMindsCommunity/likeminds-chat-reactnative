@@ -35,7 +35,7 @@ import { Client } from "../client";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Image as CompressedImage } from "react-native-compressor";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { LMSeverity } from "@likeminds.community/chat-js"
+import { LMSeverity } from "@likeminds.community/chat-rn"
 
 interface FileUploadContextProps {
   children?: ReactNode;

@@ -6,7 +6,7 @@ import { styles } from "../InputBox/styles";
 const InputWrapperLeftSection = ({
   children,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) => {
   const { isReply, isUserTagging, isUploadScreen, isEditable, ogTagsState } =
     useInputBoxContext();

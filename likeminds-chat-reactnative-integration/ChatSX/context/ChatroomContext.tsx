@@ -53,7 +53,7 @@ import {
   LogBox,
   View,
 } from "react-native";
-import { LMSeverity } from "@likeminds.community/chat-js"
+import { LMSeverity } from "@likeminds.community/chat-rn"
 import {
   CommonActions,
   StackActions,
