@@ -53,15 +53,6 @@ export const LMChatBotProvider = ({
     CallBack.setLMChatInterface(lmChatInterface);
   }, [myClient, lmChatInterface])
 
-  useEffect(() => {
-    (async () => {
-      const logs = await myClient?.getLogs();
-      if (logs?.length) {
-        await myClient?.flushLogs()
-      }
-    })()
-  }, [myClient])
-
   return (
     <View style={styles.flexStyling}>{children}</View>
   )
@@ -96,8 +87,6 @@ export const LMChatProvider = ({
       GiphySDK?.configure({ apiKey: GIPHY_SDK_API_KEY });
     }
   }, []);
-
-
 
   // to get dispatch
   const dispatch = useAppDispatch();
@@ -164,13 +153,15 @@ export const LMChatProvider = ({
   }, [accessToken, refreshToken]);
 
   useEffect(() => {
-    (async () => {
-      const logs = await myClient?.getLogs();
-      if (logs?.length) {
-        await myClient?.flushLogs()
-      }
-    })()
-  }, [myClient])
+    if (isInitiated) {
+      (async () => {
+        const logs = await myClient?.getLogs();
+        if (logs?.length) {
+          await myClient?.flushLogs()
+        }
+      })()
+    }
+  }, [isInitiated])
 
   return isInitiated ? (
     <View style={styles.flexStyling}>{children}</View>
