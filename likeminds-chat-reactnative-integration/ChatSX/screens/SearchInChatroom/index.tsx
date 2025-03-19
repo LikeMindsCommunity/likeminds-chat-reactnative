@@ -6,7 +6,7 @@ import SearchHeader from "../../components/SearchHeader";
 import SearchList from "../../components/SearchList";
 
 interface SearchInChatroomProps {
-  customSearchHeader?: () => React.JSX.Element;
+  customSearchHeader?: () => React.ReactNode;
 }
 
 const SearchInChatroom = ({ customSearchHeader }: SearchInChatroomProps) => {

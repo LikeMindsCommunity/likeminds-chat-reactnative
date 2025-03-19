@@ -88,8 +88,6 @@ export const LMChatProvider = ({
     }
   }, []);
 
-
-
   // to get dispatch
   const dispatch = useAppDispatch();
 
@@ -153,6 +151,17 @@ export const LMChatProvider = ({
       callInitiateAPI();
     }
   }, [accessToken, refreshToken]);
+
+  useEffect(() => {
+    if (isInitiated) {
+      (async () => {
+        const logs = await myClient?.getLogs();
+        if (logs?.length) {
+          await myClient?.flushLogs()
+        }
+      })()
+    }
+  }, [isInitiated])
 
   return isInitiated ? (
     <View style={styles.flexStyling}>{children}</View>

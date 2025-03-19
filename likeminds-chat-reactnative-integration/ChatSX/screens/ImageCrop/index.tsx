@@ -11,7 +11,7 @@ import {
 } from "../../store/types/types";
 import { CANCEL_BUTTON, DONE_BUTTON } from "../../constants/Strings";
 
-const ImageCropScreen: FC<ImageCropScreenProps> = ({ navigation, route }) => {
+const ImageCropScreen = ({ navigation, route }) => {
   const { selectedFilesToUpload = [] }: any = useAppSelector(
     (state) => state.chatroom
   );
@@ -49,6 +49,7 @@ const ImageCropScreen: FC<ImageCropScreenProps> = ({ navigation, route }) => {
       {/* Crop View */}
       {uri ? (
         <>
+        {/* @ts-ignore */}
           <CropView
             sourceUrl={uri}
             style={styles.cropView}

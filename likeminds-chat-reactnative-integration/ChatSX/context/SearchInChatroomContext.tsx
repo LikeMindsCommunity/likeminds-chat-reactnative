@@ -11,9 +11,10 @@ import { Client } from "../client";
 import { useRoute } from "@react-navigation/native";
 import Layout from "../constants/Layout";
 import STYLES from "../constants/Styles";
+import { LMSeverity } from "@likeminds.community/chat-rn"
 
 interface SearchInChatroomContextProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 interface SearchInChatroomContextValues {
@@ -68,23 +69,34 @@ export const SearchInChatroomContextProvider = ({
   }, []);
 
   const searchConversation = async () => {
-    const payload = {
-      chatroomId: chatroomId,
-      search: search,
-      followStatus: true,
-      page: 1,
-      pageSize: page_size,
-    };
-    const response = await Client.myClient.searchConversation(payload);
-    const conversations = response?.data?.conversations;
-    if (conversations && conversations.length > 0) {
-      setIsEmptyResult(false);
-      setSearchedConversations(conversations);
-    } else if (!search) {
-      setSearchedConversations([]);
-    } else {
-      setSearchedConversations([]);
-      setIsEmptyResult(true);
+    try {
+      const payload = {
+        chatroomId: chatroomId,
+        search: search,
+        followStatus: true,
+        page: 1,
+        pageSize: page_size,
+      };
+      const response = await Client.myClient.searchConversation(payload);
+      const conversations = response?.data?.conversations;
+      if (conversations && conversations.length > 0) {
+        setIsEmptyResult(false);
+        setSearchedConversations(conversations);
+      } else if (!search) {
+        setSearchedConversations([]);
+      } else {
+        setSearchedConversations([]);
+        setIsEmptyResult(true);
+      }
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        {
+          exception: error,
+          trace: error?.stack
+        },
+        LMSeverity.ERROR
+      )
     }
   };
 
@@ -98,15 +110,26 @@ export const SearchInChatroomContextProvider = ({
   }, [search]);
 
   const updateData = async (newPage: number) => {
-    const payload = {
-      chatroomId: chatroomId,
-      search: search,
-      followStatus: true,
-      page: newPage,
-      pageSize: page_size,
-    };
-    const response = await Client.myClient.searchConversation(payload);
-    return response?.data;
+    try {
+      const payload = {
+        chatroomId: chatroomId,
+        search: search,
+        followStatus: true,
+        page: newPage,
+        pageSize: page_size,
+      };
+      const response = await Client.myClient.searchConversation(payload);
+      return response?.data;
+    } catch (error) {
+      Client?.myClient?.handleException(
+        error,
+        {
+          exception: error,
+          trace: error?.stack
+        },
+        LMSeverity.ERROR
+      )
+    }
   };
 
   const loadData = async (newPage: number) => {

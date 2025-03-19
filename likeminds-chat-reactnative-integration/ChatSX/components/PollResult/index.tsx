@@ -69,6 +69,7 @@ const PollResult = ({ navigation, route }: any) => {
         {tabsValueArr?.map((val: any, index: any) => {
           return (
             <PollStack.Screen
+              // @ts-ignore
               key={val?.id}
               name={val?.text}
               children={(props: any) => (
