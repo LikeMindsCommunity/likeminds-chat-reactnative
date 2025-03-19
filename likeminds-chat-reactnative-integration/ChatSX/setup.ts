@@ -21,7 +21,7 @@ export const initMyClient = (
       logLevel: LMSeverity.INFO,
       onErrorHandler: onErrorHandler ? onErrorHandler : () => { }
     })
-    .setVersionCode(42)
+    .setVersionCode(43)
     .build();
 
   Client.setMyClient(myClient);
