@@ -3,24 +3,23 @@ import { ConversationState, LMChatClient, LMStackTrace } from "@likeminds.commun
 import { LMSeverity } from "@likeminds.community/chat-rn"
 import { Client } from "./client";
 import AudioPlayer from "./optionalDependecies/AudioPlayer";
+import packageJson from "../package.json"
 
-interface InitiateClientRequest {
+export const initMyClient = (
   filterStateMessage: ConversationState[],
-  shareLogsWithLM?: boolean,
-  onErrorHandler?: (exception: string, stackTrace: LMStackTrace) => void;
-}
-
-export const initMyClient = ({ filterStateMessage, shareLogsWithLM = true, onErrorHandler }: InitiateClientRequest) => {
+  shareLogsWithLM: boolean = true,
+  onErrorHandler?: (exception: string, stackTrace: LMStackTrace) => void
+) => {
   const myClient = LMChatClient
     .setfilterStateConversation(filterStateMessage)
     .setInitiateLoggerRequest({
       sdkConfig: {
-        coreVersion: '1.10.0',
-        dataLayerVersion: '1.15.0'
+        coreVersion: packageJson.version,
+        dataLayerVersion: packageJson.dependencies["@likeminds.community/chat-rn"],
       },
       shareLogsWithLM,
       logLevel: LMSeverity.WARNING,
-      onErrorHandler: onErrorHandler ? onErrorHandler : () => {}
+      onErrorHandler: onErrorHandler ? onErrorHandler : () => { }
     })
     .setVersionCode(42)
     .build();
