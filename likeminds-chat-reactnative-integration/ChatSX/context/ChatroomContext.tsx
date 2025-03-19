@@ -747,7 +747,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -829,7 +832,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -849,7 +855,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -864,7 +873,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -933,7 +945,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -973,7 +988,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -1011,7 +1029,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -1229,7 +1250,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       .catch((error) => {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
         Alert.alert("Leave Chatroom failed");
@@ -1303,7 +1327,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       .catch((error) => {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
         Alert.alert("Leave Chatroom failed");
@@ -1353,7 +1380,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       .catch((error) => {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
         Alert.alert("Join Chatroom failed");
@@ -1408,7 +1438,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       .catch((error) => {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
         Alert.alert("Join Secret Chatroom failed");
@@ -1438,7 +1471,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       .catch((error) => {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
         Alert.alert("Mute Notification failed");
@@ -1466,7 +1502,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       .catch((error) => {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
         Alert.alert("Unmute Notification failed");
@@ -2327,7 +2366,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
 

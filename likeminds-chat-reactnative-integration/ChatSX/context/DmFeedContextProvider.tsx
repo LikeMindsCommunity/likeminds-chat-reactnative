@@ -152,7 +152,10 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -231,7 +234,10 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -263,7 +269,10 @@ export const DmFeedContextProvider = ({ children }: DmFeedContextProps) => {
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }

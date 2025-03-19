@@ -197,7 +197,10 @@ export const GroupFeedContextProvider = ({
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
@@ -224,7 +227,10 @@ export const GroupFeedContextProvider = ({
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }

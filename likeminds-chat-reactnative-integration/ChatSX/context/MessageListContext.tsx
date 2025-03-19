@@ -381,7 +381,10 @@ export const MessageListContextProvider = ({
       } catch (error) {
         Client?.myClient?.handleException(
           error,
-          error?.stack,
+          {
+            exception: error,
+            trace: error?.stack
+          },
           LMSeverity.ERROR
         )
       }
