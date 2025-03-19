@@ -118,14 +118,13 @@ function App(): React.JSX.Element {
   }, []);
 
   useEffect(() => {
-    async function generateClient() {
-      const res: any = initMyClient([
-        ConversationState.MEMBER_LEFT_SECRET_CHATROOM,
-      ]);
-      setMyClient(res);
-    }
+    const filterStateMessage = []; // give type of conversation to be filtered using ConversationState enum
 
-    generateClient();
+    // proivde apiKey below to initMyClient
+    const res: any = initMyClient({
+      filterStateMessage
+    }); // pass api key as first param and filterStateMessage array as second
+    setMyClient(res);
   }, []);
 
   useEffect(() => {
