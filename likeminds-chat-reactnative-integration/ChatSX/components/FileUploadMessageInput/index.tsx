@@ -6,7 +6,7 @@ import { useFileUploadContext } from "../../context/FileUploadContext";
 const FileUploadMessageInput = ({
   children,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) => {
   const { len } = useFileUploadContext();
   return (

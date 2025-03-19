@@ -27,7 +27,7 @@ interface HintMessages {
 }
 
 interface MessageInput {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   joinSecretChatroomProp?: () => void;
   showJoinAlertProp?: () => void;
   showRejectAlertProp?: () => void;

@@ -85,7 +85,7 @@ class CustomCallbacks implements LMChatCallbacks, LMChatroomCallbacks {
 
 const lmChatInterface = new CustomCallbacks();
 
-function App(): React.JSX.Element {
+function App(): React. React.JSX.Element {
   const [FCMToken, setFCMToken] = useState('');
   const chatroomId = '';
   const profileImageUrl = '';
@@ -152,7 +152,9 @@ function App(): React.JSX.Element {
     const filterStateMessage = []; // give type of conversation to be filtered using ConversationState enum
 
     // proivde apiKey below to initMyClient
-    const res: any = initMyClient(filterStateMessage); // pass api key as first param and filterStateMessage array as second
+    const res: any = initMyClient(
+      filterStateMessage
+    ); // pass api key as first param and filterStateMessage array as second
     setMyClient(res);
   }, [isTrue, apiKey]);
 

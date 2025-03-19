@@ -302,6 +302,7 @@ const MessageListComponent = ({
           <ChatroomTopic />
           {/* List of messages */}
           <FlashList
+            // @ts-ignore
             ref={flatlistRef}
             data={conversations}
             keyExtractor={(item: any, index) => {
@@ -519,6 +520,7 @@ const MessageListComponent = ({
         <>
           {/* List of messages */}
           <FlashList
+            // @ts-ignore
             ref={flatlistRef}
             data={conversations}
             keyExtractor={(item: any, index) => {

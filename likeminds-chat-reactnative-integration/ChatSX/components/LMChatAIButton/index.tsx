@@ -61,6 +61,10 @@ export default function LMChatAIButton({
         if (validateResponse !== undefined && validateResponse !== null) {
             // calling getMemberState API
             await dispatch(getMemberState());
+            const logs = await Client?.myClient?.getLogs();
+            if (logs?.length) {
+                await Client?.myClient?.flushLogs()
+            }
             const appConfig = await Client?.myClient?.getAppConfig();
             if (appConfig === null || appConfig === undefined) {
                 navigation.navigate(CHATBOT_INITIATE_SCREEN)
@@ -90,6 +94,10 @@ export default function LMChatAIButton({
         if (initiateResponse !== undefined && initiateResponse !== null) {
             // calling getMemberState API
             await dispatch(getMemberState());
+            const logs = await Client?.myClient?.getLogs();
+            if (logs?.length) {
+                await Client?.myClient?.flushLogs()
+            }
             const appConfig = await Client?.myClient?.getAppConfig();
             if (appConfig === undefined || appConfig === null) {
                 navigation.navigate(CHATBOT_INITIATE_SCREEN)

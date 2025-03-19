@@ -4,7 +4,7 @@ import { MessageListContextProvider } from "./MessageListContext";
 import { ExploreFeedContextProvider } from "./ExploreFeedContext";
 import { InputBoxContextProvider } from "./InputBoxContext";
 interface ChatProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 function Chat({ children }: ChatProps) {
