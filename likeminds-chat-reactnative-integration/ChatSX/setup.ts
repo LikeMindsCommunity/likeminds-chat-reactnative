@@ -3,7 +3,7 @@ import { ConversationState, LMChatClient, LMStackTrace } from "@likeminds.commun
 import { LMSeverity } from "@likeminds.community/chat-rn"
 import { Client } from "./client";
 import AudioPlayer from "./optionalDependecies/AudioPlayer";
-import packageJson from "../package.json"
+const packageJson = require("../package.json");
 
 export const initMyClient = (
   filterStateMessage: ConversationState[],
@@ -18,7 +18,7 @@ export const initMyClient = (
         dataLayerVersion: packageJson.dependencies["@likeminds.community/chat-rn"],
       },
       shareLogsWithLM,
-      logLevel: LMSeverity.WARNING,
+      logLevel: LMSeverity.INFO,
       onErrorHandler: onErrorHandler ? onErrorHandler : () => { }
     })
     .setVersionCode(42)

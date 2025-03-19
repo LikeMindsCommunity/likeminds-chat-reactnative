@@ -159,9 +159,9 @@ function App(): React.JSX.Element {
     const filterStateMessage = [ConversationState.MEMBER_LEFT_SECRET_CHATROOM]; // give type of conversation to be filtered using ConversationState enum
 
     // proivde apiKey below to initMyClient
-    const res: any = initMyClient({
+    const res: any = initMyClient(
       filterStateMessage
-    }); // pass api key as first param and filterStateMessage array as second
+    ); // pass api key as first param and filterStateMessage array as second
     setMyClient(res);
   }, [isTrue, apiKey]);
 

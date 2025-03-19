@@ -136,11 +136,7 @@ function formatTimestampTo24Hour(timestamp: number): string {
 
 export default async function getNotification(remoteMessage: any) {
   if (Client?.myClient == undefined || Client?.myClient == null) {
-    initMyClient({
-      filterStateMessage: [],
-      shareLogsWithLM: false,
-      onErrorHandler: () => {}
-    });
+    initMyClient([]);
   }
   const users = await Client.myClient?.getUserSchema();
   const isIOS = Platform.OS === "ios" ? true : false;
