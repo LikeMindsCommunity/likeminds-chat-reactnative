@@ -136,8 +136,11 @@ function formatTimestampTo24Hour(timestamp: number): string {
 
 export default async function getNotification(remoteMessage: any) {
   if (Client?.myClient == undefined || Client?.myClient == null) {
-    const filterStateMessage = [ConversationState.MEMBER_LEFT_SECRET_CHATROOM];
-    initMyClient(filterStateMessage);
+    initMyClient({
+      filterStateMessage: [],
+      shareLogsWithLM: false,
+      onErrorHandler: () => {}
+    });
   }
   const users = await Client.myClient?.getUserSchema();
   const isIOS = Platform.OS === "ios" ? true : false;
