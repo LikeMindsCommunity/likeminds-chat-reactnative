@@ -18,14 +18,14 @@ import {
   initAPI,
   validateUser,
 } from "../store/actions/homefeed";
-import { pushAPI, token } from "../notifications/index"
+import { pushAPI, token } from "../notifications/index";
+import { getUniqueId } from "react-native-device-info";
 
 export const LMChatBotProvider = ({
   myClient,
   children,
-  lmChatInterface
+  lmChatInterface,
 }: LMChatBotProviderProps) => {
-
   const dispatch = useAppDispatch();
 
   // to initialise track player
@@ -51,12 +51,10 @@ export const LMChatBotProvider = ({
 
     // setting lmChatInterface in CallBack class
     CallBack.setLMChatInterface(lmChatInterface);
-  }, [myClient, lmChatInterface])
+  }, [myClient, lmChatInterface]);
 
-  return (
-    <View style={styles.flexStyling}>{children}</View>
-  )
-}
+  return <View style={styles.flexStyling}>{children}</View>;
+};
 
 export const LMChatProvider = ({
   myClient,
@@ -110,9 +108,9 @@ export const LMChatProvider = ({
 
         token().then((res) => {
           if (!!res) {
-            pushAPI(res, accessToken)
+            pushAPI(res, accessToken);
           }
-        })
+        });
 
         await dispatch(getMemberState());
       }
@@ -126,12 +124,14 @@ export const LMChatProvider = ({
         callValidateApi(accessToken, refreshToken);
         return;
       }
+      const deviceID = await getUniqueId();
       const payload: InitUserWithUuid = {
         userName: userName,
         apiKey: apiKey ? apiKey : "",
         uuid: userUniqueId ? userUniqueId : "",
         isGuest: false,
         imageUrl: imageUrl ? imageUrl : "",
+        deviceId: deviceID,
       };
       const initiateResponse: any = await dispatch(initAPI(payload));
       if (initiateResponse !== undefined && initiateResponse !== null) {
@@ -139,9 +139,9 @@ export const LMChatProvider = ({
         await dispatch(getMemberState());
         token().then((res) => {
           if (!!res) {
-            pushAPI(res, accessToken)
+            pushAPI(res, accessToken);
           }
-        })
+        });
         setIsInitiated(true);
       }
     }

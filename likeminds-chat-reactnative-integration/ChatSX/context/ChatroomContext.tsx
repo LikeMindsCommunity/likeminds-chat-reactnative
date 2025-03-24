@@ -304,7 +304,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   const [replyChatID, setReplyChatID] = useState<number>();
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [shimmerVisibleForChatbot, setShimmerVisibleForChatbot] = useState(false);
+  const [shimmerVisibleForChatbot, setShimmerVisibleForChatbot] =
+    useState(false);
 
   const [messageSentByUserId, setMessageSentByUserId] = useState("");
   const [isToast, setIsToast] = useState(false);
@@ -343,7 +344,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     chatroomCreator,
     currentChatroomTopic,
     temporaryStateMessage,
-    messageId
+    messageId,
   }: any = useAppSelector((state) => state.chatroom);
   const { user, community, memberRights } = useAppSelector(
     (state) => state.homefeed
@@ -715,6 +716,50 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     });
   }, [chatroomID]);
 
+  const ChatCallback = {
+    onSocketConnectionOpen: () => {
+      console.log("WebSocket connection opened.");
+    },
+    onMessageReceived: async (data) => {
+      console.log("New message received:", data.conversation);
+      const conversationID = data?.conversation?.id;
+      if (conversationID) {
+        const maxTimeStamp = Math.floor(Date.now() * 1000);
+        await firebaseConversationSyncAPI(
+          INITIAL_SYNC_PAGE,
+          0,
+          maxTimeStamp,
+          conversationID
+        );
+        fetchChatroomDetails();
+      }
+    },
+    onSocketConnectionClosed: () => {
+      console.log("WebSocket connection closed.");
+    },
+    onError: (errorMessage: string) => {
+      console.error("WebSocket error:", errorMessage);
+    },
+  };
+
+  useEffect(() => {
+    const routeName = route.name;
+    if (routeName == ScreenName.FileUpload) {
+      return;
+    }
+    // Subscribe to a chatroom
+    myClient.subscribeChatroom(
+      { chatroomId: chatroomID },
+      ChatCallback
+    );
+
+    return () => {
+      if (routeName == ScreenName.Chatroom) {
+        myClient.unSubscribeChatroom();
+      }
+    }
+  }, []);
+
   // This useEffect is used to highlight the chatroom topic conversation for 1 sec on scrolling to it
   useEffect(() => {
     if (isFound) {
@@ -1003,10 +1048,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   }, [chatroomDBDetails, chatroomID]);
 
   useEffect(() => {
-    if ((chatroomType == ChatroomType.OPENCHATROOM ||
-      chatroomType == ChatroomType.ANNOUNCEMENTROOM) &&
+    if (
+      (chatroomType == ChatroomType.OPENCHATROOM ||
+        chatroomType == ChatroomType.ANNOUNCEMENTROOM) &&
       selectedMessages?.length == 1 &&
-      (SdkTheme.sdkTheme == Themes.COMMUNITY_HYBRID)
+      SdkTheme.sdkTheme == Themes.COMMUNITY_HYBRID
     ) {
       callAPI();
     }
@@ -1037,7 +1083,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         )
       }
     }
-  }, [chatroomID, chatroomDBDetails, selectedMessages])
+  }, [chatroomID, chatroomDBDetails, selectedMessages]);
 
   // sync conversation call with conversation_id from firebase listener
   const firebaseConversationSyncAPI = async (
@@ -1107,45 +1153,11 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         LMSeverity.ERROR
       )
     }
-  };
-
-  //useffect includes firebase realtime listener
-  useEffect(() => {
-    // if FileUpload Screen is opened then don't call API's
-    if (route.name == ScreenName.FileUpload) {
-      return;
-    }
-    const query = ref(db, `/collabcards/${chatroomID}`);
-    return onValue(query, async (snapshot: DataSnapshot) => {
-      if (snapshot.exists()) {
-        try {
-          const firebaseData = snapshot.val();
-          const conversationID = firebaseData?.collabcard?.answer_id;
-          if (conversationID) {
-            const maxTimeStamp = Math.floor(Date.now() * 1000);
-            await firebaseConversationSyncAPI(
-              INITIAL_SYNC_PAGE,
-              0,
-              maxTimeStamp,
-              conversationID
-            );
-            fetchChatroomDetails();
-          }
-        } catch (error) {
-          Client?.myClient?.handleException(
-            error,
-            error?.stack,
-            LMSeverity.ERROR
-          )
-        }
-      }
-    });
-  }, [chatroomID, messageSentByUserId, messageId]);
 
   // this useffect updates routes, previousRoute variables when we come to chatroom.
   useEffect(() => {
     if (isFocused) {
-      routes = (navigation.getState())?.routes;
+      routes = navigation.getState()?.routes;
       previousRoute = routes[routes?.length - 2];
     }
   }, [isFocused, chatroomID]);
@@ -2226,16 +2238,16 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         attachmentType === IMAGE_TEXT
           ? item.fileName
           : attachmentType === VIDEO_TEXT
-            ? item.fileName
-            : attachmentType === VOICE_NOTE_TEXT
-              ? item.name
-              : docAttachmentType === PDF_TEXT
-                ? item.name
-                : null;
+          ? item.fileName
+          : attachmentType === VOICE_NOTE_TEXT
+          ? item.name
+          : docAttachmentType === PDF_TEXT
+          ? item.name
+          : null;
 
       const fileInfo = splitFileName(name);
       const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${fileInfo?.name}-${conversationID}.${fileInfo.extension}`;
-      const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`
+      const thumbnailUrlPath = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${thumbnailURL}`;
 
       let uriFinal: any;
       try {
@@ -2302,15 +2314,15 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             meta:
               fileType === VIDEO_TEXT
                 ? {
-                  size: selectedFilesToUpload[i]?.fileSize,
-                  duration: selectedFilesToUpload[i]?.duration,
-                }
+                    size: selectedFilesToUpload[i]?.fileSize,
+                    duration: selectedFilesToUpload[i]?.duration,
+                  }
                 : fileType === VOICE_NOTE_TEXT
-                  ? {
+                ? {
                     size: null,
                     duration: item?.duration,
                   }
-                  : {
+                : {
                     size:
                       docAttachmentType === PDF_TEXT
                         ? selectedFilesToUpload[i]?.size
@@ -2320,8 +2332,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
               docAttachmentType === PDF_TEXT
                 ? selectedFilesToUpload[i]?.name
                 : voiceNoteAttachmentType === VOICE_NOTE_TEXT
-                  ? item?.name
-                  : selectedFilesToUpload[i]?.fileName,
+                ? item?.name
+                : selectedFilesToUpload[i]?.fileName,
             type: fileType,
             url: awsResponse,
             thumbnailUrl:
@@ -2329,7 +2341,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             awsFolderPath: path,
             localFilePath: item.uri,
             thumbnailAWSFolderPath: thumbnailUrlPath,
-            thumbnailLocalFilePath: fileType === VIDEO_TEXT ? thumbnailURL : null,
+            thumbnailLocalFilePath:
+              fileType === VIDEO_TEXT ? thumbnailURL : null,
             fileUrl: awsResponse,
             createdAt: conversationID,
             updatedAt: conversationID,
@@ -2811,9 +2824,13 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           if (userDMLimit) {
             Alert.alert(
               REQUEST_DM_LIMIT,
-              `You can only send ${userDMLimit?.numberInDuration
-              } DM requests per ${userDMLimit?.duration
-              }.\n\nTry again in ${formatTime(res?.newRequestDmTimestamp as number)}`,
+              `You can only send ${
+                userDMLimit?.numberInDuration
+              } DM requests per ${
+                userDMLimit?.duration
+              }.\n\nTry again in ${formatTime(
+                res?.newRequestDmTimestamp as number
+              )}`,
               [
                 {
                   text: CANCEL_BUTTON,
@@ -2928,7 +2945,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     onReplyPrivatelyClick,
     backAction,
     setShimmerVisibleForChatbot,
-    setMessageSentByUserId
+    setMessageSentByUserId,
   };
 
   return (
