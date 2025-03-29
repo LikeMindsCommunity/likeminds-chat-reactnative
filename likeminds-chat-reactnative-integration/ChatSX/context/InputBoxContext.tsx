@@ -57,6 +57,7 @@ import {
   EDIT_CONVERSATION,
   EMPTY_BLOCK_DELETION,
   FILE_SENT,
+  GET_CONVERSATIONS_SUCCESS,
   LONG_PRESSED,
   MESSAGE_SENT,
   SELECTED_FILE_TO_VIEW,
@@ -121,7 +122,7 @@ import {
   PanGestureHandlerEventPayload,
 } from "react-native-gesture-handler";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
-import { SyncConversationRequest, UpdateConversationDataRequest } from "@likeminds.community/chat-rn";
+import { GetConversationsRequestBuilder, SyncConversationRequest, UpdateConversationDataRequest } from "@likeminds.community/chat-rn";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
@@ -1166,6 +1167,31 @@ export const InputBoxContextProvider = ({
     }
   }
 
+  async function syncAPI(
+    page: number,
+    maxTimeStamp: number,
+    minTimeStamp: number,
+    conversationId?: string
+  ) {
+
+    if (page == 1) {
+      const payload = GetConversationsRequestBuilder.builder()
+        .setChatroomId(chatroomID?.toString())
+        .setLimit(200)
+        .build();
+      let conversationsFromRealm = await myClient?.getConversations(payload);
+      // if uploadingFilesMessages is not empty then add those messages to the conversation list
+      if (Object.keys(uploadingFilesMessages)?.length > 0) {
+        conversationsFromRealm = [...Object.values(uploadingFilesMessages), ...conversationsFromRealm]
+      }
+      dispatch({
+        type: GET_CONVERSATIONS_SUCCESS,
+        body: { conversations: conversationsFromRealm, shimmer: false },
+      });
+    }
+    return;
+  }
+
   // this method is trigerred whenever user presses the send button
   const onSend = async (
     conversation: string,
@@ -1673,6 +1699,12 @@ export const InputBoxContextProvider = ({
                 response?.conversation,
                 response?.widgets
               );
+              await syncAPI(
+                page,
+                Math.floor(Date.now() * 1000),
+                0,
+                response?.conversation?.id
+              );
             } else {
               dispatch({
                 type: SET_FAILED_MESSAGE_ID,
@@ -1804,12 +1836,18 @@ export const InputBoxContextProvider = ({
                   id: response?.conversation?.id,
                 },
               });
+              await myClient?.replaceSavedConversation(
+                response?.conversation,
+                response?.widgets
+              );
+              await syncAPI(
+                page,
+                Math.floor(Date.now() * 1000),
+                0,
+                response?.conversation?.id
+              );
             }
 
-            await myClient?.replaceSavedConversation(
-              response?.conversation,
-              response?.widgets
-            );
 
             if (response === undefined) {
               dispatch({

@@ -23,6 +23,7 @@ import {
   CLEAR_SELECTED_FILES_TO_UPLOAD,
   CLEAR_SELECTED_MESSAGES,
   CLEAR_SELECTED_VOICE_NOTE_FILES_TO_UPLOAD,
+  FIREBASE_CONVERSATIONS_SUCCESS,
   GET_CHATROOM_ACTIONS_SUCCESS,
   GET_CHATROOM_DB_SUCCESS,
   GET_CONVERSATIONS_SUCCESS,
@@ -119,6 +120,7 @@ import { SdkTheme } from "../setupChat";
 import { Themes } from "../enums/Themes";
 import { ScreenName } from "../enums/ScreenNameEnums"
 import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import DeviceInfo from "react-native-device-info";
 
 interface UploadResource {
   selectedImages: Attachment[] | any[];
@@ -721,15 +723,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       console.log("WebSocket connection opened.");
     },
     onMessageReceived: async (data) => {
-      console.log("New message received:", data.conversation);
       const conversationID = data?.conversation?.id;
       if (conversationID) {
-        const maxTimeStamp = Math.floor(Date.now() * 1000);
         await firebaseConversationSyncAPI(
           INITIAL_SYNC_PAGE,
-          0,
-          maxTimeStamp,
-          conversationID
+          data?.conversation,
+          conversationID,
         );
         fetchChatroomDetails();
       }
@@ -758,7 +757,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         myClient.unSubscribeChatroom();
       }
     }
-  }, []);
+  }, [chatroomID]);
 
   // This useEffect is used to highlight the chatroom topic conversation for 1 sec on scrolling to it
   useEffect(() => {
@@ -1088,46 +1087,42 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   // sync conversation call with conversation_id from firebase listener
   const firebaseConversationSyncAPI = async (
     page: number,
-    minTimeStamp: number,
-    maxTimeStamp: number,
-    conversationId?: string
+    data: Conversation,
+    conversationId?: string,
+    flag: boolean = true
   ) => {
     try {
-      const val = await syncConversationAPI(
-        page,
-        maxTimeStamp,
-        minTimeStamp,
-        conversationId
-      );
-      const DB_RESPONSE = val?.data;
-      if ((DB_RESPONSE?.chatroomMeta[chatroomID])?.chatRequestState == 1) {
-        await myClient?.updateChatRequestState(
-          chatroomID?.toString(),
-          ChatroomChatRequestState.ACCEPTED
-        );
-      }
+      await myClient?.saveConversationData(
+        {
+          chatroomMeta: {},
+          chatroomReactionsMeta: {},
+          communityMeta: {},
+          convAttachmentsMeta: {},
+          conversationMeta: {},
+          conversationsData: {},
+          convPollsMeta: {},
+          convReactionsMeta: {},
+          widgets: {},
+          userMeta: {}
+        },
+        {},
+        [data],
+        community?.id
+      )
+
       let flagForShimmer = shimmerVisibleForChatbot
-      if (DB_RESPONSE?.conversationsData?.length !== 0) {
-        await myClient?.saveConversationData(
-          DB_RESPONSE,
-          DB_RESPONSE?.chatroomMeta,
-          DB_RESPONSE?.conversationsData,
-          community?.id
-        );
-
-        if (messageSentByUserId != conversationId) {
-          setShimmerVisibleForChatbot(() => false);
-          flagForShimmer = false;
-        }
-
-        if (messageId != conversationId) {
-          dispatch({
-            type: HIDE_SHIMMER
-          })
-          setShimmerVisibleForChatbot(false);
-        }
+      if (messageSentByUserId != conversationId) {
+        setShimmerVisibleForChatbot(() => false);
+        flagForShimmer = false;
       }
-      if (page === 1) {
+
+      if (messageId != conversationId) {
+        dispatch({
+          type: HIDE_SHIMMER
+        })
+        setShimmerVisibleForChatbot(false);
+      }
+      if (page == 1) {
         const payload = GetConversationsRequestBuilder.builder()
           .setChatroomId(chatroomID?.toString())
           .setLimit(PAGE_SIZE)
@@ -1153,6 +1148,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         LMSeverity.ERROR
       )
     }
+  }
 
   // this useffect updates routes, previousRoute variables when we come to chatroom.
   useEffect(() => {
@@ -2238,12 +2234,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         attachmentType === IMAGE_TEXT
           ? item.fileName
           : attachmentType === VIDEO_TEXT
-          ? item.fileName
-          : attachmentType === VOICE_NOTE_TEXT
-          ? item.name
-          : docAttachmentType === PDF_TEXT
-          ? item.name
-          : null;
+            ? item.fileName
+            : attachmentType === VOICE_NOTE_TEXT
+              ? item.name
+              : docAttachmentType === PDF_TEXT
+                ? item.name
+                : null;
 
       const fileInfo = splitFileName(name);
       const path = `files/collabcard/${chatroomID}/conversation/${user?.uuid}/${fileInfo?.name}-${conversationID}.${fileInfo.extension}`;
@@ -2314,15 +2310,15 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             meta:
               fileType === VIDEO_TEXT
                 ? {
-                    size: selectedFilesToUpload[i]?.fileSize,
-                    duration: selectedFilesToUpload[i]?.duration,
-                  }
+                  size: selectedFilesToUpload[i]?.fileSize,
+                  duration: selectedFilesToUpload[i]?.duration,
+                }
                 : fileType === VOICE_NOTE_TEXT
-                ? {
+                  ? {
                     size: null,
                     duration: item?.duration,
                   }
-                : {
+                  : {
                     size:
                       docAttachmentType === PDF_TEXT
                         ? selectedFilesToUpload[i]?.size
@@ -2332,8 +2328,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
               docAttachmentType === PDF_TEXT
                 ? selectedFilesToUpload[i]?.name
                 : voiceNoteAttachmentType === VOICE_NOTE_TEXT
-                ? item?.name
-                : selectedFilesToUpload[i]?.fileName,
+                  ? item?.name
+                  : selectedFilesToUpload[i]?.fileName,
             type: fileType,
             url: awsResponse,
             thumbnailUrl:
@@ -2580,6 +2576,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             .setWidgets(response?.widgets)
             .build()
         )
+        await paginatedConversationSyncAPI(
+          INITIAL_SYNC_PAGE,
+          0,
+          Math.floor(Date.now() * 1000),
+          response?.conversation?.id
+        )
       }
     } catch (error) {
       Client?.myClient?.handleException(
@@ -2824,10 +2826,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           if (userDMLimit) {
             Alert.alert(
               REQUEST_DM_LIMIT,
-              `You can only send ${
-                userDMLimit?.numberInDuration
-              } DM requests per ${
-                userDMLimit?.duration
+              `You can only send ${userDMLimit?.numberInDuration
+              } DM requests per ${userDMLimit?.duration
               }.\n\nTry again in ${formatTime(
                 res?.newRequestDmTimestamp as number
               )}`,
