@@ -134,7 +134,15 @@ function formatTimestampTo24Hour(timestamp: number): string {
   return `${hours}:${minutes}`;
 }
 
-export default async function getNotification(remoteMessage: any) {
+export default async function getNotification(remoteMessage: any, navigationRef?: any) {
+  if (navigationRef && navigationRef?.current?.isReady()) {
+    // condition to avoid notifications if the same chatroom is opened
+    const currentRoute = navigationRef?.current?.getCurrentRoute();
+    const formattedMessage = JSON.parse(remoteMessage?.data?.unread_follow_notification);
+    if (currentRoute?.params?.chatroomID == formattedMessage?.chatroom_id?.toString()) {
+      return;
+    }
+  }
   if (Client?.myClient == undefined || Client?.myClient == null) {
     initMyClient([]);
   }
@@ -350,7 +358,6 @@ export default async function getNotification(remoteMessage: any) {
           }
         }
 
-        notifee.cancelAllNotifications()
         // Create summary
         notifee.displayNotification({
           title: navigationRoute,
