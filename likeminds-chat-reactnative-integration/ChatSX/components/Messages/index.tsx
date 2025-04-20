@@ -92,7 +92,7 @@ const MessagesComponent = ({
       const currentTimeStampEpoch = Math.floor(Date.now());
       if (item?.id?.includes && item?.id?.includes("-")) {
         if (item?.attachments?.length > 0) {
-          const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch)));
+          const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch > 0 ? item?.attachmentUploadedEpoch : item?.localSavedEpoch ?? item?.localCreatedEpoch ?? 0 )));
 
           if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30000 && ((item?.inProgress == undefined || item?.inProgress == null)) )) {
             setShowRetry(true);
