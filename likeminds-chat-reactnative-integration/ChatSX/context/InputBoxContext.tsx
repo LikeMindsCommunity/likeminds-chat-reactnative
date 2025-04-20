@@ -348,7 +348,7 @@ export const InputBoxContextProvider = ({
   const [url, setUrl] = useState("");
   const [closedPreview, setClosedPreview] = useState(false);
 
-  const { memberRights, setMessageSentByUserId, setShimmerVisibleForChatbot } =
+  const { memberRights, setMessageSentByUserId, setShimmerVisibleForChatbot, isSocketConnected } =
     useChatroomContext();
 
   const MAX_FILE_SIZE = 104857600; // 100MB in bytes
@@ -819,7 +819,8 @@ export const InputBoxContextProvider = ({
         chatroomID: chatroomID,
         previousMessage: message, // to keep message on uploadScreen InputBox
         limit,
-        communityId: community?.id?.toString()
+        communityId: community?.id?.toString(),
+        isSocketConnected
       });
       await launchImageLibrary(options, async (response: ImagePickerResponse) => {
         if (response?.didCancel) {
@@ -865,7 +866,8 @@ export const InputBoxContextProvider = ({
       navigation.navigate(FILE_UPLOAD, {
         chatroomID: chatroomID,
         previousMessage: message, // to keep message on uploadScreen InputBox
-        communityId: community?.id?.toString()
+        communityId: community?.id?.toString(),
+        isSocketConnected
       });
       const response = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf],
@@ -992,7 +994,8 @@ export const InputBoxContextProvider = ({
       navigation.navigate(FILE_UPLOAD, {
         chatroomID: chatroomID,
         previousMessage: message, // to keep message on uploadScreen InputBox
-        communityId: community?.id?.toString()
+        communityId: community?.id?.toString(),
+        isSocketConnected
       });
     } catch (error) {
       Client?.myClient?.handleException(
@@ -1016,7 +1019,8 @@ export const InputBoxContextProvider = ({
     navigation.navigate(FILE_UPLOAD, {
       chatroomID: chatroomID,
       previousMessage: message, // to keep message on uploadScreen InputBox
-      communityId: community?.id?.toString()
+      communityId: community?.id?.toString(),
+      isSocketConnected
     });
 
     await createThumbnail({
@@ -1167,28 +1171,20 @@ export const InputBoxContextProvider = ({
     }
   }
 
-  async function syncAPI(
-    page: number,
-    maxTimeStamp: number,
-    minTimeStamp: number,
-    conversationId?: string
-  ) {
-
-    if (page == 1) {
-      const payload = GetConversationsRequestBuilder.builder()
-        .setChatroomId(chatroomID?.toString())
-        .setLimit(200)
-        .build();
-      let conversationsFromRealm = await myClient?.getConversations(payload);
-      // if uploadingFilesMessages is not empty then add those messages to the conversation list
-      if (Object.keys(uploadingFilesMessages)?.length > 0) {
-        conversationsFromRealm = [...Object.values(uploadingFilesMessages), ...conversationsFromRealm]
-      }
-      dispatch({
-        type: GET_CONVERSATIONS_SUCCESS,
-        body: { conversations: conversationsFromRealm, shimmer: false },
-      });
+  async function localDBSyncCall() {
+    const payload = GetConversationsRequestBuilder.builder()
+      .setChatroomId(chatroomID?.toString())
+      .setLimit(200)
+      .build();
+    let conversationsFromRealm = await myClient?.getConversations(payload);
+    // if uploadingFilesMessages is not empty then add those messages to the conversation list
+    if (Object.keys(uploadingFilesMessages)?.length > 0) {
+      conversationsFromRealm = [...Object.values(uploadingFilesMessages), ...conversationsFromRealm]
     }
+    dispatch({
+      type: GET_CONVERSATIONS_SUCCESS,
+      body: { conversations: conversationsFromRealm, shimmer: false },
+    });
     return;
   }
 
@@ -1557,6 +1553,7 @@ export const InputBoxContextProvider = ({
             chatroomID?.toString(),
             ChatroomChatRequestState.ACCEPTED
           );
+          localDBSyncCall()
         } else {
           if (isReply) {
             if (attachmentsCount > 0) {
@@ -1699,12 +1696,7 @@ export const InputBoxContextProvider = ({
                 response?.conversation,
                 response?.widgets
               );
-              await syncAPI(
-                page,
-                Math.floor(Date.now() * 1000),
-                0,
-                response?.conversation?.id
-              );
+              await localDBSyncCall();
             } else {
               dispatch({
                 type: SET_FAILED_MESSAGE_ID,
@@ -1840,12 +1832,7 @@ export const InputBoxContextProvider = ({
                 response?.conversation,
                 response?.widgets
               );
-              await syncAPI(
-                page,
-                Math.floor(Date.now() * 1000),
-                0,
-                response?.conversation?.id
-              );
+              await localDBSyncCall()
             }
 
 

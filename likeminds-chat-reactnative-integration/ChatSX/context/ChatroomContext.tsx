@@ -120,7 +120,7 @@ import { SdkTheme } from "../setupChat";
 import { Themes } from "../enums/Themes";
 import { ScreenName } from "../enums/ScreenNameEnums"
 import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
-import DeviceInfo from "react-native-device-info";
+import NetInfo from "@react-native-community/netinfo"
 
 interface UploadResource {
   selectedImages: Attachment[] | any[];
@@ -193,6 +193,7 @@ export interface ChatroomContextValues {
   refInput: any;
   shimmerVisibleForChatbot: boolean;
   messageSentByUserId: string;
+  isSocketConnected: boolean,
 
   // Functions
   setIsEditable: Dispatch<SetStateAction<boolean>>;
@@ -260,6 +261,7 @@ export interface ChatroomContextValues {
     setRetryUploadInProgress: Dispatch<SetStateAction<boolean>>,
     retryUploadInProgress: boolean
   ) => void;
+  setIsSocketConnected: Dispatch<SetStateAction<boolean>>
 }
 
 const ChatroomContext = createContext<ChatroomContextValues | undefined>(
@@ -289,6 +291,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     deepLinking,
     isNavigationToSearchedConversation,
     searchedConversation,
+    isSocketConnected: socketConnectedStatus
   } = route.params as {
     chatroomID: any; // Adjust the type accordingly
     previousChatroomID: any; // Adjust the type accordingly
@@ -296,6 +299,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     deepLinking: any; // Adjust the type accordingly
     isNavigationToSearchedConversation: any;
     searchedConversation: any;
+    isSocketConnected: any
   };
 
   const refInput = useRef<any>();
@@ -334,6 +338,9 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   const reactionArr = ["❤️", "😂", "😮", "😢", "😠", "👍"];
 
   const isFocused = useIsFocused();
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [socketError, setSocketError] = useState(false);
+  const [isInternet, setIsInternet] = useState(false);
 
   const dispatch = useAppDispatch();
   const {
@@ -357,6 +364,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   const { uploadingFilesMessages }: any = useAppSelector(
     (state) => state.upload
   );
+
+  const uploadingFilesMessagesRef = useRef(uploadingFilesMessages);
+
+  useEffect(() => {
+    uploadingFilesMessagesRef.current = uploadingFilesMessages;
+  }, [uploadingFilesMessages]);
 
   const INITIAL_SYNC_PAGE = 1;
   const PAGE_SIZE = 200;
@@ -539,7 +552,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           DB_RESPONSE,
           DB_RESPONSE?.chatroomMeta,
           DB_RESPONSE?.conversationsData,
-          user?.sdkClientInfo?.community?.toString()
+          user?.sdkClientInfo?.community?.toString(),
+          DB_RESPONSE?.widgets
         );
       }
 
@@ -719,8 +733,12 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   }, [chatroomID]);
 
   const ChatCallback = {
-    onSocketConnectionOpen: () => {
-      console.log("WebSocket connection opened.");
+    onSocketConnectionOpen: async () => {
+      setIsSocketConnected(true);
+      setSocketError(false);
+      // call sync API on socket connection to sync chatroom incase socket was disconnected for some time
+      const chatroomDetails = await fetchChatroomDetails();
+      await fetchData(chatroomDetails, false);
     },
     onMessageReceived: async (data) => {
       const conversationID = data?.conversation?.id;
@@ -729,35 +747,71 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           INITIAL_SYNC_PAGE,
           data?.conversation,
           conversationID,
+          data?.widgets
         );
         fetchChatroomDetails();
       }
     },
     onSocketConnectionClosed: () => {
-      console.log("WebSocket connection closed.");
+      setIsSocketConnected(false);
     },
     onError: (errorMessage: string) => {
-      console.error("WebSocket error:", errorMessage);
+      setIsSocketConnected(false);
+      setSocketError(true);
+      
     },
   };
-
+  
   useEffect(() => {
     const routeName = route.name;
     if (routeName == ScreenName.FileUpload) {
       return;
     }
-    // Subscribe to a chatroom
-    myClient.subscribeChatroom(
-      { chatroomId: chatroomID },
-      ChatCallback
-    );
+
+    if (!isSocketConnected && isFocused) {
+      // Subscribe to a chatroom
+      myClient.subscribeChatroom(
+        { chatroomId: chatroomID },
+        ChatCallback
+      );
+    }
+
+    if (isSocketConnected && !isFocused) {
+      myClient.unSubscribeChatroom();
+    }
+
+  }, [chatroomID, isSocketConnected, isFocused, isInternet]);
+
+  useEffect(() => {
+    if (route.name == ScreenName.FileUpload) {
+      return;
+    }
 
     return () => {
-      if (routeName == ScreenName.Chatroom) {
-        myClient.unSubscribeChatroom();
-      }
+      myClient.unSubscribeChatroom();
     }
-  }, [chatroomID]);
+  }, [])
+
+
+  useEffect(() => {
+    if (route.name == ScreenName.FileUpload) {
+      return;
+    }
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isInternetReachable === true) {
+        setIsInternet(true);
+      } else if (state.isInternetReachable === false) {
+        setIsInternet(false);
+        setIsSocketConnected(false);
+      }
+    });
+
+    return () => {
+      unsubscribe(); // Clean up the listener on unmount
+    };
+
+  }, [])
+
 
   // This useEffect is used to highlight the chatroom topic conversation for 1 sec on scrolling to it
   useEffect(() => {
@@ -1087,9 +1141,9 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   // sync conversation call with conversation_id from firebase listener
   const firebaseConversationSyncAPI = async (
     page: number,
-    data: Conversation,
+    data: any,
     conversationId?: string,
-    flag: boolean = true
+    widgets?: any,
   ) => {
     try {
       await myClient?.saveConversationData(
@@ -1107,7 +1161,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
         },
         {},
         [data],
-        community?.id
+        community?.id,
+        widgets
       )
 
       let flagForShimmer = shimmerVisibleForChatbot
@@ -1129,8 +1184,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           .build();
         let conversationsFromRealm = await myClient?.getConversations(payload);
         // if uploadingFilesMessages is not empty then add those messages to the conversation list
-        if (Object.keys(uploadingFilesMessages)?.length > 0) {
-          conversationsFromRealm = [...Object.values(uploadingFilesMessages), ...conversationsFromRealm]
+        if (Object.keys(uploadingFilesMessagesRef.current)?.length > 0) {
+          conversationsFromRealm = [...Object.values(uploadingFilesMessagesRef.current), ...conversationsFromRealm]
         }
         dispatch({
           type: GET_CONVERSATIONS_SUCCESS,
@@ -2362,16 +2417,16 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
             ID: conversationID,
           },
         });
-        const id = conversationID;
-        const message = {
-          ...uploadingFilesMessages[conversationID?.toString()],
-          isInProgress: FAILED,
-        };
+        // const id = conversationID;
+        // const message = {
+        //   ...uploadingFilesMessages[conversationID?.toString()],
+        //   isInProgress: FAILED,
+        // };
 
-        await myClient?.saveAttachmentUploadConversation(
-          id?.toString(),
-          JSON.stringify(message)
-        );
+        // await myClient?.saveAttachmentUploadConversation(
+        //   id?.toString(),
+        //   JSON.stringify(message)
+        // );
 
         Client?.myClient?.handleException(
           error,
@@ -2903,6 +2958,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     messageSentByUserId,
     uploadResourceRetry,
     onRetryButtonClicked,
+    isSocketConnected,
 
     setIsEditable,
     setIsReact,
@@ -2946,6 +3002,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     backAction,
     setShimmerVisibleForChatbot,
     setMessageSentByUserId,
+    setIsSocketConnected
   };
 
   return (
