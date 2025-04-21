@@ -3,6 +3,7 @@ import React, {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -58,6 +59,7 @@ import { LMSeverity } from "@likeminds.community/chat-rn"
 import {
   CommonActions,
   StackActions,
+  useFocusEffect,
   useIsFocused,
   useNavigation,
   useRoute,
@@ -338,7 +340,10 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   const reactionArr = ["❤️", "😂", "😮", "😢", "😠", "👍"];
 
   const isFocused = useIsFocused();
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
+
+  const isSocketConnected = useRef(false);
+  const isSocketConnecting = useRef(false);
+
   const [socketError, setSocketError] = useState(false);
   const [isInternet, setIsInternet] = useState(false);
 
@@ -734,11 +739,14 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
 
   const ChatCallback = {
     onSocketConnectionOpen: async () => {
-      setIsSocketConnected(true);
+      isSocketConnected.current = true;
+      isSocketConnecting.current = false;
       setSocketError(false);
+
       // call sync API on socket connection to sync chatroom incase socket was disconnected for some time
       const chatroomDetails = await fetchChatroomDetails();
       await fetchData(chatroomDetails, false);
+      console.log("WebSocket connection opened.");
     },
     onMessageReceived: async (data) => {
       const conversationID = data?.conversation?.id;
@@ -753,14 +761,19 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       }
     },
     onSocketConnectionClosed: () => {
-      setIsSocketConnected(false);
+      isSocketConnected.current = false;
+      isSocketConnecting.current = false;
+      console.log("WebSocket connection closed.");
     },
     onError: (errorMessage: string) => {
-      setIsSocketConnected(false);
+      isSocketConnecting.current = false;
       setSocketError(true);
       
+      console.error("WebSocket error:", errorMessage);
     },
   };
+
+  
   
   useEffect(() => {
     const routeName = route.name;
@@ -768,8 +781,9 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       return;
     }
 
-    if (!isSocketConnected && isFocused) {
+    if (!isSocketConnected.current && isFocused && !isSocketConnecting.current) {
       // Subscribe to a chatroom
+      isSocketConnecting.current = true
       myClient.subscribeChatroom(
         { chatroomId: chatroomID },
         ChatCallback
@@ -780,7 +794,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
       myClient.unSubscribeChatroom();
     }
 
-  }, [chatroomID, isSocketConnected, isFocused, isInternet]);
+  }, [chatroomID, isSocketConnected, isFocused, isInternet, socketError]);
 
   useEffect(() => {
     if (route.name == ScreenName.FileUpload) {
@@ -792,6 +806,27 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     }
   }, [])
 
+  useEffect(() => {
+    if (route.name == ScreenName.FileUpload) {
+      return;
+    }
+
+    const unsubscribe = AppState.addEventListener("change", (state) => {
+      if (state == "active" && !isSocketConnected.current && !isSocketConnecting.current) {
+        isSocketConnecting.current = true;
+        myClient.subscribeChatroom(
+          { chatroomId: chatroomID },
+          ChatCallback
+        );
+      }
+    })
+
+    return unsubscribe.remove
+
+  }, [isSocketConnected, isSocketConnecting])
+
+
+
 
   useEffect(() => {
     if (route.name == ScreenName.FileUpload) {
@@ -800,9 +835,8 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     const unsubscribe = NetInfo.addEventListener(state => {
       if (state.isInternetReachable === true) {
         setIsInternet(true);
-      } else if (state.isInternetReachable === false) {
+      } else if (!state.isInternetReachable) {
         setIsInternet(false);
-        setIsSocketConnected(false);
       }
     });
 
@@ -1143,7 +1177,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     page: number,
     data: any,
     conversationId?: string,
-    widgets?: any,
+    widgets?: any
   ) => {
     try {
       await myClient?.saveConversationData(
@@ -2958,7 +2992,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     messageSentByUserId,
     uploadResourceRetry,
     onRetryButtonClicked,
-    isSocketConnected,
+    // isSocketConnected,
 
     setIsEditable,
     setIsReact,
@@ -3002,7 +3036,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
     backAction,
     setShimmerVisibleForChatbot,
     setMessageSentByUserId,
-    setIsSocketConnected
+    // setIsSocketConnected
   };
 
   return (
