@@ -79,22 +79,24 @@ const MessagesComponent = ({
     setShowRetry,
     setRetryUploadInProgress,
     retryUploadInProgress,
-    failedMessageId
+    failedMessageId,
+    messageUploadInProgressId
   } = useMessageContext();
 
   const styles = STYLES?.$CHAT_BUBBLE_STYLE;
 
   useEffect(() => {
     let interval;
+    let isCurrentlyBeingUploaded = item?.id == messageUploadInProgressId;
     let uploadFailed = item?.id == failedMessageId;
   
   const checkMessageStatus = () => {
       const currentTimeStampEpoch = Math.floor(Date.now());
       if (item?.id?.includes && item?.id?.includes("-")) {
         if (item?.attachments?.length > 0) {
-          const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch > 0 ? item?.attachmentUploadedEpoch : item?.localSavedEpoch ?? item?.localCreatedEpoch ?? 0 )));
+          const localTimestamp =  Math.floor(Math.abs(parseInt(item?.attachmentUploadedEpoch)));
 
-          if ( (uploadFailed) || (currentTimeStampEpoch - localTimestamp > 30000 && ((item?.inProgress == undefined || item?.inProgress == null)) )) {
+          if ( (uploadFailed) || ( (!isCurrentlyBeingUploaded) && (currentTimeStampEpoch - localTimestamp > 30000 && ((item?.inProgress == undefined || item?.inProgress == null))) )) {
             setShowRetry(true);
   
             // Stop checking once the condition is met
@@ -127,7 +129,7 @@ const MessagesComponent = ({
 
     // Cleanup interval when component unmounts
     return () => clearInterval(interval);
-  }, [item, failedMessageId])
+  }, [item, failedMessageId, messageUploadInProgressId])
 
 
   const { customReactionList }: CustomReactionList =
