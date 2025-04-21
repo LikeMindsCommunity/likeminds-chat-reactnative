@@ -819,6 +819,9 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
           ChatCallback
         );
       }
+      if (state == "background" || state == "inactive") {
+        myClient.unSubscribeChatroom();
+      }
     })
 
     return unsubscribe.remove
