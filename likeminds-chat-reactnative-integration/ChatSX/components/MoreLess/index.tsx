@@ -2,6 +2,7 @@ import { Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "./styles";
 import { decode } from "../../commonFuctions";
+import STYLES from "../../constants/Styles";
 
 const MoreLess = ({
   text,
@@ -18,7 +19,9 @@ const MoreLess = ({
   const [isTruncated, setIsTruncated] = useState(false);
   const [isFirstRender , setIsFirstRender] = useState(true)
 
-  const MAX_LINES = 3;
+  const disableTruncation = STYLES?.$CHAT_BUBBLE_STYLE?.disableTruncation
+
+  const MAX_LINES = disableTruncation ? 10_000 : 10;
 
   const handleTextLayout = (event: { nativeEvent: { lines: any[] } }) => {
     if (event.nativeEvent.lines.length > MAX_LINES) {

@@ -154,6 +154,7 @@ export interface ChatroomTopicStyles {
 
 export interface ChatBubbleStyles {
   borderRadius?: number;
+  disableTruncation?: boolean;
   sentMessageBackgroundColor?: string;
   receivedMessageBackgroundColor?: string;
   selectedBackgroundColor?: string;

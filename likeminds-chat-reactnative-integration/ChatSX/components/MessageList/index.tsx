@@ -302,6 +302,7 @@ const MessageListComponent = ({
           <ChatroomTopic />
           {/* List of messages */}
           <FlashList
+            keyboardDismissMode={Platform.OS == "ios" ? "on-drag" : "none"}
             // @ts-ignore
             ref={flatlistRef}
             data={conversations}
@@ -520,6 +521,7 @@ const MessageListComponent = ({
         <>
           {/* List of messages */}
           <FlashList
+            keyboardDismissMode={Platform.OS == "ios" ? "on-drag" : "none"}
             // @ts-ignore
             ref={flatlistRef}
             data={conversations}
