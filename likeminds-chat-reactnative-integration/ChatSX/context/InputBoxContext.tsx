@@ -104,7 +104,7 @@ import Layout from "../constants/Layout";
 import { LINK_PREVIEW_REGEX } from "../constants/Regex";
 import { generateAudioSet, generateVoiceNoteName } from "../audio";
 import ReactNativeBlobUtil from "react-native-blob-util";
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { Conversation } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Conversation";
 import GIFPicker from "../optionalDependecies/Gif";
 import AudioRecorder from "../optionalDependecies/AudioRecorder";
 import {
@@ -121,12 +121,12 @@ import {
   PanGestureHandlerEventPayload,
 } from "react-native-gesture-handler";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
-import { SyncConversationRequest, UpdateConversationDataRequest } from "@likeminds.community/chat-rn";
+import { SyncConversationRequest, UpdateConversationDataRequest } from "@likeminds.community/chat-rn-beta";;
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
 import { useNavigation } from "@react-navigation/native";
 import { isOtherUserAIChatbot } from "../utils/chatroomUtils";
 import { useChatroomContext } from "./ChatroomContext";
-import { LMSeverity } from "@likeminds.community/chat-rn"
+import { LMSeverity } from "@likeminds.community/chat-rn-beta";
 
 export interface InputBoxContextProps {
   children?: ReactNode;

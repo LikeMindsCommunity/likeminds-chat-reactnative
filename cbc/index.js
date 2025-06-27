@@ -8,7 +8,7 @@ import {
   initMyClient,
   getNotification,
 } from "@likeminds.community/chat-rn-core";
-import { ConversationState } from "@likeminds.community/chat-rn";
+import { ConversationState } from "@likeminds.community/chat-rn-beta";;
 import messaging from "@react-native-firebase/messaging";
 
 {

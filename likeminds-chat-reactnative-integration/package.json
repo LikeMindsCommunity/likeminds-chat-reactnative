@@ -1,8 +1,8 @@
 {
-  "name": "@likeminds.community/chat-rn-core",
-  "version": "1.10.0",
-  "versionCode": "26",
-  "versionName": "1.10.0",
+  "name": "@likeminds.community/chat-rn-core-beta",
+  "version": "0.0.14",
+  "versionCode": "27",
+  "versionName": "0.0.14",
   "description": "LikeMinds ReactNative Core SDK for chat",
   "scripts": {
     "android": "react-native run-android",
@@ -20,9 +20,9 @@
   "homepage": "https://likeminds.community/",
   "license": "ISC",
   "dependencies": {
-    "@likeminds.community/chat-rn": "1.10.0",
+    "@likeminds.community/chat-rn-beta": "^1.1.8",
     "diff": "5.1.0",
-    "realm": "11.10.2",
+    "realm": "20.1.0",
     "typescript": "5.6.2"
   },
   "peerDependencies": {
@@ -86,6 +86,12 @@
       "optional": true
     },
     "@react-native-clipboard/clipboard": {
+      "optional": true
+    },
+    "react-native-video": {
+      "optional": true
+    },
+    "react-native-media-console": {
       "optional": true
     }
   },

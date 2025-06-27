@@ -11,7 +11,7 @@ import { Client } from "../client";
 import { useRoute } from "@react-navigation/native";
 import Layout from "../constants/Layout";
 import STYLES from "../constants/Styles";
-import { LMSeverity } from "@likeminds.community/chat-rn"
+import { LMSeverity } from "@likeminds.community/chat-rn-beta";
 
 interface SearchInChatroomContextProps {
   children?: ReactNode;

@@ -10,7 +10,7 @@ import { GET_CONVERSATIONS_SUCCESS, SHOW_TOAST } from "../store/types/types";
 import { Platform } from "react-native";
 import { formatDate } from "../commonFuctions";
 import { CreatePollProps } from "../components/Poll/models";
-import { GetConversationsRequestBuilder } from "@likeminds.community/chat-rn";
+import { GetConversationsRequestBuilder } from "@likeminds.community/chat-rn-beta";;
 import {
   DATE_TEXT,
   EMPTY_OPTIONS_WARNING,
@@ -21,7 +21,7 @@ import {
   TIME_TEXT,
 } from "../constants/Strings";
 import { Client } from "../client";
-import { LMSeverity } from "@likeminds.community/chat-rn"
+import { LMSeverity } from "@likeminds.community/chat-rn-beta";
 
 interface CreatePollContextProps {
   children?: ReactNode;

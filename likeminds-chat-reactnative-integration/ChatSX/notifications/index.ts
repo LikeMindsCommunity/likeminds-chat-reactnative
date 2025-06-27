@@ -16,14 +16,14 @@ import { Client } from "../client";
 import { getRoute } from "./routes";
 import { Credentials } from "../credentials";
 import { ChatroomData } from "./models";
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
-import { Chatroom } from "@likeminds.community/chat-rn/dist/shared/responseModels/Chatroom";
-import { ChatroomRO } from "@likeminds.community/chat-rn/dist/localDb/models/ChatroomRO";
-import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseModels/Attachment";
+import { Conversation } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Conversation";
+import { Chatroom } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Chatroom";
+import { ChatroomRO } from "@likeminds.community/chat-rn-beta/dist/localDb/models/ChatroomRO";
+import { Attachment } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Attachment";
 import { chatSchema } from "../assets/chatSchema";
 import { MediaAttachment } from "../commonFuctions/model"
 import { getUniqueId } from "react-native-device-info";
-import { ConversationState, LMChatClient } from "@likeminds.community/chat-rn";
+import { ConversationState, LMChatClient } from "@likeminds.community/chat-rn-beta";;
 import { initMyClient } from "../../ChatSX/setup";
 
 interface RegisterDeviceRequest {

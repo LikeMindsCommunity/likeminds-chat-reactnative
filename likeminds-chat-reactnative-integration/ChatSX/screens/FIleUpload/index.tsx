@@ -44,7 +44,6 @@ import { CustomisableMethodsContextProvider } from "../../context/CustomisableMe
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useChatroomContext } from "../../context/ChatroomContext";
-import VideoPlayer from "react-native-media-console";
 import { InputBoxContextProvider } from "../../context/InputBoxContext";
 import FileUploadHeader from "../../components/FileUploadHeader";
 import FileUploadView from "../../components/FileUploadView";

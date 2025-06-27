@@ -297,6 +297,7 @@ const HomeFeed = ({ navigation, theme }: Props) => {
       <View style={styles.page}>
         {hideDMTab === false ? (
           <Tab.Navigator
+            id={undefined}
             screenOptions={{
               tabBarLabelStyle: styles.font,
               tabBarIndicatorStyle: { backgroundColor: STYLES.$COLORS.PRIMARY },

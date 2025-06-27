@@ -12,7 +12,7 @@ import { LMChatBotProviderProps, LMChatProviderProps } from "./type";
 import { CallBack } from "../callBacks/callBackClass";
 import GIFPicker from "../optionalDependecies/Gif";
 import { Token } from "../tokens";
-import { InitUserWithUuid, ValidateUser } from "@likeminds.community/chat-rn";
+import { InitUserWithUuid, ValidateUser } from "@likeminds.community/chat-rn-beta";;
 import {
   getMemberState,
   initAPI,

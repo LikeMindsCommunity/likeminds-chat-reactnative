@@ -34,7 +34,7 @@ import { Client } from "../client";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SHOW_LIST_REGEX } from "../commonFuctions";
-import { LMSeverity } from "@likeminds.community/chat-rn"
+import { LMSeverity } from "@likeminds.community/chat-rn-beta";
 
 export interface GroupFeedContextProps {
   children?: ReactNode;

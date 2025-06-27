@@ -11,7 +11,6 @@ import React, { useLayoutEffect } from "react";
 import Layout from "../../constants/Layout";
 import STYLES from "../../constants/Styles";
 import { styles } from "./styles";
-import VideoPlayer from "react-native-media-console";
 import { CAROUSEL_SCREEN, VIDEO_PLAYER } from "../../constants/Screens";
 import { IMAGE_TEXT, VIDEO_TEXT } from "../../constants/Strings";
 import ViewImage from "../../screens/ViewImage";

@@ -2,8 +2,8 @@ import { View, Text, Image } from "react-native";
 import React from "react";
 import styles from "../../screens/FIleUpload/styles";
 import { IMAGE_TEXT, PDF_TEXT, VIDEO_TEXT } from "../../constants/Strings";
-import VideoPlayer from "react-native-media-console";
 import { useFileUploadContext } from "../../context/FileUploadContext";
+import RNVideoPlayer from "../../optionalDependecies/RNVideo";
 
 const FileUploadView = () => {
   const { itemType, selectedFileToView, video, docItemType, isGif } =
@@ -16,9 +16,9 @@ const FileUploadView = () => {
           source={{ uri: selectedFileToView?.uri }}
           style={styles.mainImage}
         />
-      ) : itemType === VIDEO_TEXT ? (
+      ) : itemType === VIDEO_TEXT && RNVideoPlayer ? (
         <View style={styles.video}>
-          <VideoPlayer
+          <RNVideoPlayer
             // @ts-ignore
             source={{ uri: selectedFileToView?.uri }}
             videoStyle={styles.videoPlayer}

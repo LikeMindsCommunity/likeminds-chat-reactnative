@@ -53,7 +53,7 @@ import {
   LogBox,
   View,
 } from "react-native";
-import { LMSeverity } from "@likeminds.community/chat-rn"
+import { LMSeverity } from "@likeminds.community/chat-rn-beta";
 import {
   CommonActions,
   StackActions,
@@ -78,7 +78,7 @@ import {
   SyncConversationRequest,
   UpdateConversationDataRequest,
   UpdateAttachmentRequest
-} from "@likeminds.community/chat-rn";
+} from "@likeminds.community/chat-rn-beta";;
 import { Credentials } from "../credentials";
 import { initAPI } from "../store/actions/homefeed";
 import { createTemporaryStateMessage, isOtherUserAIChatbot, splitFileName } from "../utils/chatroomUtils";
@@ -114,11 +114,11 @@ import { fetchResourceFromURI, formatTime, generateGifName } from "../commonFuct
 import { Image as CompressedImage } from "react-native-compressor";
 import { Client } from "../client";
 import AudioPlayer from "../optionalDependecies/AudioPlayer";
-import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseModels/Attachment";
+import { Attachment } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Attachment";
 import { SdkTheme } from "../setupChat";
 import { Themes } from "../enums/Themes";
 import { ScreenName } from "../enums/ScreenNameEnums"
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { Conversation } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Conversation";
 
 interface UploadResource {
   selectedImages: Attachment[] | any[];

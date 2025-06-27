@@ -2,7 +2,7 @@ import {
   InitUserWithUuid,
   LMChatClient,
   LMSDKCallbacks,
-} from "@likeminds.community/chat-rn";
+} from "@likeminds.community/chat-rn-beta";;
 import { Client } from "./client";
 import { Themes } from "../ChatSX/enums/Themes";
 

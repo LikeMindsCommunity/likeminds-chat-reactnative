@@ -1,5 +1,5 @@
 import React from "react"
-import {Conversation} from '@likeminds.community/chat-rn/dist/shared/responseModels/Conversation';
+import {Conversation} from '@likeminds.community/chat-rn-beta/shared/responseModels/Conversation';
 
 export interface SwipeableParams {
   onFocusKeyboard: () => void;

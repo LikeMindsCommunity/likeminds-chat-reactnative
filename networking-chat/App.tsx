@@ -64,7 +64,7 @@ import FetchKeyInputScreen from './login';
 import {
   ConversationState,
   InitUserWithUuid,
-} from '@likeminds.community/chat-rn';
+} from '@likeminds.community/chat-rn-beta';;
 import {LMCoreCallbacks} from '@likeminds.community/chat-rn-core/ChatSX/setupChat';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import FileUploadScreenWrapper from '@likeminds.community/chat-rn-core/ChatSX/wrappers/FileUploadWrapper';

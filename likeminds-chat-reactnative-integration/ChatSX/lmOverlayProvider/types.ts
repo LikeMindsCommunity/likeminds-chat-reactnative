@@ -1,4 +1,4 @@
-import { LMChatClient } from "@likeminds.community/chat-rn";
+import { LMChatClient } from "@likeminds.community/chat-rn-beta";;
 import React from "react";
 import { LMCoreCallbacks } from "../setupChat";
 import { Themes } from "../enums/Themes";

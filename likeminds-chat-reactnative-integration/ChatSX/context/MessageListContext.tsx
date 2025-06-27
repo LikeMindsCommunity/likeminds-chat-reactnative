@@ -27,17 +27,17 @@ import {
   paginatedConversationsEnd,
   paginatedConversationsStart,
 } from "../store/actions/chatroom";
-import { GetConversationsRequestBuilder } from "@likeminds.community/chat-rn";
+import { GetConversationsRequestBuilder } from "@likeminds.community/chat-rn-beta";;
 import { GET_CONVERSATIONS_SUCCESS } from "../store/types/types";
 import { DocumentType, GetConversationsType } from "../enums";
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { Conversation } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Conversation";
 import { styles } from "../components/MessageList/styles";
 import { decode, generateGifString } from "../commonFuctions";
 import { CAPITAL_GIF_TEXT, VOICE_NOTE_STRING } from "../constants/Strings";
 import { getCurrentConversation } from "../utils/chatroomUtils";
 import { convertToChatroomTopicSchema } from "../assets/chatSchema";
 import { useIsFocused } from "@react-navigation/native";
-import { LMSeverity } from "@likeminds.community/chat-rn"
+import { LMSeverity } from "@likeminds.community/chat-rn-beta";
 
 interface MessageListContextProps {
   children?: ReactNode;

@@ -1,4 +1,4 @@
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { Conversation } from "@likeminds.community/chat-rn-beta/shared/responseModels/Conversation";
 
 export interface InputBoxProps {
   replyChatID?: any;

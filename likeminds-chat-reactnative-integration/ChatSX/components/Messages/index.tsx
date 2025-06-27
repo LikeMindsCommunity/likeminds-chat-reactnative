@@ -17,7 +17,7 @@ import SimpleMessage from "../SimpleMessage";
 import { NavigateToProfileParams } from "../../callBacks/type";
 import { CallBack } from "../../callBacks/callBackClass";
 import { useCustomComponentsContext } from "../../context/CustomComponentContextProvider";
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { Conversation } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Conversation";
 import { onConversationsCreate } from "../../store/actions/chatroom";
 import { useAppDispatch } from "../../store";
 import { Client } from "../../client";

@@ -1,6 +1,6 @@
 import { playbackService } from "./audio";
-import { ConversationState, LMChatClient, LMStackTrace } from "@likeminds.community/chat-rn";
-import { LMSeverity } from "@likeminds.community/chat-rn"
+import { ConversationState, LMChatClient, LMStackTrace } from "@likeminds.community/chat-rn-beta";;
+import { LMSeverity } from "@likeminds.community/chat-rn-beta";
 import { Client } from "./client";
 import AudioPlayer from "./optionalDependecies/AudioPlayer";
 const packageJson = require("../package.json");

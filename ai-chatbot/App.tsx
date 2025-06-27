@@ -61,7 +61,7 @@ import FetchKeyInputScreen from './login';
 import {
   ConversationState,
   InitUserWithUuid,
-} from '@likeminds.community/chat-rn';
+} from '@likeminds.community/chat-rn-beta';;
 import { ScreenName } from './src/enums/screenNameEnums';
 import { LMCoreCallbacks } from '@likeminds.community/chat-rn-core/ChatSX/setupChat';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

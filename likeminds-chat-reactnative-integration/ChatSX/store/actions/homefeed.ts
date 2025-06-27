@@ -33,7 +33,7 @@ import {
   VALIDATE_API_SUCCESS,
 } from "../types/types";
 import { Client } from "../../client";
-import { ValidateUser } from "@likeminds.community/chat-rn";
+import { ValidateUser } from "@likeminds.community/chat-rn-beta";;
 
 export const initAPI = (payload: any) => () => {
   try {

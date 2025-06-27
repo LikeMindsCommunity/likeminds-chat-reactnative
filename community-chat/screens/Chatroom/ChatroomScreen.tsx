@@ -14,7 +14,7 @@ import ChatroomTabNavigator from '../../src/ChatroomTabNavigator';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Text, View} from 'react-native';
-import {Conversation} from '@likeminds.community/chat-rn/dist/shared/responseModels/Conversation';
+import {Conversation} from '@likeminds.community/chat-rn-beta/shared/responseModels/Conversation';
 import {InputBoxContextProvider} from '@likeminds.community/chat-rn-core/ChatSX/context/InputBoxContext';
 import {ChatroomContextValues} from '@likeminds.community/chat-rn-core/ChatSX/context/ChatroomContext';
 import MessageInputBox from './MessageInputBox';

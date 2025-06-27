@@ -1,9 +1,9 @@
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { Conversation } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Conversation";
 import { UserInfo } from "../db/models";
 import { GetConversationsType } from "../enums";
 import { Client } from "../client";
-import { Chatroom } from "@likeminds.community/chat-rn/dist/shared/responseModels/Chatroom";
-import { Member } from "@likeminds.community/chat-rn/dist/shared/responseModels/Member";
+import { Chatroom } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Chatroom";
+import { Member } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Member";
 
 enum Roles {
   Chatbot = "chatbot",

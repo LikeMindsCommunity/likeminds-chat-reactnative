@@ -1,5 +1,5 @@
-import { Attachment } from "@likeminds.community/chat-rn/dist/shared/responseModels/Attachment";
-import { Conversation } from "@likeminds.community/chat-rn/dist/shared/responseModels/Conversation";
+import { Attachment } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Attachment";
+import { Conversation } from "@likeminds.community/chat-rn-beta/dist/shared/responseModels/Conversation";
 import { MediaType } from "../enums";
 
 export const getConversationType = (conversation: Conversation) => {

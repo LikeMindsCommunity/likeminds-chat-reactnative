@@ -1,4 +1,4 @@
-import { LMChatClient } from "@likeminds.community/chat-rn";
+import { LMChatClient } from "@likeminds.community/chat-rn-beta";;
 
 export class Client {
   private static _myClient: LMChatClient;

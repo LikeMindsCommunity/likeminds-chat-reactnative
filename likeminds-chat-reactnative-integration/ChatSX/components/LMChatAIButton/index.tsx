@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import STYLES from "../../constants/Styles";
 import { LMChatButton } from "../../uiComponents/LMChatButton"
-import { ConversationState, InitUserWithUuid, LMChatClient, ValidateUser } from "@likeminds.community/chat-rn";
+import { ConversationState, InitUserWithUuid, LMChatClient, ValidateUser } from "@likeminds.community/chat-rn-beta";;
 import { getMemberState, initAPI, validateUser } from "../../store/actions/homefeed";
 import { pushAPI, token } from "../../notifications";
 import { useAppDispatch } from "../../store";
@@ -27,6 +27,8 @@ interface LMChatAIButtonProps {
     accessToken?: string;
     refreshToken?: string;
     onTap?: () => void;
+    customNavigationToChatroom?: (chatroomId?: string) => void;
+    customNavigationToInitScreen?: () => void;
 }
 
 export default function LMChatAIButton({
@@ -44,7 +46,9 @@ export default function LMChatAIButton({
     isGuest,
     accessToken,
     refreshToken,
-    onTap
+    onTap,
+    customNavigationToChatroom,
+    customNavigationToInitScreen
 }: LMChatAIButtonProps) {
     const [isInitiated, setIsInitiated] = useState(false);
     const LMChatButtonStyles = STYLES?.$LMCHAT_AI_BUTTON_STYLE;
@@ -67,11 +71,19 @@ export default function LMChatAIButton({
             }
             const appConfig = await Client?.myClient?.getAppConfig();
             if (appConfig === null || appConfig === undefined) {
-                navigation.navigate(CHATBOT_INITIATE_SCREEN)
+                if (customNavigationToInitScreen) {
+                    customNavigationToInitScreen();
+                } else {
+                    navigation.navigate(CHATBOT_INITIATE_SCREEN)
+                }
             } else {
-                navigation.navigate(CHATROOM, {
-                    chatroomID: appConfig?.chatroomIdWithAIChatbot
-                })
+                if (customNavigationToChatroom) {
+                    customNavigationToChatroom(appConfig?.chatroomIdWithAIChatbot)
+                } else {
+                    navigation.navigate(CHATROOM, {
+                        chatroomID: appConfig?.chatroomIdWithAIChatbot
+                    })
+                }
             }
         }
         setIsInitiated(true);

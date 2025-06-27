@@ -60,6 +60,7 @@ const PollResult = ({ navigation, route }: any) => {
       }}
     >
       <PollStack.Navigator
+        id={undefined}
         screenOptions={{
           tabBarLabelStyle: styles.font,
           tabBarIndicatorStyle: { backgroundColor: STYLES.$COLORS.PRIMARY },
