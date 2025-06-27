@@ -83,7 +83,6 @@ export const styles = StyleSheet.create({
     fontFamily: STYLES.$FONT_TYPES.LIGHT,
     maxHeight: Layout.normalize(120),
     padding: 0,
-    marginBottom: Layout.normalize(2),
     overflow: "scroll",
     width: "100%",
   },
