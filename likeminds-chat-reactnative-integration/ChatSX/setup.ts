@@ -10,6 +10,11 @@ export const initMyClient = (
   shareLogsWithLM: boolean = true,
   onErrorHandler?: (exception: string, stackTrace: LMStackTrace) => void
 ) => {
+
+  if (Client?.myClient) {
+    return Client.myClient
+  }
+
   const myClient = LMChatClient
     .setfilterStateConversation(filterStateMessage)
     .setInitiateLoggerRequest({

@@ -410,7 +410,7 @@ export const ChatroomContextProvider = ({ children }: ChatroomContextProps) => {
   }
   const chatroomProfile =
     chatroomType === ChatroomType.DMCHATROOM
-      ? user?.id !== chatroomWithUser?.id
+      ? user?.id?.toString() !== chatroomWithUser?.id?.toString()
         ? chatroomWithUser?.imageUrl
         : chatroomDBDetails?.member?.imageUrl!
       : null;
