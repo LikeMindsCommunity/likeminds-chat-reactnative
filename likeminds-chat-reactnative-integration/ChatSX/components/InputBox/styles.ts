@@ -68,7 +68,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: Layout.normalize(10),
     paddingLeft: 0,
-    width: "58%",
+    width: "75%",
   },
   voiceNotesInputParent: {
     display: "flex",
