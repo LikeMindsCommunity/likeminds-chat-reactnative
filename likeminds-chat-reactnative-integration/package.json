@@ -18,7 +18,7 @@
   },
   "author": "LikeMinds",
   "homepage": "https://likeminds.community/",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "@likeminds.community/chat-rn": "1.10.0",
     "diff": "5.1.0",
